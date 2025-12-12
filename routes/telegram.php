@@ -15,8 +15,8 @@ use SergiX44\Nutgram\Nutgram;
 |
 */
 
-$bot->registerCommand(StartCommand::class);
-$bot->registerCommand(CancelCommand::class);
+$menu = new \Services\TelegramBot\Bot();
+$menu($bot);
 
 if (app()->isLocal()) {
     $bot->registerMyCommands();

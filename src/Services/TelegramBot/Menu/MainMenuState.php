@@ -21,7 +21,7 @@ class MainMenuState extends MenuState
     public function handle(Nutgram $bot): ?MenuState
     {
         return match ($bot->callbackQuery()->data) {
-            'categories' => new CategoriesMenu(),
+            'categories' => new CategoriesMenuState(),
             'settings' => new SettingsMenuState(),
             default => null,
         };

@@ -6,7 +6,7 @@ use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 
-class CategoriesMenu extends MenuState
+class CategoriesMenuState extends MenuState
 {
     public function render(Nutgram $bot): void
     {
@@ -21,8 +21,8 @@ class CategoriesMenu extends MenuState
     public function handle(Nutgram $bot): ?MenuState
     {
         return match ($bot->callbackQuery()->data) {
-            'categories_1' => $bot->sendMessage('1'),
-            'categories_2' => $bot->sendMessage('2'),
+            'categories_1' => new CategoryDetailState('категория 1'),
+            'categories_2' => new CategoryDetailState('категория 2'),
             'back' => new MainMenuState(),
             default => null,
         };

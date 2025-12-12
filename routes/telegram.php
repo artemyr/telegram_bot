@@ -15,18 +15,9 @@ use SergiX44\Nutgram\Nutgram;
 |
 */
 
-$bot->onMessage(function (Nutgram $bot) {
-    $m = $bot->message();
-    $bot->sendMessage('You sent a message! ' . $m->getText());
-});
-
-$bot->onText('Give me food!', function (Nutgram $bot) {
-    $bot->sendMessage('Apple!');
-});
-
-$bot->onText('Give me animal!', function (Nutgram $bot) {
-    $bot->sendMessage('Dog!');
-});
-
 $bot->registerCommand(StartCommand::class);
 $bot->registerCommand(CancelCommand::class);
+
+if (app()->isLocal()) {
+    $bot->registerMyCommands();
+}

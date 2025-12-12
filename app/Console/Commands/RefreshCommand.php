@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use SergiX44\Nutgram\Nutgram;
 
 class RefreshCommand extends Command
 {
@@ -23,8 +24,8 @@ class RefreshCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(Nutgram $bot)
     {
-        echo '';
+        $bot->registerMyCommands();
     }
 }

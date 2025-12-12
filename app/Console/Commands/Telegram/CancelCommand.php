@@ -9,12 +9,13 @@ use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardRemove;
 class CancelCommand extends Command
 {
     protected string $command = 'cancel';
+    protected ?string $description = 'Отмена';
 
     public function handle(Nutgram $bot)
     {
         $bot->sendMessage(
-            text: 'Removing keyboard...',
+            text: 'Bye',
             reply_markup: ReplyKeyboardRemove::make(true),
-        )?->delete();
+        );
     }
 }

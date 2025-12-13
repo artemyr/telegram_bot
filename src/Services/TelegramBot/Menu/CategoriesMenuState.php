@@ -10,11 +10,12 @@ class CategoriesMenuState extends MenuState
 {
     public function render(Nutgram $bot): void
     {
-        $bot->sendMessage(
+        $bot->editMessageText(
             text: 'Категории',
             reply_markup: InlineKeyboardMarkup::make()
                 ->addRow(InlineKeyboardButton::make(text: 'категория 1', callback_data: 'categories_1'))
                 ->addRow(InlineKeyboardButton::make(text: 'категория 2', callback_data: 'categories_2'))
+                ->addRow(InlineKeyboardButton::make(text: 'Назад', callback_data: 'back'))
         );
     }
 

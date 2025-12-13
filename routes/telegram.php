@@ -1,10 +1,6 @@
 <?php
 /** @var SergiX44\Nutgram\Nutgram $bot */
 
-use App\Console\Commands\Telegram\CancelCommand;
-use App\Console\Commands\Telegram\StartCommand;
-use SergiX44\Nutgram\Nutgram;
-
 /*
 |--------------------------------------------------------------------------
 | Nutgram Handlers
@@ -15,7 +11,9 @@ use SergiX44\Nutgram\Nutgram;
 |
 */
 
-$menu = new \Services\TelegramBot\Bot();
+use Domain\Menu\MenuFactory;
+
+$menu = new MenuFactory();
 $menu($bot);
 
 if (app()->isLocal()) {

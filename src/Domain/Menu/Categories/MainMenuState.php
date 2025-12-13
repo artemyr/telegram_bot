@@ -1,10 +1,13 @@
 <?php
 
-namespace Services\TelegramBot\Menu;
+namespace Domain\Menu\Categories;
 
+use Domain\Menu\Categories\Categories\CategoriesMenuState;
+use Domain\Menu\Categories\Settings\SettingsMenuState;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
+use Services\TelegramBot\Menu\MenuState;
 
 class MainMenuState extends MenuState
 {

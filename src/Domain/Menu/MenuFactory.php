@@ -1,13 +1,14 @@
 <?php
 
-namespace Services\TelegramBot;
+namespace Domain\Menu;
 
+use Domain\Menu\Categories\MainMenuState;
 use SergiX44\Nutgram\Nutgram;
-use Services\TelegramBot\Menu\MainMenuState;
+use Services\TelegramBot\UserStateStore;
 
-class Bot
+class MenuFactory
 {
-    public function __invoke(Nutgram $bot)
+    public function __invoke(Nutgram $bot): void
     {
         $bot->onCommand('start', function (Nutgram $bot) {
             $state = new MainMenuState();

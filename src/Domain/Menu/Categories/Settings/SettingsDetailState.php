@@ -1,12 +1,13 @@
 <?php
 
-namespace Services\TelegramBot\Menu;
+namespace Domain\Menu\Categories\Settings;
 
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
+use Services\TelegramBot\Menu\MenuState;
 
-class CategoryDetailState extends MenuState
+class SettingsDetailState extends MenuState
 {
     public function __construct(public string $categoryName)
     {
@@ -15,7 +16,7 @@ class CategoryDetailState extends MenuState
     public function render(Nutgram $bot): void
     {
         $bot->editMessageText(
-            text: "Категория: {$this->categoryName}",
+            text: "Настройка: {$this->categoryName}",
             reply_markup: InlineKeyboardMarkup::make()
                 ->addRow(InlineKeyboardButton::make(text: 'Описание', callback_data: 'info'))
                 ->addRow(InlineKeyboardButton::make(text: 'Назад', callback_data: 'back')));
@@ -26,8 +27,8 @@ class CategoryDetailState extends MenuState
         $data = $bot->callbackQuery()->data;
 
         return match ($data) {
-            'info' => new CategoryInfoState($this->categoryName),
-            'back' => new CategoriesMenuState(),
+            'info' => new SettingsInfoState($this->categoryName),
+            'back' => new SettingsMenuState(),
         };
     }
 }

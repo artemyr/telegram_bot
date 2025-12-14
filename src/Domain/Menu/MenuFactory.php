@@ -11,17 +11,24 @@ class MenuFactory
     public function __invoke(Nutgram $bot): void
     {
         $bot->onCommand('start', function (Nutgram $bot) {
+            request()->merge([
+                'path' => '/'
+            ]);
             $state = new MainMenuState();
             UserStateStore::set($bot->userId(), $state);
             $state->render($bot);
         });
 
         $bot->onCallbackQuery(function (Nutgram $bot) {
-            $current = UserStateStore::get($bot->userId()) ?? new MainMenuState();
+            request()->merge([
+                'path' => $bot->callbackQuery()->data
+            ]);
 
+            $current = UserStateStore::get($bot->userId()) ?? new MainMenuState();
             $next = $current->handle($bot);
 
             if ($next) {
+                $next->silent();
                 UserStateStore::set($bot->userId(), $next);
                 $next->render($bot);
             }

@@ -2,5 +2,5 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    App\Providers\TelegramServiceProvider::class,
+    App\Providers\ViewServiceProvider::class,
 ];

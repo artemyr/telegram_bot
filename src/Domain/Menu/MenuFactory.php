@@ -29,7 +29,6 @@ class MenuFactory
             }, $fail);
         });
 
-
         $bot->onCallbackQuery(function (Nutgram $bot) use ($fail) {
             try_to(function () use ($bot) {
                 $current = UserStateStore::get($bot->userId()) ?? new MainMenuState();

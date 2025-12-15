@@ -16,7 +16,7 @@ class RequestMiddleware
             ]);
         } else {
             request()->merge([
-                'path' => '/'
+                'path' => troute('home')
             ]);
         }
 

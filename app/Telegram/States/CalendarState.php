@@ -2,13 +2,12 @@
 
 namespace App\Telegram\States;
 
-use Domain\Calendar\Contracts\ShowMenuContract;
 use Domain\Calendar\Enum\CalendarEnum;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\MenuEnum;
+use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\MenuBotState;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardRemove;
 
 class CalendarState extends BotState
 {
@@ -16,18 +15,22 @@ class CalendarState extends BotState
 
     public function render(Nutgram $bot): void
     {
-        $action = app(ShowMenuContract::class);
-        $action($bot);
+        $keyboard = [
+            MenuEnum::BACK->value
+        ];
+
+        foreach (CalendarEnum::cases() as $case) {
+            $keyboard[] = $case->value;
+        }
+
+        Keyboard::send("Раздел: Календарь\nВыберите что хотите сделать", $keyboard);
     }
 
     public function handle(Nutgram $bot): ?BotState
     {
         if ($bot->message()->getText() === MenuEnum::BACK->value) {
 
-            $bot->sendMessage(
-                text: 'Removing keyboard...',
-                reply_markup: ReplyKeyboardRemove::make(true),
-            )?->delete();
+            Keyboard::remove();
 
             request()->merge([
                 'path' => troute('categories')

@@ -22,3 +22,23 @@ if (!function_exists('troute')) {
         return $route;
     }
 }
+
+if (!function_exists('try')) {
+    function try_to(callable $callback, callable $fail = null)
+    {
+        try {
+            return $callback();
+        } catch (Throwable $e) {
+            report($e);
+
+            if ($fail !== null) {
+                try {
+                    $fail($e);
+                } catch (Throwable) {
+                }
+            }
+        }
+
+        return null;
+    }
+}

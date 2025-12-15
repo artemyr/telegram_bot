@@ -7,7 +7,6 @@ use App\Telegram\Middleware\RequestMiddleware;
 use Domain\Menu\Categories\MainMenuState;
 use SergiX44\Nutgram\Nutgram;
 use Services\TelegramBot\UserStateStore;
-use Throwable;
 
 class MenuFactory
 {
@@ -16,21 +15,23 @@ class MenuFactory
         $bot->middleware(AuthMiddleware::class);
         $bot->middleware(RequestMiddleware::class);
 
-        $bot->onCommand('start', function (Nutgram $bot) {
-            try {
+        $fail = function ($e) use ($bot) {
+            if (app()->hasDebugModeEnabled()) {
+                $bot->sendMessage("Error! " . $e->getMessage());
+            }
+        };
+
+        $bot->onCommand('start', function (Nutgram $bot) use ($fail) {
+            try_to(function () use ($bot) {
                 $state = new MainMenuState();
                 UserStateStore::set($bot->userId(), $state);
                 $state->render($bot);
-            } catch (Throwable $e) {
-                report($e);
-                if (app()->hasDebugModeEnabled()) {
-                    $bot->sendMessage("Error! " . $e->getMessage());
-                }
-            }
+            }, $fail);
         });
 
-        $bot->onCallbackQuery(function (Nutgram $bot) {
-            try {
+
+        $bot->onCallbackQuery(function (Nutgram $bot) use ($fail) {
+            try_to(function () use ($bot) {
                 $current = UserStateStore::get($bot->userId()) ?? new MainMenuState();
                 $next = $current->handle($bot);
 
@@ -39,23 +40,13 @@ class MenuFactory
                     UserStateStore::set($bot->userId(), $next);
                     $next->render($bot);
                 }
-            } catch (Throwable $e) {
-                report($e);
-                if (app()->hasDebugModeEnabled()) {
-                    $bot->sendMessage("Error! " . $e->getMessage());
-                }
-            }
+            }, $fail);
         });
 
-        try {
+        try_to(function () use ($bot) {
             if (app()->isLocal()) {
                 $bot->registerMyCommands();
             }
-        } catch (Throwable $e) {
-            report($e);
-            if (app()->hasDebugModeEnabled()) {
-                $bot->sendMessage("Error! " . $e->getMessage());
-            }
-        }
+        }, $fail);
     }
 }

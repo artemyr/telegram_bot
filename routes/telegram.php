@@ -14,4 +14,4 @@
 use App\Telegram\Factory\BotFactory;
 
 $menu = new BotFactory();
-$menu($bot);
+$menu();

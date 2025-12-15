@@ -2,12 +2,10 @@
 
 namespace Domain\Calendar\Actions;
 
-use SergiX44\Nutgram\Nutgram;
-
 class PiAction
 {
-    public function __invoke(Nutgram $bot)
+    public function __invoke(): void
     {
-        $bot->sendMessage('pi pi');
+        bot()->sendMessage('pi pi');
     }
 }

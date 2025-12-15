@@ -2,8 +2,6 @@
 
 namespace Domain\TelegramBot;
 
-use SergiX44\Nutgram\Nutgram;
-
 abstract class BotState
 {
     public bool $silent = false;
@@ -14,14 +12,14 @@ abstract class BotState
         return $this;
     }
 
-    abstract public function render(Nutgram $bot): void;
+    abstract public function render(): void;
 
-    public function handle(Nutgram $bot): ?BotState
+    public function handle(): ?BotState
     {
         return null;
     }
 
-    protected function transition(Nutgram $bot, BotState $state): BotState
+    protected function transition(BotState $state): BotState
     {
         return $state;
     }

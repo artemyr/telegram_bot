@@ -7,13 +7,12 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\MenuEnum;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\MenuBotState;
-use SergiX44\Nutgram\Nutgram;
 
 class CalendarState extends BotState
 {
     public bool $silent = true;
 
-    public function render(Nutgram $bot): void
+    public function render(): void
     {
         $keyboard = [
             MenuEnum::BACK->value
@@ -26,9 +25,9 @@ class CalendarState extends BotState
         Keyboard::send("Раздел: Календарь\nВыберите что хотите сделать", $keyboard);
     }
 
-    public function handle(Nutgram $bot): ?BotState
+    public function handle(): ?BotState
     {
-        if ($bot->message()->getText() === MenuEnum::BACK->value) {
+        if (bot()->message()->getText() === MenuEnum::BACK->value) {
 
             Keyboard::remove();
 
@@ -40,10 +39,10 @@ class CalendarState extends BotState
         }
 
         foreach (CalendarEnum::cases() as $case) {
-            if ($bot->message()->getText() === $case->value) {
-                $bot->sendMessage("Вы отметили: " . $case->value);
+            if (bot()->message()->getText() === $case->value) {
+                bot()->sendMessage("Вы отметили: " . $case->value);
                 $action = new ($case->action());
-                $action($bot);
+                $action();
             }
         }
 

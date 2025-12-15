@@ -1,6 +1,7 @@
 <?php
 
 use App\Menu\MenuContract;
+use SergiX44\Nutgram\Nutgram;
 
 if (!function_exists('menu')) {
     function menu(): MenuContract
@@ -40,5 +41,12 @@ if (!function_exists('try')) {
         }
 
         return null;
+    }
+}
+
+if (!function_exists('bot')) {
+    function bot(): Nutgram
+    {
+        return app(Nutgram::class);
     }
 }

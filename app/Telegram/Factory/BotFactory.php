@@ -6,55 +6,50 @@ use App\Telegram\Middleware\AuthMiddleware;
 use App\Telegram\Middleware\RequestMiddleware;
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\UserStateStore;
-use SergiX44\Nutgram\Nutgram;
 
 class BotFactory
 {
-    protected Nutgram $bot;
-
-    public function __invoke(Nutgram $bot): void
+    public function __invoke(): void
     {
-        $this->bot = $bot;
+        bot()->middleware(AuthMiddleware::class);
+        bot()->middleware(RequestMiddleware::class);
 
-        $bot->middleware(AuthMiddleware::class);
-        $bot->middleware(RequestMiddleware::class);
-
-        $bot->onCommand('start', function (Nutgram $bot) {
-            $this->try(function () use ($bot) {
+        bot()->onCommand('start', function () {
+            $this->try(function () {
                 $state = new MenuBotState();
-                UserStateStore::set($bot->userId(), $state);
-                $state->render($bot);
+                UserStateStore::set(bot()->userId(), $state);
+                $state->render();
             });
         });
 
-        $bot->onCallbackQuery(function (Nutgram $bot) {
-            $this->try(function () use ($bot) {
-                $this->handleState($bot);
+        bot()->onCallbackQuery(function () {
+            $this->try(function () {
+                $this->handleState();
             });
         });
 
-        $bot->onMessage(function (Nutgram $bot) {
-            $this->try(function () use ($bot) {
-                $this->handleState($bot);
+        bot()->onMessage(function () {
+            $this->try(function () {
+                $this->handleState();
             });
         });
 
         $this->try(function () {
             if (app()->isLocal()) {
-                $this->bot->registerMyCommands();
+                bot()->registerMyCommands();
             }
         });
     }
 
-    protected function handleState($bot): void
+    protected function handleState(): void
     {
-        $current = UserStateStore::get($bot->userId()) ?? new MenuBotState();
-        $next = $current->handle($bot);
+        $current = UserStateStore::get(bot()->userId()) ?? new MenuBotState();
+        $next = $current->handle();
 
         if ($next) {
             $next->silent();
-            UserStateStore::set($bot->userId(), $next);
-            $next->render($bot);
+            UserStateStore::set(bot()->userId(), $next);
+            $next->render();
         }
     }
 
@@ -62,9 +57,9 @@ class BotFactory
     {
         try_to($call, function ($e) {
             if (app()->hasDebugModeEnabled()) {
-                $this->bot->sendMessage("Error! " . $e->getMessage());
+                bot()->sendMessage("Error! " . $e->getMessage());
             } else {
-                $this->bot->sendMessage("Произошла ошибка");
+                bot()->sendMessage("Произошла ошибка");
             }
         });
     }

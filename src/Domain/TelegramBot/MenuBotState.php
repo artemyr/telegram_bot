@@ -2,13 +2,12 @@
 
 namespace Domain\TelegramBot;
 
-use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 
 class MenuBotState extends BotState
 {
-    public function render(Nutgram $bot): void
+    public function render(): void
     {
         $keyboard = InlineKeyboardMarkup::make();
 
@@ -36,13 +35,13 @@ class MenuBotState extends BotState
             ? 'editMessageText'
             : 'sendMessage';
 
-        $bot->{$method}(
+        bot()->{$method}(
             text: $menu->label(),
             reply_markup: $keyboard
         );
     }
 
-    public function handle(Nutgram $bot): ?BotState
+    public function handle(): ?BotState
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
 

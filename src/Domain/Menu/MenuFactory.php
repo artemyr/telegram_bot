@@ -7,6 +7,7 @@ use App\Telegram\Middleware\RequestMiddleware;
 use Domain\Menu\Categories\MainMenuState;
 use SergiX44\Nutgram\Nutgram;
 use Services\TelegramBot\UserStateStore;
+use Throwable;
 
 class MenuFactory
 {
@@ -16,24 +17,45 @@ class MenuFactory
         $bot->middleware(RequestMiddleware::class);
 
         $bot->onCommand('start', function (Nutgram $bot) {
-            $state = new MainMenuState();
-            UserStateStore::set($bot->userId(), $state);
-            $state->render($bot);
-        });
-
-        $bot->onCallbackQuery(function (Nutgram $bot) {
-            $current = UserStateStore::get($bot->userId()) ?? new MainMenuState();
-            $next = $current->handle($bot);
-
-            if ($next) {
-                $next->silent();
-                UserStateStore::set($bot->userId(), $next);
-                $next->render($bot);
+            try {
+                $state = new MainMenuState();
+                UserStateStore::set($bot->userId(), $state);
+                $state->render($bot);
+            } catch (Throwable $e) {
+                report($e);
+                if (app()->hasDebugModeEnabled()) {
+                    $bot->sendMessage("Error! " . $e->getMessage());
+                }
             }
         });
 
-        if (app()->isLocal()) {
-            $bot->registerMyCommands();
+        $bot->onCallbackQuery(function (Nutgram $bot) {
+            try {
+                $current = UserStateStore::get($bot->userId()) ?? new MainMenuState();
+                $next = $current->handle($bot);
+
+                if ($next) {
+                    $next->silent();
+                    UserStateStore::set($bot->userId(), $next);
+                    $next->render($bot);
+                }
+            } catch (Throwable $e) {
+                report($e);
+                if (app()->hasDebugModeEnabled()) {
+                    $bot->sendMessage("Error! " . $e->getMessage());
+                }
+            }
+        });
+
+        try {
+            if (app()->isLocal()) {
+                $bot->registerMyCommands();
+            }
+        } catch (Throwable $e) {
+            report($e);
+            if (app()->hasDebugModeEnabled()) {
+                $bot->sendMessage("Error! " . $e->getMessage());
+            }
         }
     }
 }

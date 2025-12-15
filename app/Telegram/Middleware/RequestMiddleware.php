@@ -12,11 +12,13 @@ class RequestMiddleware
 
         if (!empty($path)) {
             request()->merge([
-                'path' => $bot->callbackQuery()->data
+                'path' => $bot->callbackQuery()->data,
+                'can_send_answer_silent' => !empty($path),
             ]);
         } else {
             request()->merge([
-                'path' => troute('home')
+                'path' => troute('home'),
+                'can_send_answer_silent' => !empty($path),
             ]);
         }
 

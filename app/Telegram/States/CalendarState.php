@@ -2,11 +2,13 @@
 
 namespace App\Telegram\States;
 
+use Domain\Calendar\Contracts\ShowMenuContract;
+use Domain\Calendar\Enum\CalendarEnum;
 use Domain\TelegramBot\BotState;
+use Domain\TelegramBot\Enum\MenuEnum;
 use Domain\TelegramBot\MenuBotState;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardRemove;
 
 class CalendarState extends BotState
 {
@@ -14,18 +16,32 @@ class CalendarState extends BotState
 
     public function render(Nutgram $bot): void
     {
-        $bot->editMessageText(
-            text: now()->format('Y-m-d H:i:s'),
-            reply_markup: InlineKeyboardMarkup::make()
-                ->addRow(InlineKeyboardButton::make(text: 'Назад', callback_data: troute('categories')))
-        );
+        $action = app(ShowMenuContract::class);
+        $action($bot);
     }
 
     public function handle(Nutgram $bot): ?BotState
     {
-        return match ($bot->callbackQuery()->data) {
-            troute('categories') => new MenuBotState(),
-            default => null,
-        };
+        if ($bot->message()->getText() === MenuEnum::BACK->value) {
+
+            $bot->sendMessage(
+                text: 'Removing keyboard...',
+                reply_markup: ReplyKeyboardRemove::make(true),
+            )?->delete();
+
+            request()->merge([
+                'path' => troute('categories')
+            ]);
+
+            return new MenuBotState();
+        }
+
+        foreach (CalendarEnum::cases() as $case) {
+            if ($bot->message()->getText() === $case->value) {
+                $bot->sendMessage("Вы отметили: " . $case->value);
+            }
+        }
+
+        return new CalendarState();
     }
 }

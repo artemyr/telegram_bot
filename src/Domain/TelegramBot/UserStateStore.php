@@ -13,6 +13,6 @@ class UserStateStore
 
     public static function set(int $userId, BotState $state): void
     {
-        Cache::put("tg_state:$userId", $state, now()->addSeconds(10));
+        Cache::put("tg_state:$userId", $state, now()->addHour());
     }
 }

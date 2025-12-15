@@ -32,7 +32,7 @@ class MenuBotState extends BotState
             );
         }
 
-        $method = $this->silent
+        $method = ($this->silent && request('can_send_answer_silent', false))
             ? 'editMessageText'
             : 'sendMessage';
 

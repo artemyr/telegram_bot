@@ -11,16 +11,7 @@
 |
 */
 
-use App\Telegram\Middleware\AuthMiddleware;
-use App\Telegram\Middleware\RequestMiddleware;
 use Domain\Menu\MenuFactory;
-
-$bot->middleware(AuthMiddleware::class);
-$bot->middleware(RequestMiddleware::class);
 
 $menu = new MenuFactory();
 $menu($bot);
-
-if (app()->isLocal()) {
-    $bot->registerMyCommands();
-}

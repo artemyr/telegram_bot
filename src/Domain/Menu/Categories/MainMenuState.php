@@ -45,10 +45,10 @@ class MainMenuState extends MenuState
 
     public function handle(Nutgram $bot): ?MenuState
     {
-        $currentMenu = menu()->getCurrentCategoryItem();
+        $currentMenuItem = menu()->getCurrentCategoryItem();
 
+        $state = $currentMenuItem->state();
 
-
-        return new MainMenuState();
+        return new $state();
     }
 }

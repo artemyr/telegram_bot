@@ -8,7 +8,9 @@ class RequestMiddleware
 {
     public function __invoke(Nutgram $bot, $next): void
     {
-        if (!empty($bot->callbackQuery()->data)) {
+        $path = $bot->callbackQuery()?->data;
+
+        if (!empty($path)) {
             request()->merge([
                 'path' => $bot->callbackQuery()->data
             ]);
@@ -17,6 +19,8 @@ class RequestMiddleware
                 'path' => '/'
             ]);
         }
+
+        logger()->debug('Request to: ' . request('path'));
 
         $next($bot);
     }

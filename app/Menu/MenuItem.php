@@ -13,12 +13,17 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
 
     /** @var MenuItem[] */
     protected array $items = [];
+    protected static string $defaultState;
 
     public function __construct(
         protected string $link,
         protected string $label,
+        protected ?string $state = null,
     )
     {
+        if ($state === null) {
+            $this->state = static::$defaultState;
+        }
     }
 
     public function link(): string
@@ -29,6 +34,16 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
     public function label(): string
     {
         return $this->label;
+    }
+
+    public function state(): string
+    {
+        return $this->state;
+    }
+
+    public static function setDefaultState(string $state): void
+    {
+        self::$defaultState = $state;
     }
 
     public function isActive(): bool

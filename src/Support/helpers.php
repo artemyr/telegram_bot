@@ -8,3 +8,17 @@ if (!function_exists('menu')) {
         return app(MenuContract::class);
     }
 }
+
+if (!function_exists('troute')) {
+    function troute(string $name, array $parameters = []): string
+    {
+        $route = route($name, $parameters);
+
+        $route = str_replace(env('APP_URL'), '', $route);
+        if (empty($route)) {
+            $route = '/';
+        }
+
+        return $route;
+    }
+}

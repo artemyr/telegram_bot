@@ -6,4 +6,5 @@ interface MenuContract {
     public function getCurrentCategoryItem(): self;
     public function getParent(): ?self;
     public function link(): string;
+    public function state(): string;
 }

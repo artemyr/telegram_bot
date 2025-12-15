@@ -25,14 +25,7 @@ trait MenuTrait
 
     public function add(MenuItem $item): self
     {
-        if ($this->link() === '/') {
-            $item->link = '/' . $item->link;
-        } else {
-            $item->link = $this->link() . '/' . $item->link;
-        }
-
         $item->parent = $this;
-
         $this->items[] = $item;
 
         return $this;

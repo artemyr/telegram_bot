@@ -6,6 +6,6 @@ class PiAction
 {
     public function __invoke(): void
     {
-        bot()->sendMessage('pi pi');
+        bot()->sendMessage('Записал ваш пись пись');
     }
 }

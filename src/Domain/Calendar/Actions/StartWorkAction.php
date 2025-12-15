@@ -6,6 +6,6 @@ class StartWorkAction
 {
     public function __invoke(): void
     {
-        bot()->sendMessage('work!!');
+        bot()->sendMessage('Вы начали рабочий день. Напомню вам когда его нужно будет завершить');
     }
 }

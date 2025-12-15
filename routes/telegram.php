@@ -11,7 +11,7 @@
 |
 */
 
-use Domain\Menu\MenuFactory;
+use App\Telegram\Factory\BotFactory;
 
-$menu = new MenuFactory();
+$menu = new BotFactory();
 $menu($bot);

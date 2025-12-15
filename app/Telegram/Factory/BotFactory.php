@@ -1,14 +1,14 @@
 <?php
 
-namespace Domain\Menu;
+namespace App\Telegram\Factory;
 
 use App\Telegram\Middleware\AuthMiddleware;
 use App\Telegram\Middleware\RequestMiddleware;
-use Domain\Menu\Categories\MainMenuState;
+use Domain\TelegramBot\MenuBotState;
+use Domain\TelegramBot\UserStateStore;
 use SergiX44\Nutgram\Nutgram;
-use Services\TelegramBot\UserStateStore;
 
-class MenuFactory
+class BotFactory
 {
     public function __invoke(Nutgram $bot): void
     {
@@ -23,7 +23,7 @@ class MenuFactory
 
         $bot->onCommand('start', function (Nutgram $bot) use ($fail) {
             try_to(function () use ($bot) {
-                $state = new MainMenuState();
+                $state = new MenuBotState();
                 UserStateStore::set($bot->userId(), $state);
                 $state->render($bot);
             }, $fail);
@@ -31,7 +31,7 @@ class MenuFactory
 
         $bot->onCallbackQuery(function (Nutgram $bot) use ($fail) {
             try_to(function () use ($bot) {
-                $current = UserStateStore::get($bot->userId()) ?? new MainMenuState();
+                $current = UserStateStore::get($bot->userId()) ?? new MenuBotState();
                 $next = $current->handle($bot);
 
                 if ($next) {

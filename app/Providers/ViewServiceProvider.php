@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Menu\MenuContract;
 use App\Menu\MenuItem;
-use Domain\Menu\Categories\CalendarState;
-use Domain\Menu\Categories\MainMenuState;
+use App\Telegram\States\CalendarState;
+use Domain\TelegramBot\MenuBotState;
 use Illuminate\Support\ServiceProvider;
 
 class ViewServiceProvider extends ServiceProvider
@@ -13,7 +13,7 @@ class ViewServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(MenuContract::class, function () {
-            MenuItem::setDefaultState(MainMenuState::class);
+            MenuItem::setDefaultState(MenuBotState::class);
 
             return MenuItem::make(troute('home'), 'Главное меню')
                 ->add(

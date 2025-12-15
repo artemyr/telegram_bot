@@ -1,13 +1,12 @@
 <?php
 
-namespace Domain\Menu\Categories;
+namespace Domain\TelegramBot;
 
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
-use Services\TelegramBot\Menu\MenuState;
 
-class MainMenuState extends MenuState
+class MenuBotState extends BotState
 {
     public function render(Nutgram $bot): void
     {
@@ -43,7 +42,7 @@ class MainMenuState extends MenuState
         );
     }
 
-    public function handle(Nutgram $bot): ?MenuState
+    public function handle(Nutgram $bot): ?BotState
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Services\TelegramBot\Menu;
+namespace Domain\TelegramBot;
 
 use SergiX44\Nutgram\Nutgram;
 
-abstract class MenuState
+abstract class BotState
 {
     public bool $silent = false;
 
@@ -16,12 +16,12 @@ abstract class MenuState
 
     abstract public function render(Nutgram $bot): void;
 
-    public function handle(Nutgram $bot): ?MenuState
+    public function handle(Nutgram $bot): ?BotState
     {
         return null;
     }
 
-    protected function transition(Nutgram $bot, MenuState $state): MenuState
+    protected function transition(Nutgram $bot, BotState $state): BotState
     {
         return $state;
     }

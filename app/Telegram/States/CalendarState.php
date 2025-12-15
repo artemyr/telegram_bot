@@ -1,13 +1,14 @@
 <?php
 
-namespace Domain\Menu\Categories;
+namespace App\Telegram\States;
 
+use Domain\TelegramBot\BotState;
+use Domain\TelegramBot\MenuBotState;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
-use Services\TelegramBot\Menu\MenuState;
 
-class CalendarState extends MenuState
+class CalendarState extends BotState
 {
     public bool $silent = true;
 
@@ -20,10 +21,10 @@ class CalendarState extends MenuState
         );
     }
 
-    public function handle(Nutgram $bot): ?MenuState
+    public function handle(Nutgram $bot): ?BotState
     {
         return match ($bot->callbackQuery()->data) {
-            troute('categories') => new MainMenuState(),
+            troute('categories') => new MenuBotState(),
             default => null,
         };
     }

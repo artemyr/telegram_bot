@@ -42,6 +42,8 @@ class CalendarState extends BotState
         foreach (CalendarEnum::cases() as $case) {
             if ($bot->message()->getText() === $case->value) {
                 $bot->sendMessage("Вы отметили: " . $case->value);
+                $action = new ($case->action());
+                $action($bot);
             }
         }
 

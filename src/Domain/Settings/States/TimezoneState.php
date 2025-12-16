@@ -23,7 +23,9 @@ class TimezoneState extends BotState
             $keyboard[] = $case->value;
         }
 
-        Keyboard::send("Раздел: Настройки\nВыберите часовой пояс:", $keyboard);
+        $timezone = config('app.timezone');
+
+        Keyboard::send("Раздел: Настройки\nВаш часовой пояс: $timezone\nВыберите часовой пояс:", $keyboard);
     }
 
     public function handle(): ?BotState
@@ -43,6 +45,7 @@ class TimezoneState extends BotState
             if (bot()->message()->getText() === $case->value) {
                 bot()->sendMessage("Вы отметили: " . $case->value);
                 UserState::changeTimezone(bot()->userId(), $case->value);
+                config(['app.timezone' => $case->value]);
             }
         }
 

@@ -30,6 +30,7 @@ class BotFactory
                 } else {
                     $userDto = UserState::make(bot()->userId(), troute('home'), $state);
                     UserState::write($userDto);
+                    bot()->sendMessage('Обратите внимание на часовой пояс в настройках');
                 }
 
                 $state->render();

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Telegram\States;
+namespace Domain\Calendar\States;
 
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\MenuEnum;
@@ -19,8 +19,8 @@ class CalendarListState extends BotState
         $list = '';
         $num = 1;
 
-        foreach ($userDto->actions as $name => $value) {
-            $list .= "$num) $name: $value\n";
+        foreach ($userDto->actions as $action) {
+            $list .= "$num) $action->title: $action->startDate\n";
             $num++;
         }
 

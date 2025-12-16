@@ -4,17 +4,18 @@ namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\UserStateContract;
-use Domain\TelegramBot\Dto\UserDto;
+use Domain\TelegramBot\Dto\ActionStateDto;
+use Domain\TelegramBot\Dto\UserStateDto;
 use Domain\TelegramBot\UserStateStore;
 
 class UserStateManager implements UserStateContract
 {
-    public function load(int $userId): ?UserDto
+    public function load(int $userId): ?UserStateDto
     {
         return UserStateStore::get($userId);
     }
 
-    public function write(UserDto $user): void
+    public function write(UserStateDto $user): void
     {
         UserStateStore::set($user->userId, $user);
     }
@@ -25,9 +26,9 @@ class UserStateManager implements UserStateContract
         BotState $state,
         bool     $keyboard = false,
         array    $actions = []
-    ): UserDto
+    ): UserStateDto
     {
-        return new UserDto(
+        return new UserStateDto(
             $userId,
             $path,
             $state,
@@ -81,19 +82,19 @@ class UserStateManager implements UserStateContract
         $this->write($newUserDto);
     }
 
-    public function changeAction(int $userId, string $actionName, $value): void
+    public function changeAction(int $userId, ActionStateDto $action): void
     {
         $userDto = $this->load($userId);
 
-        $actions = $userDto->actions;
-        $actions[$actionName] = $value;
+        $oldActions = $userDto->actions;
+        $oldActions[$action->code] = $action;
 
         $newUserDto = $this->make(
             $userDto->userId,
             $userDto->path,
             $userDto->state,
             $userDto->keyboard,
-            $actions,
+            $oldActions,
         );
 
         $this->write($newUserDto);

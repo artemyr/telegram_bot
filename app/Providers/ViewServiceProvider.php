@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Menu\MenuContract;
 use App\Menu\MenuItem;
-use App\Telegram\States\CalendarAddState;
-use App\Telegram\States\CalendarListState;
+use Domain\Calendar\States\CalendarAddState;
+use Domain\Calendar\States\CalendarListState;
 use Domain\TelegramBot\MenuBotState;
 use Illuminate\Support\ServiceProvider;
 

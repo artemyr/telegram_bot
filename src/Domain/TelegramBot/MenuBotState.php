@@ -2,6 +2,7 @@
 
 namespace Domain\TelegramBot;
 
+use Domain\TelegramBot\Facades\Keyboard;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 
@@ -9,6 +10,8 @@ class MenuBotState extends BotState
 {
     public function render(): void
     {
+        Keyboard::remove();
+
         $keyboard = InlineKeyboardMarkup::make();
 
         $menu = menu()->getCurrentCategoryItem();

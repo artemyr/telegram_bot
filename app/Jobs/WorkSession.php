@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Facades\UserState;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,7 +16,7 @@ class WorkSession implements ShouldQueue, ShouldBeUnique
         protected int $chatId,
         protected int $userId,
         protected string $message,
-        protected string $actionName,
+        protected ActionStateDto $action,
         protected string $unique,
     )
     {
@@ -28,7 +29,14 @@ class WorkSession implements ShouldQueue, ShouldBeUnique
             chat_id: $this->chatId,
         );
 
-        UserState::changeAction($this->userId, $this->actionName, false);
+        UserState::changeAction($this->userId, new ActionStateDto(
+            $this->action->class,
+            true,
+            $this->action->createDate,
+            $this->action->startDate,
+            $this->action->code,
+            $this->action->title,
+        ));
     }
 
     public function uniqueId(): string

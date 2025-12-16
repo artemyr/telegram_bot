@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Telegram\States;
+namespace Domain\Calendar\States;
 
 use Domain\Calendar\Enum\CalendarAddEnum;
 use Domain\TelegramBot\BotState;

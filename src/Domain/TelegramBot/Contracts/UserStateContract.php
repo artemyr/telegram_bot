@@ -14,6 +14,7 @@ interface UserStateContract
         int $userId,
         string $path,
         BotState $state,
+        string $timezone = '',
         bool $keyboard = false,
         array $actions = []
     ): UserStateDto;
@@ -21,5 +22,6 @@ interface UserStateContract
     public function changePath(int $userId, string $path): void;
     public function changeState(int $userId, BotState $state): void;
     public function changeKeyboard(int $userId, bool $active): void;
+    public function changeTimezone(int $userId, string $timezone): void;
     public function changeAction(int $userId, ActionStateDto $action): void;
 }

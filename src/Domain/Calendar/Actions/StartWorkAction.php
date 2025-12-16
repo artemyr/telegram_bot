@@ -5,6 +5,7 @@ namespace Domain\Calendar\Actions;
 use App\Jobs\WorkSession;
 use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Facades\UserState;
+use Illuminate\Support\Carbon;
 
 class StartWorkAction
 {
@@ -23,7 +24,8 @@ class StartWorkAction
         $hour = config('calendar.actions.work.start_work');
         $startDate = now()->addHours($hour);
 
-        bot()->sendMessage("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $startDate");
+        $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
+        bot()->sendMessage("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
 
         $action = new ActionStateDto(
             self::class,

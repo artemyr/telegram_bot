@@ -4,6 +4,7 @@ namespace App\Telegram\Factory;
 
 use App\Telegram\Middleware\AuthMiddleware;
 use App\Telegram\Middleware\RequestMiddleware;
+use App\Telegram\Middleware\TimeZoneMiddleware;
 use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 
@@ -13,6 +14,7 @@ class BotFactory
     {
         bot()->middleware(AuthMiddleware::class);
         bot()->middleware(RequestMiddleware::class);
+        bot()->middleware(TimeZoneMiddleware::class);
 
         bot()->onCommand('start', function () {
             $this->try(function () {
@@ -72,6 +74,7 @@ class BotFactory
                 bot()->userId(),
                 request('path'),
                 $next,
+                $userDto?->timezone ?? '',
                 $userDto?->keyboard ?? false,
                 $userDto?->actions ?? []
             );

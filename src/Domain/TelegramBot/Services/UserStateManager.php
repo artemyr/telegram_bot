@@ -24,14 +24,16 @@ class UserStateManager implements UserStateContract
         int      $userId,
         string   $path,
         BotState $state,
+        string   $timezone = '',
         bool     $keyboard = false,
-        array    $actions = []
+        array    $actions = [],
     ): UserStateDto
     {
         return new UserStateDto(
             $userId,
             $path,
             $state,
+            $timezone,
             $keyboard,
             $actions
         );
@@ -45,6 +47,7 @@ class UserStateManager implements UserStateContract
             $userDto->userId,
             $path,
             $userDto->state,
+            $userDto->timezone,
             $userDto->keyboard,
             $userDto->actions,
         );
@@ -60,6 +63,7 @@ class UserStateManager implements UserStateContract
             $userDto->userId,
             $userDto->path,
             $state,
+            $userDto->timezone,
             $userDto->keyboard,
             $userDto->actions,
         );
@@ -75,7 +79,24 @@ class UserStateManager implements UserStateContract
             $userDto->userId,
             $userDto->path,
             $userDto->state,
+            $userDto->timezone,
             $active,
+            $userDto->actions,
+        );
+
+        $this->write($newUserDto);
+    }
+
+    public function changeTimezone(int $userId, string $timezone): void
+    {
+        $userDto = $this->load($userId);
+
+        $newUserDto = $this->make(
+            $userDto->userId,
+            $userDto->path,
+            $userDto->state,
+            $timezone,
+            $userDto->keyboard,
             $userDto->actions,
         );
 
@@ -93,6 +114,7 @@ class UserStateManager implements UserStateContract
             $userDto->userId,
             $userDto->path,
             $userDto->state,
+            $userDto->timezone,
             $userDto->keyboard,
             $oldActions,
         );

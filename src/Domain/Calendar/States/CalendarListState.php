@@ -7,6 +7,7 @@ use Domain\TelegramBot\Enum\MenuEnum;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
+use Illuminate\Support\Carbon;
 
 class CalendarListState extends BotState
 {
@@ -20,7 +21,9 @@ class CalendarListState extends BotState
         $num = 1;
 
         foreach ($userDto->actions as $action) {
-            $list .= "$num) $action->title: $action->startDate\n";
+            $time = Carbon::make($action->startDate)
+                ->setTimezone(config('app.timezone'));
+            $list .= "$num) $action->title: $time\n";
             $num++;
         }
 

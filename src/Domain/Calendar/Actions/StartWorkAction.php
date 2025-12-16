@@ -21,8 +21,7 @@ class StartWorkAction
             return;
         }
 
-        $hour = config('calendar.actions.work.start_work');
-        $startDate = now()->addHours($hour);
+        $startDate = now()->addSeconds(config('calendar.actions.work.start_work', 5));
 
         $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
         bot()->sendMessage("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");

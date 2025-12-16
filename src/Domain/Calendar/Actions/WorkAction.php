@@ -5,6 +5,7 @@ namespace Domain\Calendar\Actions;
 use App\Jobs\WorkSession;
 use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Facades\UserState;
+use Illuminate\Support\Carbon;
 
 class WorkAction
 {
@@ -20,10 +21,9 @@ class WorkAction
             return;
         }
 
-        $pause = config('calendar.actions.work.pause_duration');
-        bot()->sendMessage("Через $pause минут отдых. Я напомню");
-
-        $startDate = now()->addMinutes($pause);
+        $startDate = now()->addSeconds(config('calendar.actions.work.pause_duration', 5));
+        $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
+        bot()->sendMessage("В $time отдых. Я напомню");
 
         $action = new ActionStateDto(
             self::class,

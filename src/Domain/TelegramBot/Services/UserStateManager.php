@@ -18,6 +18,8 @@ class UserStateManager implements UserStateContract
     public function write(UserStateDto $user): void
     {
         UserStateStore::set($user->userId, $user);
+
+        logger()->debug('Write user state: ' . json_encode($user));
     }
 
     public function make(
@@ -53,6 +55,8 @@ class UserStateManager implements UserStateContract
         );
 
         $this->write($newUserDto);
+
+        logger()->debug("User $userId request to: " . $path);
     }
 
     public function changeState(int $userId, BotState $state): void
@@ -69,6 +73,8 @@ class UserStateManager implements UserStateContract
         );
 
         $this->write($newUserDto);
+
+        logger()->debug("Change user $userId stage to: " . get_class($state));
     }
 
     public function changeKeyboard(int $userId, bool $active): void
@@ -85,6 +91,8 @@ class UserStateManager implements UserStateContract
         );
 
         $this->write($newUserDto);
+
+        logger()->debug("Change user $userId keyboard to: $active");
     }
 
     public function changeTimezone(int $userId, string $timezone): void
@@ -101,6 +109,8 @@ class UserStateManager implements UserStateContract
         );
 
         $this->write($newUserDto);
+
+        logger()->debug("Change user $userId timezone to: $timezone");
     }
 
     public function changeAction(int $userId, ActionStateDto $action): void
@@ -120,5 +130,7 @@ class UserStateManager implements UserStateContract
         );
 
         $this->write($newUserDto);
+
+        logger()->debug("Change user $userId action state: " . json_encode($newUserDto));
     }
 }

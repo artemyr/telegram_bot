@@ -4,7 +4,7 @@ namespace Domain\Calendar\Enum;
 
 use Domain\Calendar\Actions\PiAction;
 use Domain\Calendar\Actions\StartWorkAction;
-use Domain\Calendar\Actions\WorkAction;
+use Domain\Calendar\Actions\WorkSessionAction;
 
 enum CalendarAddEnum: string
 {
@@ -16,7 +16,7 @@ enum CalendarAddEnum: string
     {
         return match($this) {
             self::PI => PiAction::class,
-            self::WORK => WorkAction::class,
+            self::WORK => WorkSessionAction::class,
             self::START_WORK => StartWorkAction::class,
         };
     }

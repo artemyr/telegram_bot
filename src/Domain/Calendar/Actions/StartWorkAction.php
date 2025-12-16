@@ -2,7 +2,7 @@
 
 namespace Domain\Calendar\Actions;
 
-use App\Jobs\WorkSession;
+use App\Jobs\TelegramActionJob;
 use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Facades\UserState;
 use Illuminate\Support\Carbon;
@@ -14,15 +14,17 @@ class StartWorkAction
 
     public function __invoke(): void
     {
+        logger()->debug('Start to execute action: ' . self::class);
+
         $userDto = UserState::load(bot()->userId());
 
         if (!empty($userDto->actions[self::CODE]) && $userDto->actions[self::CODE]->finished === false) {
             bot()->sendMessage("Вы уже запустили рабочий день!");
+            logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
 
         $startDate = now()->addSeconds(config('calendar.actions.work.start_work', 5));
-
         $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
         bot()->sendMessage("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
 
@@ -35,7 +37,7 @@ class StartWorkAction
             self::TITLE,
         );
 
-        dispatch(new WorkSession(
+        dispatch(new TelegramActionJob(
             bot()->chatId(),
             bot()->userId(),
             'Пора завершать рабочий день!',
@@ -44,5 +46,7 @@ class StartWorkAction
         ))->delay($startDate);
 
         UserState::changeAction(bot()->userId(), $action);
+
+        logger()->debug('Success execute action: ' . self::class);
     }
 }

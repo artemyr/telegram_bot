@@ -39,7 +39,14 @@ class KeyboardManager implements KeyboardContract
     {
         $userDto = UserState::load($this->bot->userId());
 
-        if ($userDto->keyboard) {
+        if (!$userDto) {
+            $this->bot->sendMessage(
+                text: 'Removing keyboard...',
+                reply_markup: ReplyKeyboardRemove::make(true),
+            )?->delete();
+        }
+
+        if ($userDto && $userDto->keyboard) {
             $this->bot->sendMessage(
                 text: 'Removing keyboard...',
                 reply_markup: ReplyKeyboardRemove::make(true),

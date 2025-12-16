@@ -2,22 +2,25 @@
 
 namespace Domain\Calendar\Actions;
 
-use App\Jobs\WorkSession;
+use App\Jobs\TelegramActionJob;
 use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Facades\UserState;
 use Illuminate\Support\Carbon;
 
-class WorkAction
+class WorkSessionAction
 {
     public const TITLE = 'Таймер трудовой сессии';
     public const CODE = 'work_session';
 
     public function __invoke(): void
     {
+        logger()->debug('Start to execute action: ' . self::class);
+
         $userDto = UserState::load(bot()->userId());
 
         if (!empty($userDto->actions[self::CODE]) && $userDto->actions[self::CODE]->finished === false) {
             bot()->sendMessage("Вы уже запустили таймер!");
+            logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
 
@@ -34,7 +37,7 @@ class WorkAction
             self::TITLE,
         );
 
-        dispatch(new WorkSession(
+        dispatch(new TelegramActionJob(
             bot()->chatId(),
             bot()->userId(),
             'Пора отдыхать',
@@ -43,5 +46,7 @@ class WorkAction
         ))->delay($startDate);
 
         UserState::changeAction(bot()->userId(), $action);
+
+        logger()->debug('Success execute action: ' . self::class);
     }
 }

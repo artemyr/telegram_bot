@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class WorkSession implements ShouldQueue, ShouldBeUnique
+class TelegramActionJob implements ShouldQueue, ShouldBeUnique
 {
     use Queueable;
 
@@ -29,14 +29,18 @@ class WorkSession implements ShouldQueue, ShouldBeUnique
             chat_id: $this->chatId,
         );
 
-        UserState::changeAction($this->userId, new ActionStateDto(
+        $action = new ActionStateDto(
             $this->action->class,
             true,
             $this->action->createDate,
             $this->action->startDate,
             $this->action->code,
             $this->action->title,
-        ));
+        );
+
+        UserState::changeAction($this->userId, $action);
+
+        logger()->debug('Job executed. action stage' . json_encode($action));
     }
 
     public function uniqueId(): string

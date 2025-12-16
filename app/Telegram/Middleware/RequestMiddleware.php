@@ -2,6 +2,7 @@
 
 namespace App\Telegram\Middleware;
 
+use Domain\TelegramBot\Facades\UserState;
 use SergiX44\Nutgram\Nutgram;
 
 class RequestMiddleware
@@ -11,18 +12,21 @@ class RequestMiddleware
         $path = $bot->callbackQuery()?->data;
 
         if (!empty($path)) {
+
+            UserState::changePath($bot->userId(), $path);
+
             request()->merge([
-                'path' => $bot->callbackQuery()->data,
+                'path' => $path,
                 'can_send_answer_silent' => !empty($path),
             ]);
         } else {
+            $userDto = UserState::load($bot->userId());
+
             request()->merge([
-                'path' => troute('home'),
+                'path' => $userDto?->path ?? troute('home'),
                 'can_send_answer_silent' => !empty($path),
             ]);
         }
-
-        logger()->debug('Request to: ' . request('path'));
 
         $next($bot);
     }

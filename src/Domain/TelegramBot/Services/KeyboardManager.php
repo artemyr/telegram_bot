@@ -3,6 +3,8 @@
 namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Enum\MenuEnum;
+use Domain\TelegramBot\Facades\UserState;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
@@ -10,7 +12,7 @@ use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardRemove;
 
 class KeyboardManager implements KeyboardContract
 {
-    protected mixed $bot;
+    protected Nutgram $bot;
 
     public function __construct()
     {
@@ -29,13 +31,30 @@ class KeyboardManager implements KeyboardContract
             text: $text,
             reply_markup: $keyboard
         );
+
+        UserState::changeKeyboard($this->bot->userId(), true);
     }
 
     public function remove(): void
     {
-        $this->bot->sendMessage(
-            text: 'Removing keyboard...',
-            reply_markup: ReplyKeyboardRemove::make(true),
-        )?->delete();
+        $userDto = UserState::load($this->bot->userId());
+
+        if ($userDto->keyboard) {
+            $this->bot->sendMessage(
+                text: 'Removing keyboard...',
+                reply_markup: ReplyKeyboardRemove::make(true),
+            )?->delete();
+
+            UserState::changeKeyboard($this->bot->userId(), false);
+        }
+    }
+
+    public function back(string $text): void
+    {
+        $keyboard = [
+            MenuEnum::BACK->value
+        ];
+
+        $this->send($text, $keyboard);
     }
 }

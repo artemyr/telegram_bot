@@ -4,8 +4,8 @@ namespace App\Telegram\Factory;
 
 use App\Telegram\Middleware\AuthMiddleware;
 use App\Telegram\Middleware\RequestMiddleware;
+use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
-use Domain\TelegramBot\UserStateStore;
 
 class BotFactory
 {
@@ -17,7 +17,19 @@ class BotFactory
         bot()->onCommand('start', function () {
             $this->try(function () {
                 $state = new MenuBotState();
-                UserStateStore::set(bot()->userId(), $state);
+
+                $userDto = UserState::load(bot()->userId());
+
+                if ($userDto) {
+                    request()->merge([
+                        'path' => $userDto->path
+                    ]);
+                    bot()->sendMessage('Восстановлено предыдущее состояние');
+                } else {
+                    $userDto = UserState::make(bot()->userId(), troute('home'), $state);
+                    UserState::write($userDto);
+                }
+
                 $state->render();
             });
         });
@@ -43,12 +55,28 @@ class BotFactory
 
     protected function handleState(): void
     {
-        $current = UserStateStore::get(bot()->userId()) ?? new MenuBotState();
+        $userDto = UserState::load(bot()->userId());
+
+        $current = $userDto->state;
+        $current = ($current) ?: new MenuBotState();
+
         $next = $current->handle();
 
         if ($next) {
             $next->silent();
-            UserStateStore::set(bot()->userId(), $next);
+
+            /** в handle состояние user могло поменятся */
+            $userDto = UserState::load(bot()->userId());
+
+            $user = UserState::make(
+                bot()->userId(),
+                request('path'),
+                $next,
+                $userDto?->keyboard ?? false,
+                $userDto?->actions ?? []
+            );
+
+            UserState::write($user);
             $next->render();
         }
     }

@@ -114,5 +114,6 @@ return [
 
     'telegram' => [
         'user_ids' => explode(',', env('TELEGRAM_USER_IDS', '')),
+        'user_state_lock_period' => 3600 * 24
     ]
 ];

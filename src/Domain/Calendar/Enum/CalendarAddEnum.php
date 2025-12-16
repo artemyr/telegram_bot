@@ -6,7 +6,7 @@ use Domain\Calendar\Actions\PiAction;
 use Domain\Calendar\Actions\StartWorkAction;
 use Domain\Calendar\Actions\WorkAction;
 
-enum CalendarEnum: string
+enum CalendarAddEnum: string
 {
     case PI = '🚽 Отметить пись пись';
     case WORK = '🔨 Отметить начало трудовой сессии';

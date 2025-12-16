@@ -2,33 +2,37 @@
 
 namespace App\Jobs;
 
+use Domain\TelegramBot\Facades\UserState;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class WorkSession implements ShouldQueue
+class WorkSession implements ShouldQueue, ShouldBeUnique
 {
     use Queueable;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(protected int $chatId)
+    public function __construct(
+        protected int $chatId,
+        protected int $userId,
+        protected string $message,
+        protected string $actionName,
+        protected string $unique,
+    )
     {
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         bot()->sendMessage(
-            text: 'Пора отдыхать',
-            chat_id: $this->chatId
+            text: $this->message,
+            chat_id: $this->chatId,
         );
+
+        UserState::changeAction($this->userId, $this->actionName, false);
     }
 
-    public function uniqueId() //?
+    public function uniqueId(): string
     {
-        return 'work-session';
+        return $this->unique;
     }
 }

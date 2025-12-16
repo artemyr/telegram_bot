@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static void send(string $text, array $buttons)
  * @method static void remove()
+ * @method static void back(string $text)
  */
 
 class Keyboard extends Facade

@@ -23,6 +23,8 @@ class AuthMiddleware
                 )
             );
 
+            bot()->sendMessage('Я вас еще не знаю');
+
             return;
         }
 

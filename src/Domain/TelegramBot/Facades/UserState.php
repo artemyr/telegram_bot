@@ -9,7 +9,8 @@ use Domain\TelegramBot\Dto\UserStateDto;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static UserStateDto|null load(int $userId);
+ * @method static UserStateDto|null get(int $userId);
+ * @method static UserStateDto load(int $userId);
  * @method static void write(UserStateDto $user)
  * @method static UserStateDto make(int $userId, string $path, BotState $state, string $timezone = '', bool $keyboard = false, array $actions = [])
  *
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void changeState(int $userId, BotState $state)
  * @method static void changeKeyboard(int $userId, bool $active)
  * @method static void changeTimezone(int $userId, string $timezone)
+ * @method static void changeCallbackQuery(int $userId, bool $active)
  * @method static void changeAction(int $userId, ActionStateDto $action)
  */
 class UserState extends Facade

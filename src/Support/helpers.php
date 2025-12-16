@@ -1,6 +1,8 @@
 <?php
 
 use App\Menu\MenuContract;
+use Domain\TelegramBot\Dto\UserStateDto;
+use Domain\TelegramBot\Facades\UserState;
 use SergiX44\Nutgram\Nutgram;
 
 if (!function_exists('menu')) {
@@ -48,5 +50,12 @@ if (!function_exists('bot')) {
     function bot(): Nutgram
     {
         return app(Nutgram::class);
+    }
+}
+
+if (!function_exists('tuser')) {
+    function tuser(): ?UserStateDto
+    {
+        return UserState::load(bot()->userId());
     }
 }

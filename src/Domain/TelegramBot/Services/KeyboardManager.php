@@ -37,7 +37,7 @@ class KeyboardManager implements KeyboardContract
 
     public function remove(): void
     {
-        $userDto = UserState::load($this->bot->userId());
+        $userDto = UserState::get(bot()->userId());
 
         if (!$userDto) {
             $this->bot->sendMessage(

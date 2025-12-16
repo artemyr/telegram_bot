@@ -15,7 +15,7 @@ class CalendarListState extends BotState
 
     public function render(): void
     {
-        $userDto = UserState::load(bot()->userId());
+        $userDto = tuser();
 
         $list = '';
         $num = 1;

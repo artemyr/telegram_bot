@@ -6,13 +6,26 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Dto\UserStateDto;
+use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\UserStateStore;
 
 class UserStateManager implements UserStateContract
 {
-    public function load(int $userId): ?UserStateDto
+    public function get(int $userId): ?UserStateDto
     {
         return UserStateStore::get($userId);
+    }
+
+    public function load(int $userId): UserStateDto
+    {
+        $userDto = UserStateStore::get($userId);
+
+        if (!$userDto) {
+            $userDto = $this->make($userId, troute('home'), new MenuBotState());
+            $this->write($userDto);
+        }
+
+        return $userDto;
     }
 
     public function write(UserStateDto $user): void
@@ -28,6 +41,7 @@ class UserStateManager implements UserStateContract
         BotState $state,
         string   $timezone = '',
         bool     $keyboard = false,
+        bool     $callbackQuery = false,
         array    $actions = [],
     ): UserStateDto
     {
@@ -37,7 +51,8 @@ class UserStateManager implements UserStateContract
             $state,
             $timezone,
             $keyboard,
-            $actions
+            $callbackQuery,
+            $actions,
         );
     }
 
@@ -51,6 +66,7 @@ class UserStateManager implements UserStateContract
             $userDto->state,
             $userDto->timezone,
             $userDto->keyboard,
+            $userDto->callbackQuery,
             $userDto->actions,
         );
 
@@ -69,6 +85,7 @@ class UserStateManager implements UserStateContract
             $state,
             $userDto->timezone,
             $userDto->keyboard,
+            $userDto->callbackQuery,
             $userDto->actions,
         );
 
@@ -86,6 +103,26 @@ class UserStateManager implements UserStateContract
             $userDto->path,
             $userDto->state,
             $userDto->timezone,
+            $active,
+            $userDto->callbackQuery,
+            $userDto->actions,
+        );
+
+        $this->write($newUserDto);
+
+        logger()->debug("Change user $userId keyboard to: $active");
+    }
+
+    public function changeCallbackQuery(int $userId, bool $active): void
+    {
+        $userDto = $this->load($userId);
+
+        $newUserDto = $this->make(
+            $userDto->userId,
+            $userDto->path,
+            $userDto->state,
+            $userDto->timezone,
+            $userDto->keyboard,
             $active,
             $userDto->actions,
         );
@@ -105,6 +142,7 @@ class UserStateManager implements UserStateContract
             $userDto->state,
             $timezone,
             $userDto->keyboard,
+            $userDto->callbackQuery,
             $userDto->actions,
         );
 
@@ -126,6 +164,7 @@ class UserStateManager implements UserStateContract
             $userDto->state,
             $userDto->timezone,
             $userDto->keyboard,
+            $userDto->callbackQuery,
             $oldActions,
         );
 

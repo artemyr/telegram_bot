@@ -19,9 +19,12 @@ class BotFactory
 
         bot()->onCommand('start', function () {
             $this->try(function () {
+
+                UserState::changeCallbackQuery(bot()->userId(), false);
+
                 $state = new MenuBotState();
 
-                $userDto = UserState::load(bot()->userId());
+                $userDto = UserState::get(bot()->userId());
 
                 if ($userDto) {
                     request()->merge([
@@ -29,8 +32,7 @@ class BotFactory
                     ]);
                     bot()->sendMessage('Восстановлено предыдущее состояние');
                 } else {
-                    $userDto = UserState::make(bot()->userId(), troute('home'), $state);
-                    UserState::write($userDto);
+                    UserState::load(bot()->userId());
                     bot()->sendMessage('Обратите внимание на часовой пояс в настройках');
                 }
 
@@ -40,12 +42,18 @@ class BotFactory
 
         bot()->onCallbackQuery(function () {
             $this->try(function () {
+
+                UserState::changeCallbackQuery(bot()->userId(), true);
+
                 $this->handleState();
             });
         });
 
         bot()->onMessage(function () {
             $this->try(function () {
+
+                UserState::changeCallbackQuery(bot()->userId(), false);
+
                 $this->handleState();
             });
         });
@@ -61,9 +69,9 @@ class BotFactory
     {
         logger()->debug('handle state');
 
-        $userDto = UserState::load(bot()->userId());
+        $userDto = UserState::get(bot()->userId());
 
-        if (!empty($userDto->state)) {
+        if ($userDto && !empty($userDto->state)) {
             logger()->debug('use state form user cache');
             $current = $userDto->state;
         } else {
@@ -73,7 +81,7 @@ class BotFactory
             $current = new MenuBotState();
             logger()->debug('use default state');
 
-            UserState::write(UserState::make(bot()->userId(), request('path'), $current));
+            UserState::load(bot()->userId());
         }
 
         logger()->debug('current state is: ' . get_class($current));
@@ -84,7 +92,7 @@ class BotFactory
         logger()->debug('state handled');
 
         /** в handle состояние user могло поменятся */
-        $userDto = UserState::load(bot()->userId());
+        $userDto = tuser();
         logger()->debug('user state before handle: ' . json_encode($userDto));
 
         if ($next) {

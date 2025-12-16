@@ -17,14 +17,12 @@ class RequestMiddleware
 
             request()->merge([
                 'path' => $path,
-                'can_send_answer_silent' => !empty($path),
             ]);
         } else {
-            $userDto = UserState::load($bot->userId());
+            $userDto = tuser();
 
             request()->merge([
                 'path' => $userDto?->path ?? troute('home'),
-                'can_send_answer_silent' => !empty($path),
             ]);
         }
 

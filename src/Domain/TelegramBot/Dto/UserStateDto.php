@@ -13,8 +13,9 @@ class UserStateDto
         public readonly int      $userId,
         public readonly string   $path,
         public readonly BotState $state,
-        public readonly string $timezone,
+        public readonly string   $timezone,
         public readonly bool     $keyboard,
+        public readonly bool     $callbackQuery,
         /** @param $actions ActionStateDto[] */
         public readonly array    $actions,
     )

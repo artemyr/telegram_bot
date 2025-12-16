@@ -16,7 +16,7 @@ class StartWorkAction
     {
         logger()->debug('Start to execute action: ' . self::class);
 
-        $userDto = UserState::load(bot()->userId());
+        $userDto = tuser();
 
         if (!empty($userDto->actions[self::CODE]) && $userDto->actions[self::CODE]->finished === false) {
             bot()->sendMessage("Вы уже запустили рабочий день!");

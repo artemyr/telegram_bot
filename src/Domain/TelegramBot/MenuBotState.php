@@ -34,7 +34,7 @@ class MenuBotState extends BotState
             );
         }
 
-        $method = ($this->silent && request('can_send_answer_silent', false))
+        $method = ($this->silent && tuser()->callbackQuery)
             ? 'editMessageText'
             : 'sendMessage';
 
@@ -49,6 +49,10 @@ class MenuBotState extends BotState
         $currentMenuItem = menu()->getCurrentCategoryItem();
 
         $state = $currentMenuItem->state();
+
+        if (($state !== self::class) && tuser()->callbackQuery) {
+            bot()->message()?->delete();
+        }
 
         return new $state();
     }

@@ -21,6 +21,9 @@ class CalendarListState extends BotState
         $num = 1;
 
         foreach ($userDto->actions as $action) {
+            if ($action->finished === true) {
+                continue;
+            }
             $time = Carbon::make($action->startDate)
                 ->setTimezone(config('app.timezone'));
             $list .= "$num) $action->title: $time\n";

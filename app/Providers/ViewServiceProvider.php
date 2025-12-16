@@ -19,7 +19,7 @@ class ViewServiceProvider extends ServiceProvider
 
             return MenuItem::make(troute('home'), 'Главное меню')
                 ->add(MenuItem::make(troute('calendar'), 'Календарь')
-                    ->add(MenuItem::make(troute('calendar.add'), 'Отмеитить событие', CalendarAddState::class))
+                    ->add(MenuItem::make(troute('calendar.add'), 'Отметить событие', CalendarAddState::class))
                     ->add(MenuItem::make(troute('calendar.list'), 'Список событий', CalendarListState::class))
                 )
                 ->add(MenuItem::make(troute('food'), 'Еда'))

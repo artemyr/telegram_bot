@@ -3,22 +3,77 @@
 namespace Domain\TelegramBot\Dto;
 
 use Domain\TelegramBot\BotState;
-use Support\Traits\Makeable;
 
-class UserStateDto
+readonly class UserStateDto
 {
-    use Makeable;
-
     public function __construct(
-        public readonly int      $userId,
-        public readonly string   $path,
-        public readonly BotState $state,
-        public readonly string   $timezone,
-        public readonly bool     $keyboard,
-        public readonly bool     $callbackQuery,
+        public int $userId,
+        public string $path,
+        public BotState $state,
+        public string $timezone,
+        public bool $keyboard,
         /** @param $actions ActionStateDto[] */
-        public readonly array    $actions,
-    )
+        public array $actions,
+    ) {
+    }
+
+    public function toArray(): array
     {
+        return [
+            'userId' => $this->userId,
+            'path' => $this->path,
+            'state' => $this->state,
+            'timezone' => $this->timezone,
+            'keyboard' => $this->keyboard,
+            'actions' => $this->actions,
+        ];
+    }
+
+    public static function fromArray(array $values): self
+    {
+        return new self(
+            $values['userId'],
+            $values['path'],
+            $values['state'],
+            $values['timezone'],
+            $values['keyboard'],
+            $values['actions'],
+        );
+    }
+
+    public function __toString(): string
+    {
+        $fields = $this->toArray();
+        return $this->print($fields);
+    }
+
+    public function print(array $fields): string
+    {
+        $str = '';
+
+        foreach ($fields as $name => $field) {
+            switch (gettype($field)) {
+                case 'boolean':
+                    $str .= "$name: " . (($field) ? 'true' : 'false') . "\n";
+                    break;
+                case 'integer':
+                case 'string':
+                    $str .= "$name: \"$field\"\n";
+                    break;
+                case 'array':
+                    if (empty($field)) {
+                        $str .= $name . ": []" . "\n";
+                        break;
+                    }
+                    $str .= $this->print($field) . "\n";
+                    break;
+                case 'object':
+                    $str .= get_class($field) . ":\n";
+                    $str .= json_encode($field, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) . "\n";
+                    break;
+            }
+        }
+
+        return $str;
     }
 }

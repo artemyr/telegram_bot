@@ -6,8 +6,10 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Dto\UserStateDto;
+use Domain\TelegramBot\Exceptions\UserStateManagerException;
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\UserStateStore;
+use ReflectionClass;
 
 class UserStateManager implements UserStateContract
 {
@@ -41,7 +43,6 @@ class UserStateManager implements UserStateContract
         BotState $state,
         string   $timezone = '',
         bool     $keyboard = false,
-        bool     $callbackQuery = false,
         array    $actions = [],
     ): UserStateDto
     {
@@ -51,125 +52,72 @@ class UserStateManager implements UserStateContract
             $state,
             $timezone,
             $keyboard,
-            $callbackQuery,
             $actions,
         );
     }
 
     public function changePath(int $userId, string $path): void
     {
-        $userDto = $this->load($userId);
-
-        $newUserDto = $this->make(
-            $userDto->userId,
-            $path,
-            $userDto->state,
-            $userDto->timezone,
-            $userDto->keyboard,
-            $userDto->callbackQuery,
-            $userDto->actions,
-        );
-
-        $this->write($newUserDto);
-
-        logger()->debug("User $userId request to: " . $path);
+        $this->changeParam($userId, 'path', $path);
     }
 
     public function changeState(int $userId, BotState $state): void
     {
-        $userDto = $this->load($userId);
-
-        $newUserDto = $this->make(
-            $userDto->userId,
-            $userDto->path,
-            $state,
-            $userDto->timezone,
-            $userDto->keyboard,
-            $userDto->callbackQuery,
-            $userDto->actions,
-        );
-
-        $this->write($newUserDto);
-
-        logger()->debug("Change user $userId stage to: " . get_class($state));
+        $this->changeParam($userId, 'state', $state);
     }
 
     public function changeKeyboard(int $userId, bool $active): void
     {
-        $userDto = $this->load($userId);
-
-        $newUserDto = $this->make(
-            $userDto->userId,
-            $userDto->path,
-            $userDto->state,
-            $userDto->timezone,
-            $active,
-            $userDto->callbackQuery,
-            $userDto->actions,
-        );
-
-        $this->write($newUserDto);
-
-        logger()->debug("Change user $userId keyboard to: $active");
-    }
-
-    public function changeCallbackQuery(int $userId, bool $active): void
-    {
-        $userDto = $this->load($userId);
-
-        $newUserDto = $this->make(
-            $userDto->userId,
-            $userDto->path,
-            $userDto->state,
-            $userDto->timezone,
-            $userDto->keyboard,
-            $active,
-            $userDto->actions,
-        );
-
-        $this->write($newUserDto);
-
-        logger()->debug("Change user $userId keyboard to: $active");
+        $this->changeParam($userId, 'keyboard', $active);
     }
 
     public function changeTimezone(int $userId, string $timezone): void
     {
-        $userDto = $this->load($userId);
-
-        $newUserDto = $this->make(
-            $userDto->userId,
-            $userDto->path,
-            $userDto->state,
-            $timezone,
-            $userDto->keyboard,
-            $userDto->callbackQuery,
-            $userDto->actions,
-        );
-
-        $this->write($newUserDto);
-
-        logger()->debug("Change user $userId timezone to: $timezone");
+        $this->changeParam($userId, 'timezone', $timezone);
     }
 
     public function changeAction(int $userId, ActionStateDto $action): void
     {
+        $this->changeParam($userId, 'actions', [$action->code => $action]);
+    }
+
+    public function changeParam(int $userId, string $param, $value): void
+    {
         $userDto = $this->load($userId);
+        $fields = $userDto->toArray();
+        $from = $fields[$param];
 
-        $oldActions = $userDto->actions;
-        $oldActions[$action->code] = $action;
+        if (is_array($value)) {
+            $fields[$param] = array_merge($fields[$param], $value);
+        } else {
+            $fields[$param] = $value;
+        }
 
-        $newUserDto = $this->make(
-            $userDto->userId,
-            $userDto->path,
-            $userDto->state,
-            $userDto->timezone,
-            $userDto->keyboard,
-            $userDto->callbackQuery,
-            $oldActions,
-        );
-
+        $newUserDto = UserStateDto::fromArray($fields);
         $this->write($newUserDto);
 
-        logger()->debug("Change user $userId action state: " . json_encode($newUserDto));
+        if (is_object($from) || is_array($from)) {
+            $from = json_encode($from);
+        }
+
+        if (is_object($value) || is_array($value)) {
+            $value = json_encode($value);
+        }
+
+        logger()->debug("User $userId change param $param from $from to $value");
+    }
+
+    /**
+     * @throws UserStateManagerException
+     */
+    protected function checkUser(UserStateDto $user): void
+    {
+        $r = new ReflectionClass($user);
+        $a = $r->getProperties();
+        foreach ($a as $property) {
+            if (!$property->isInitialized()) {
+                throw new UserStateManagerException('User dto crashed');
+            }
+        }
     }
 }

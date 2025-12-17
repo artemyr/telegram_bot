@@ -2,57 +2,70 @@
 
 namespace Domain\TelegramBot;
 
+use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Exceptions\BotMenuException;
 use Domain\TelegramBot\Facades\Keyboard;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
+use Domain\TelegramBot\Facades\UserState;
 
 class MenuBotState extends BotState
 {
     public function render(): void
     {
-        Keyboard::remove();
-
-        $keyboard = InlineKeyboardMarkup::make();
-
         $menu = menu()->getCurrentCategoryItem();
 
+        $buttons = [];
+
         foreach ($menu->all() as $category) {
-            $keyboard->addRow(
-                InlineKeyboardButton::make(
-                    text: $category->label(),
-                    callback_data:  $category->link()
-                )
-            );
+            $buttons[] = $category->label();
         }
 
         if ($parent = $menu->getParent()) {
-            $keyboard->addRow(
-                InlineKeyboardButton::make(
-                    text: "Назад",
-                    callback_data: $parent->link()
-                )
-            );
+            $buttons[] = KeyboardContract::BACK;
         }
 
-        $method = ($this->silent && tuser()->callbackQuery)
-            ? 'editMessageText'
-            : 'sendMessage';
-
-        bot()->{$method}(
+        bot()->sendMessage(
             text: $menu->label(),
-            reply_markup: $keyboard
+            reply_markup: Keyboard::markup($buttons)
         );
+
+        UserState::changeKeyboard(bot()->userId(), true);
     }
 
+    /**
+     * @throws BotMenuException
+     */
     public function handle(): ?BotState
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
+        $found = false;
+        $text = bot()->message()?->getText();
+
+        if (!empty($text)) {
+            if ($text === KeyboardContract::BACK) {
+                $found = true;
+                if ($currentMenuItem->getParent()) {
+                    UserState::changePath(bot()->userId(), $currentMenuItem->getParent()->link());
+                    $currentMenuItem = $currentMenuItem->getParent();
+                } else {
+                    logger()->warning('Button back not handled on path' . tuser()->path);
+                    throw new BotMenuException('Button back not handled on path' . tuser()->path);
+                }
+            } else {
+                foreach ($currentMenuItem->all() as $item) {
+                    if ($item->label() === $text) {
+                        UserState::changePath(bot()->userId(), $item->link());
+                        $currentMenuItem = $item;
+                        $found = true;
+                    }
+                }
+            }
+        }
+
+        if (!$found) {
+            bot()->sendMessage('Выберите значение из списка');
+        }
 
         $state = $currentMenuItem->state();
-
-        if (($state !== self::class) && tuser()->callbackQuery) {
-            bot()->message()?->delete();
-        }
 
         return new $state();
     }

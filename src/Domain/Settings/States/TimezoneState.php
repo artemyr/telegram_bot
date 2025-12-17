@@ -4,7 +4,7 @@ namespace Domain\Settings\States;
 
 use Domain\Settings\Enums\TimezoneEnum;
 use Domain\TelegramBot\BotState;
-use Domain\TelegramBot\Enum\MenuEnum;
+use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
@@ -16,7 +16,7 @@ class TimezoneState extends BotState
     public function render(): void
     {
         $keyboard = [
-            MenuEnum::BACK->value
+            KeyboardContract::BACK
         ];
 
         foreach (TimezoneEnum::cases() as $case) {
@@ -30,13 +30,8 @@ class TimezoneState extends BotState
 
     public function handle(): ?BotState
     {
-        if (bot()->message()->getText() === MenuEnum::BACK->value) {
-
-            Keyboard::remove();
-
-            request()->merge([
-                'path' => troute('settings')
-            ]);
+        if (bot()->message()->getText() === KeyboardContract::BACK) {
+            UserState::changePath(bot()->userId(), troute('settings'));
 
             return new MenuBotState();
         }

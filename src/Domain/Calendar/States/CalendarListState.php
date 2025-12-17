@@ -3,7 +3,7 @@
 namespace Domain\Calendar\States;
 
 use Domain\TelegramBot\BotState;
-use Domain\TelegramBot\Enum\MenuEnum;
+use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
@@ -39,13 +39,8 @@ class CalendarListState extends BotState
 
     public function handle(): ?BotState
     {
-        if (bot()->message()->getText() === MenuEnum::BACK->value) {
-
-            Keyboard::remove();
-
-            request()->merge([
-                'path' => troute('calendar')
-            ]);
+        if (bot()->message()->getText() === KeyboardContract::BACK) {
+            UserState::changePath(bot()->userId(), troute('calendar'));
 
             return new MenuBotState();
         }

@@ -3,7 +3,6 @@
 namespace App\Telegram\Factory;
 
 use App\Telegram\Middleware\AuthMiddleware;
-use App\Telegram\Middleware\RequestMiddleware;
 use App\Telegram\Middleware\TimeZoneMiddleware;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\Facades\UserState;
@@ -14,46 +13,30 @@ class BotFactory
     public function __invoke(): void
     {
         bot()->middleware(AuthMiddleware::class);
-        bot()->middleware(RequestMiddleware::class);
         bot()->middleware(TimeZoneMiddleware::class);
 
         bot()->onCommand('start', function () {
             $this->try(function () {
-
-                UserState::changeCallbackQuery(bot()->userId(), false);
-
-                $state = new MenuBotState();
-
                 $userDto = UserState::get(bot()->userId());
 
+                if (config('telegram_bot.debug', false)) {
+                    bot()->sendMessage("Состояние пользователя: \n```\n$userDto\n```");
+                }
+
                 if ($userDto) {
-                    request()->merge([
-                        'path' => $userDto->path
-                    ]);
                     bot()->sendMessage('Восстановлено предыдущее состояние');
                 } else {
                     UserState::load(bot()->userId());
                     bot()->sendMessage('Обратите внимание на часовой пояс в настройках');
                 }
 
+                $state = $userDto->state ?? new MenuBotState();
                 $state->render();
-            });
-        });
-
-        bot()->onCallbackQuery(function () {
-            $this->try(function () {
-
-                UserState::changeCallbackQuery(bot()->userId(), true);
-
-                $this->handleState();
             });
         });
 
         bot()->onMessage(function () {
             $this->try(function () {
-
-                UserState::changeCallbackQuery(bot()->userId(), false);
-
                 $this->handleState();
             });
         });
@@ -67,9 +50,13 @@ class BotFactory
 
     protected function handleState(): void
     {
-        logger()->debug('handle state');
+        logger()->debug('handle state start');
 
         $userDto = UserState::get(bot()->userId());
+
+        if (config('telegram_bot.debug', false)) {
+            bot()->sendMessage("Состояние пользователя: \n```\n$userDto\n```");
+        }
 
         if ($userDto && !empty($userDto->state)) {
             logger()->debug('use state form user cache');

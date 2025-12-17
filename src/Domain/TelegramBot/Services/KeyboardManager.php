@@ -3,7 +3,6 @@
 namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\Contracts\KeyboardContract;
-use Domain\TelegramBot\Enum\MenuEnum;
 use Domain\TelegramBot\Facades\UserState;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
@@ -59,9 +58,20 @@ class KeyboardManager implements KeyboardContract
     public function back(string $text): void
     {
         $keyboard = [
-            MenuEnum::BACK->value
+            KeyboardContract::BACK
         ];
 
         $this->send($text, $keyboard);
+    }
+
+    public function markup(array $buttons):  ReplyKeyboardMarkup
+    {
+        $keyboard = ReplyKeyboardMarkup::make();
+
+        foreach ($buttons as $button) {
+            $keyboard->addRow(KeyboardButton::make(text: $button));
+        }
+
+        return $keyboard;
     }
 }

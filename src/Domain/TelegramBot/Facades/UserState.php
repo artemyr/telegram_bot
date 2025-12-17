@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static void changeState(int $userId, BotState $state)
  * @method static void changeKeyboard(int $userId, bool $active)
  * @method static void changeTimezone(int $userId, string $timezone)
- * @method static void changeCallbackQuery(int $userId, bool $active)
  * @method static void changeAction(int $userId, ActionStateDto $action)
  */
 class UserState extends Facade

@@ -4,8 +4,9 @@ namespace Domain\Calendar\States;
 
 use Domain\Calendar\Enum\CalendarAddEnum;
 use Domain\TelegramBot\BotState;
-use Domain\TelegramBot\Enum\MenuEnum;
+use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Facades\Keyboard;
+use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 
 class CalendarAddState extends BotState
@@ -15,7 +16,7 @@ class CalendarAddState extends BotState
     public function render(): void
     {
         $keyboard = [
-            MenuEnum::BACK->value
+            KeyboardContract::BACK
         ];
 
         foreach (CalendarAddEnum::cases() as $case) {
@@ -27,13 +28,8 @@ class CalendarAddState extends BotState
 
     public function handle(): ?BotState
     {
-        if (bot()->message()->getText() === MenuEnum::BACK->value) {
-
-            Keyboard::remove();
-
-            request()->merge([
-                'path' => troute('calendar')
-            ]);
+        if (bot()->message()->getText() === KeyboardContract::BACK) {
+            UserState::changePath(bot()->userId(), troute('calendar'));
 
             return new MenuBotState();
         }

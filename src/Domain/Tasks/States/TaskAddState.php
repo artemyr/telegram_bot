@@ -3,6 +3,7 @@
 namespace Domain\Tasks\States;
 
 use Domain\Tasks\Models\Task;
+use Domain\Tasks\Repository\TaskRepository;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Facades\Keyboard;
@@ -31,30 +32,20 @@ class TaskAddState extends BotState
         }
 
         $taskTitle = bot()->message()->getText();
+        $result = TaskRepository::save(bot()->userId(), $taskTitle);
 
-        $task = Task::query()
-            ->where('telegram_user_id', bot()->userId())
-            ->where('title', $taskTitle)
-            ->withTrashed()
-            ->first();
-
-        if (!empty($task) && !$task->trashed()) {
-            bot()->sendMessage("Задача \"$task->title\" уже существует");
+        if ($result === TaskRepository::EXISTS) {
+            bot()->sendMessage("Задача \"$taskTitle\" уже существует");
             return new TaskAddState();
         }
 
-        if (!empty($task) && $task->trashed()) {
-            $task->restore();
-            bot()->sendMessage("Задача \"$task->title\" востанновлена");
+        if ($result === TaskRepository::RESTORED) {
+            bot()->sendMessage("Задача \"$taskTitle\" востановленна");
             return new TaskListState();
         }
 
-        if (empty($task)) {
-            $task = new Task();
-            $task->telegram_user_id = bot()->userId();
-            $task->title = $taskTitle;
-            $task->save();
-            bot()->sendMessage("Задача \"$task->title\" создана");
+        if ($result === TaskRepository::SUCCESS_SAVED) {
+            bot()->sendMessage("Задача \"$taskTitle\" создана");
         }
 
         return new TaskListState();

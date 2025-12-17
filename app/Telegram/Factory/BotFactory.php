@@ -4,6 +4,7 @@ namespace App\Telegram\Factory;
 
 use App\Telegram\Middleware\AuthMiddleware;
 use App\Telegram\Middleware\TimeZoneMiddleware;
+use Domain\TelegramBot\Exceptions\PrintableException;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
@@ -100,11 +101,19 @@ class BotFactory
     protected function try(callable $call): void
     {
         try_to($call, function ($e) {
+
+            if ($e instanceof PrintableException) {
+                bot()->sendMessage($e->getMessage());
+                return;
+            }
+
             if (app()->hasDebugModeEnabled()) {
                 bot()->sendMessage("Error! " . $e->getMessage());
             } else {
                 bot()->sendMessage("Произошла ошибка");
             }
+
+            report($e);
         });
     }
 }

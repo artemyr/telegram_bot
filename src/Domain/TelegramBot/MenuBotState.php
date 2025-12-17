@@ -48,7 +48,6 @@ class MenuBotState extends BotState
                     $currentMenuItem = $currentMenuItem->getParent();
                 } else {
                     logger()->warning('Button back not handled on path' . tuser()->path);
-                    throw new BotMenuException('Button back not handled on path' . tuser()->path);
                 }
             } else {
                 foreach ($currentMenuItem->all() as $item) {

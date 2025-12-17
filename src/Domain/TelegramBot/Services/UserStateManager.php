@@ -8,16 +8,27 @@ use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Dto\UserStateDto;
 use Domain\TelegramBot\Exceptions\UserStateManagerException;
 use Domain\TelegramBot\MenuBotState;
+use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\UserStateStore;
 use ReflectionClass;
 
 class UserStateManager implements UserStateContract
 {
+    /**
+     * @throws UserStateManagerException
+     */
     public function get(int $userId): ?UserStateDto
     {
-        return UserStateStore::get($userId);
+        $userDto = UserStateStore::get($userId);
+
+        $this->checkUser($userDto);
+
+        return $userDto;
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function load(int $userId): UserStateDto
     {
         $userDto = UserStateStore::get($userId);
@@ -27,11 +38,18 @@ class UserStateManager implements UserStateContract
             $this->write($userDto);
         }
 
+        $this->checkUser($userDto);
+
         return $userDto;
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function write(UserStateDto $user): void
     {
+        $this->checkUser($user);
+
         UserStateStore::set($user->userId, $user);
 
         logger()->debug('Write user state: ' . json_encode($user));
@@ -46,6 +64,16 @@ class UserStateManager implements UserStateContract
         array    $actions = [],
     ): UserStateDto
     {
+        if (empty($timezone)) {
+            $tuser = TelegramUser::query()
+                ->where('telegram_id', $userId)
+                ->select('timezone')
+                ->first();
+
+            $timezone  = $tuser->timezone;
+            config(['app.timezone' => $timezone]);
+        }
+
         return new UserStateDto(
             $userId,
             $path,
@@ -81,6 +109,9 @@ class UserStateManager implements UserStateContract
         $this->changeParam($userId, 'actions', [$action->code => $action]);
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function changeParam(int $userId, string $param, $value): void
     {
         $userDto = $this->load($userId);
@@ -115,7 +146,7 @@ class UserStateManager implements UserStateContract
         $r = new ReflectionClass($user);
         $a = $r->getProperties();
         foreach ($a as $property) {
-            if (!$property->isInitialized()) {
+            if (!$property->isInitialized($user)) {
                 throw new UserStateManagerException('User dto crashed');
             }
         }

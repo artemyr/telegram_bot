@@ -3,8 +3,8 @@
 return [
     'actions' => [
         'work' => [
-            'pause_duration' => 60 * 45,
-            'start_work' => 3600 * 9
+            'pause_duration' => 15,
+            'start_work' => 30
         ],
     ],
 ];

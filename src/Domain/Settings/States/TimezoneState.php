@@ -2,6 +2,7 @@
 
 namespace Domain\Settings\States;
 
+use App\Models\TelegramUser;
 use Domain\Settings\Enums\TimezoneEnum;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
@@ -41,6 +42,11 @@ class TimezoneState extends BotState
                 bot()->sendMessage("Вы отметили: " . $case->value);
                 UserState::changeTimezone(bot()->userId(), $case->value);
                 config(['app.timezone' => $case->value]);
+                TelegramUser::query()
+                    ->where('telegram_id', bot()->userId())
+                    ->update([
+                        'timezone' => $case->value,
+                    ]);
             }
         }
 

@@ -12,7 +12,7 @@ class RegisterWebhookCommand extends Command
     public function handle()
     {
         $this->call('nutgram:hook:set', [
-            "https://" . config('app.url') . "/api/webhook"
+            config('app.url') . "/api/webhook"
         ]);
     }
 }

@@ -56,6 +56,6 @@ if (!function_exists('bot')) {
 if (!function_exists('tuser')) {
     function tuser(): ?UserStateDto
     {
-        return UserState::load(bot()->userId());
+        return UserState::get(bot()->userId());
     }
 }

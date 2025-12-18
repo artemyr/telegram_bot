@@ -13,8 +13,6 @@ readonly class UserStateDto
         public BotState $state,
         public string $timezone,
         public bool $keyboard,
-        /** @param $actions ActionStateDto[] */
-        public array $actions,
     ) {
     }
 
@@ -27,7 +25,6 @@ readonly class UserStateDto
             'state' => $this->state,
             'timezone' => $this->timezone,
             'keyboard' => $this->keyboard,
-            'actions' => $this->actions,
         ];
     }
 
@@ -40,7 +37,6 @@ readonly class UserStateDto
             $values['state'],
             $values['timezone'],
             $values['keyboard'],
-            $values['actions'],
         );
     }
 

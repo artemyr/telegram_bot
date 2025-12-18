@@ -2,9 +2,8 @@
 
 namespace Domain\Calendar\Actions;
 
-use App\Jobs\TelegramActionJob;
-use Domain\TelegramBot\Dto\ActionStateDto;
-use Domain\TelegramBot\Facades\UserState;
+use App\Jobs\TelegramTimerJob;
+use Domain\Calendar\Models\Timer;
 use Illuminate\Support\Carbon;
 
 class WorkSessionAction
@@ -18,35 +17,58 @@ class WorkSessionAction
 
         $userDto = tuser();
 
-        if (!empty($userDto->actions[self::CODE]) && $userDto->actions[self::CODE]->finished === false) {
+        $timer = Timer::query()
+            ->where('telegram_user_id', $userDto->userId)
+            ->where('code', self::CODE)
+            ->first();
+
+        if (!empty($timer)) {
             bot()->sendMessage("Вы уже запустили таймер!");
             logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
 
+        $timer = Timer::query()
+            ->where('telegram_user_id', $userDto->userId)
+            ->where('code', self::CODE)
+            ->withTrashed()
+            ->first();
+
         $startDate = now()->addSeconds(config('calendar.actions.work.pause_duration', 5));
-        $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
-        bot()->sendMessage("В $time отдых. Я напомню");
 
-        $action = new ActionStateDto(
-            self::class,
-            false,
-            now(),
-            $startDate,
-            self::CODE,
-            self::TITLE,
-        );
+        if (!empty($timer)) {
+            $timer->restore();
+        }
 
-        dispatch(new TelegramActionJob(
+        $timer->update([
+            'class' => self::class,
+            'startDate' => $startDate,
+            'title' => self::TITLE,
+        ]);
+
+        dispatch(new TelegramTimerJob(
             bot()->chatId(),
             bot()->userId(),
-            'Пора отдыхать',
-            $action,
+            $timer->id,
+            self::class,
             self::CODE . '_' . bot()->userId()
         ))->delay($startDate);
 
-        UserState::changeAction(bot()->userId(), $action);
+        $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
+        bot()->sendMessage("В $time отдых. Я напомню");
 
         logger()->debug('Success execute action: ' . self::class);
+    }
+
+    public function timeout(int $chatId, int $timerId): void
+    {
+        bot()->sendMessage(
+            text: 'Пора отдыхать',
+            chat_id: $chatId,
+        );
+
+        Timer::query()
+            ->where('id', $timerId)
+            ->delete();
     }
 }

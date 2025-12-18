@@ -4,14 +4,10 @@ namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\UserStateContract;
-use Domain\TelegramBot\Dto\ActionStateDto;
 use Domain\TelegramBot\Dto\UserStateDto;
 use Domain\TelegramBot\Exceptions\UserStateManagerException;
-use Domain\TelegramBot\MenuBotState;
-use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\UserStateStore;
 use ReflectionClass;
-use RuntimeException;
 
 class UserStateManager implements UserStateContract
 {
@@ -21,23 +17,6 @@ class UserStateManager implements UserStateContract
     public function get(int $userId): ?UserStateDto
     {
         $userDto = UserStateStore::get($userId);
-
-        $this->checkUser($userDto);
-
-        return $userDto;
-    }
-
-    /**
-     * @throws UserStateManagerException
-     */
-    public function load(int $userId): UserStateDto
-    {
-        $userDto = UserStateStore::get($userId);
-
-        if (!$userDto) {
-            $userDto = $this->make($userId, troute('home'), new MenuBotState());
-            $this->write($userDto);
-        }
 
         $this->checkUser($userDto);
 
@@ -63,31 +42,8 @@ class UserStateManager implements UserStateContract
         int      $chatId = null,
         string   $timezone = '',
         bool     $keyboard = false,
-        array    $actions = [],
     ): UserStateDto
     {
-        $tuser = TelegramUser::query()
-            ->where('telegram_id', $userId)
-            ->select(['chat_id', 'timezone'])
-            ->first();
-
-        if ($tuser) {
-            if (empty($timezone)) {
-                $timezone  = $tuser->timezone;
-                if (!empty($timezone)) {
-                    config(['app.timezone' => $timezone]);
-                }
-            }
-
-            if (empty($chatId)) {
-                $chatId = $tuser->chat_id;
-            }
-        }
-
-        if (empty($chatId)) {
-            throw new RuntimeException('Chat id is required parameter');
-        }
-
         return new UserStateDto(
             $userId,
             $chatId,
@@ -95,7 +51,6 @@ class UserStateManager implements UserStateContract
             $state,
             $timezone ?? '',
             $keyboard,
-            $actions,
         );
     }
 
@@ -134,17 +89,9 @@ class UserStateManager implements UserStateContract
     /**
      * @throws UserStateManagerException
      */
-    public function changeAction(int $userId, ActionStateDto $action): void
-    {
-        $this->changeParam($userId, 'actions', [$action->code => $action]);
-    }
-
-    /**
-     * @throws UserStateManagerException
-     */
     public function changeParam(int $userId, string $param, $value): void
     {
-        $userDto = $this->load($userId);
+        $userDto = $this->get($userId);
         $fields = $userDto->toArray();
         $from = $fields[$param];
 

@@ -2,6 +2,7 @@
 
 namespace Domain\Calendar\States;
 
+use Domain\Calendar\Models\Timer;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Facades\Keyboard;
@@ -20,13 +21,14 @@ class CalendarListState extends BotState
         $list = '';
         $num = 1;
 
-        foreach ($userDto->actions as $action) {
-            if ($action->finished === true) {
-                continue;
-            }
-            $time = Carbon::make($action->startDate)
+        $timers = Timer::query()
+            ->where('telegram_user_id', $userDto->userId)
+            ->get();
+
+        foreach ($timers as $timer) {
+            $time = Carbon::make($timer->startDate)
                 ->setTimezone(config('app.timezone'));
-            $list .= "$num) $action->title: $time\n";
+            $list .= "$num) $timer->title: $time\n";
             $num++;
         }
 

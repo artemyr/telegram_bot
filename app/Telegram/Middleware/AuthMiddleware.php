@@ -6,75 +6,148 @@ use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 use SergiX44\Nutgram\Nutgram;
+use SergiX44\Nutgram\Telegram\Types\User\User;
 
 class AuthMiddleware
 {
+    private ?User $botUser;
+    private ?string $text;
+
     public function __invoke(Nutgram $bot, $next): void
     {
-        $botUser = $bot->user();
-        $text = $bot->message()?->getText();
+        $this->botUser = $bot->user();
+        $this->text = $bot->message()?->getText();
 
-        if (!empty($text) && $text !== '/start') {
-            $password = $text;
-        }
+        $tuser = TelegramUser::query()
+            ->where('telegram_id', $this->botUser?->id)
+            ->first();
 
-        $tuser = TelegramUser::query()->where('telegram_id', $botUser?->id)->first();
-
-        if (empty($tuser) && empty($password)) {
-            logger()->alert(
-                sprintf(
-                    "Some user try to access bot:\n"
-                    . "user_id: '%s', \n"
-                    . "username: '%s', \n"
-                    . "name: %s",
-                    $botUser?->id,
-                    $botUser?->username,
-                    $botUser?->first_name . ' ' . $botUser?->last_name,
-                )
-            );
-
-            bot()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
-
-            return;
-        }
-
-        if (empty($tuser) && !Hash::check($password, config("auth.telegram.register_pass"))) {
-            logger()->alert(
-                sprintf(
-                    "Some user try to access bot with password:\n"
-                    . "user_id: '%s', \n"
-                    . "username: '%s', \n"
-                    . "name: '%s', \n"
-                    . "password: %s",
-                    $botUser?->id,
-                    $botUser?->username,
-                    $botUser?->first_name . ' ' . $botUser?->last_name,
-                    $password
-                )
-            );
-
-            bot()->sendMessage("Пароль не верный!");
-
-            return;
-        }
-
+        // если пользователя нет в базе
         if (empty($tuser)) {
-            $tuser = new TelegramUser();
-            $tuser->telegram_id = $botUser->id;
-            $tuser->chat_id = $bot->chatId();
-            $tuser->save();
+            $this->newUserHandler();
+        }
 
-            UserState::write(
-                UserState::make(
-                    $tuser->telegram_id,
-                    troute('home'),
-                    new MenuBotState(),
-                    $tuser->chat_id
-                )
-            );
+        // если есть в базе
+        if (!empty($tuser)) {
+            $this->existsUserHandler($tuser);
+        }
+
+        // на этот момент пользователь уже должен быть и в базе и в кеше
+        $userDto = tuser();
+        if (!$userDto) {
+            throw new RuntimeException('User init error');
         }
 
         $next($bot);
+    }
+
+    private function requestOfPassword(): void
+    {
+        logger()->alert(
+            sprintf(
+                "Some user try to access bot:\n"
+                . "user_id: '%s', \n"
+                . "username: '%s', \n"
+                . "name: %s",
+                $this->botUser?->id,
+                $this->botUser?->username,
+                $this->botUser?->first_name . ' ' . $this->botUser?->last_name,
+            )
+        );
+
+        bot()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
+    }
+
+    private function incorrectPassword(): void
+    {
+        logger()->alert(
+            sprintf(
+                "Some user try to access bot with password:\n"
+                . "user_id: '%s', \n"
+                . "username: '%s', \n"
+                . "name: '%s', \n"
+                . "password: %s",
+                $this->botUser?->id,
+                $this->botUser?->username,
+                $this->botUser?->first_name . ' ' . $this->botUser?->last_name,
+                $this->text
+            )
+        );
+
+        bot()->sendMessage("Пароль не верный!");
+    }
+
+    private function newUserHandler(): void
+    {
+        // запрос пароля
+        if ((empty($this->text) || $this->text === '/start')) {
+            $this->requestOfPassword();
+            exit();
+        }
+
+        // пароль не верный
+        if (!Hash::check($this->text, config("auth.telegram.register_pass"))) {
+            $this->incorrectPassword();
+            exit();
+        }
+
+        // создаем пользователя в базе
+        $tuser = $this->createDatabaseUser();
+        // создаем в кеше
+        $this->createCacheUser($tuser);
+
+        bot()->sendMessage('Вы зарегистрированы!');
+        bot()->sendMessage('Обратите внимание на часовой пояс в настройках');
+    }
+
+    private function existsUserHandler(TelegramUser $tuser): void
+    {
+        $userDto = tuser();
+
+        // если есть в кеше
+        if ($userDto) {
+            // то ничего не надо
+            return;
+        }
+
+        // если есть в бд но нет в кеше - создаем
+        if (!$userDto) {
+            $timezone = $tuser->timezone;
+            if (!empty($timezone)) {
+                config(['app.timezone' => $timezone]);
+            }
+
+            $chatId = $tuser->chat_id;
+
+            if (empty($chatId)) {
+                throw new RuntimeException('Chat id is required parameter');
+            }
+
+            $this->createCacheUser($tuser);
+            bot()->sendMessage('Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала');
+        }
+    }
+
+    private function createCacheUser(TelegramUser $tuser): void
+    {
+        $userDto = UserState::make(
+            $tuser->telegram_id,
+            troute('home'),
+            new MenuBotState(),
+            $tuser->chat_id
+        );
+
+        UserState::write($userDto);
+    }
+
+    private function createDatabaseUser(): TelegramUser
+    {
+        $tuser = new TelegramUser();
+        $tuser->telegram_id = $this->botUser->id;
+        $tuser->chat_id = bot()->chatId();
+        $tuser->save();
+        return $tuser;
     }
 }

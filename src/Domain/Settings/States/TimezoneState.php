@@ -2,13 +2,13 @@
 
 namespace Domain\Settings\States;
 
-use App\Models\TelegramUser;
 use Domain\Settings\Enums\TimezoneEnum;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
+use Domain\TelegramBot\Models\TelegramUser;
 
 class TimezoneState extends BotState
 {

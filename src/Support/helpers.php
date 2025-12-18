@@ -17,7 +17,7 @@ if (!function_exists('troute')) {
     {
         $route = route($name, $parameters);
 
-        $route = str_replace(env('APP_URL'), '', $route);
+        $route = str_replace(config('app.url'), '', $route);
         if (empty($route)) {
             $route = '/';
         }

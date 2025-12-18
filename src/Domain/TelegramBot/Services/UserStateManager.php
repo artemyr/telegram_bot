@@ -71,14 +71,16 @@ class UserStateManager implements UserStateContract
                 ->first();
 
             $timezone  = $tuser->timezone;
-            config(['app.timezone' => $timezone]);
+            if (!empty($timezone)) {
+                config(['app.timezone' => $timezone]);
+            }
         }
 
         return new UserStateDto(
             $userId,
             $path,
             $state,
-            $timezone,
+            $timezone ?? '',
             $keyboard,
             $actions,
         );

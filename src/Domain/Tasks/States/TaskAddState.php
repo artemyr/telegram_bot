@@ -31,21 +31,29 @@ class TaskAddState extends BotState
             return new MenuBotState();
         }
 
-        $taskTitle = bot()->message()->getText();
-        $result = TaskRepository::save(bot()->userId(), $taskTitle);
+        $tasks = bot()->message()->getText();
+        $arTasks = explode("\n", $tasks);
 
-        if ($result === TaskRepository::EXISTS) {
-            bot()->sendMessage("Задача \"$taskTitle\" уже существует");
-            return new TaskAddState();
+        $response = [];
+
+        foreach ($arTasks as $task) {
+            $result = TaskRepository::save(bot()->userId(), $task);
+
+            if ($result === TaskRepository::EXISTS) {
+                $response[] = "Задача \"$task\" уже существует";
+            }
+
+            if ($result === TaskRepository::RESTORED) {
+                $response[] = "Задача \"$task\" востановленна";
+            }
+
+            if ($result === TaskRepository::SUCCESS_SAVED) {
+                $response[] = "Задача \"$task\" создана";
+            }
         }
 
-        if ($result === TaskRepository::RESTORED) {
-            bot()->sendMessage("Задача \"$taskTitle\" востановленна");
-            return new TaskListState();
-        }
-
-        if ($result === TaskRepository::SUCCESS_SAVED) {
-            bot()->sendMessage("Задача \"$taskTitle\" создана");
+        if (!empty($response)) {
+            bot()->sendMessage(implode("\n", $response));
         }
 
         return new TaskListState();

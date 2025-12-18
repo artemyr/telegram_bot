@@ -2,6 +2,8 @@
 
 namespace App\Telegram\Middleware;
 
+use Domain\TelegramBot\Facades\UserState;
+use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Facades\Hash;
 use SergiX44\Nutgram\Nutgram;
@@ -28,7 +30,7 @@ class AuthMiddleware
                     . "name: %s",
                     $botUser?->id,
                     $botUser?->username,
-                    $botUser?->first_name .' '. $botUser?->last_name,
+                    $botUser?->first_name . ' ' . $botUser?->last_name,
                 )
             );
 
@@ -47,7 +49,7 @@ class AuthMiddleware
                     . "password: %s",
                     $botUser?->id,
                     $botUser?->username,
-                    $botUser?->first_name .' '. $botUser?->last_name,
+                    $botUser?->first_name . ' ' . $botUser?->last_name,
                     $password
                 )
             );
@@ -60,7 +62,17 @@ class AuthMiddleware
         if (empty($tuser)) {
             $tuser = new TelegramUser();
             $tuser->telegram_id = $botUser->id;
+            $tuser->chat_id = $bot->chatId();
             $tuser->save();
+
+            UserState::write(
+                UserState::make(
+                    $tuser->telegram_id,
+                    troute('home'),
+                    new MenuBotState(),
+                    $tuser->chat_id
+                )
+            );
         }
 
         $next($bot);

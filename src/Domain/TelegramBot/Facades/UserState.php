@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static UserStateDto|null get(int $userId);
  * @method static UserStateDto load(int $userId);
  * @method static void write(UserStateDto $user)
- * @method static UserStateDto make(int $userId, string $path, BotState $state, string $timezone = '', bool $keyboard = false, array $actions = [])
+ * @method static UserStateDto make(int $userId, string $path, BotState $state, int $chatId = null, string $timezone = '', bool $keyboard = false, array $actions = [])
  *
  * @method static void changePath(int $userId, string $path)
  * @method static void changeState(int $userId, BotState $state)

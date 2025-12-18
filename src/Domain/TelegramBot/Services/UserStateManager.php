@@ -11,6 +11,7 @@ use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\UserStateStore;
 use ReflectionClass;
+use RuntimeException;
 
 class UserStateManager implements UserStateContract
 {
@@ -59,25 +60,37 @@ class UserStateManager implements UserStateContract
         int      $userId,
         string   $path,
         BotState $state,
+        int      $chatId = null,
         string   $timezone = '',
         bool     $keyboard = false,
         array    $actions = [],
     ): UserStateDto
     {
-        if (empty($timezone)) {
-            $tuser = TelegramUser::query()
-                ->where('telegram_id', $userId)
-                ->select('timezone')
-                ->first();
+        $tuser = TelegramUser::query()
+            ->where('telegram_id', $userId)
+            ->select(['chat_id', 'timezone'])
+            ->first();
 
-            $timezone  = $tuser->timezone;
-            if (!empty($timezone)) {
-                config(['app.timezone' => $timezone]);
+        if ($tuser) {
+            if (empty($timezone)) {
+                $timezone  = $tuser->timezone;
+                if (!empty($timezone)) {
+                    config(['app.timezone' => $timezone]);
+                }
             }
+
+            if (empty($chatId)) {
+                $chatId = $tuser->chat_id;
+            }
+        }
+
+        if (empty($chatId)) {
+            throw new RuntimeException('Chat id is required parameter');
         }
 
         return new UserStateDto(
             $userId,
+            $chatId,
             $path,
             $state,
             $timezone ?? '',
@@ -86,26 +99,41 @@ class UserStateManager implements UserStateContract
         );
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function changePath(int $userId, string $path): void
     {
         $this->changeParam($userId, 'path', $path);
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function changeState(int $userId, BotState $state): void
     {
         $this->changeParam($userId, 'state', $state);
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function changeKeyboard(int $userId, bool $active): void
     {
         $this->changeParam($userId, 'keyboard', $active);
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function changeTimezone(int $userId, string $timezone): void
     {
         $this->changeParam($userId, 'timezone', $timezone);
     }
 
+    /**
+     * @throws UserStateManagerException
+     */
     public function changeAction(int $userId, ActionStateDto $action): void
     {
         $this->changeParam($userId, 'actions', [$action->code => $action]);

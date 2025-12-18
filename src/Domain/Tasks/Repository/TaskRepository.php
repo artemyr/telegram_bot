@@ -3,6 +3,10 @@
 namespace Domain\Tasks\Repository;
 
 use Domain\Tasks\Models\Task;
+use Domain\TelegramBot\Dto\Table\ColDto;
+use Domain\TelegramBot\Dto\Table\RowDto;
+use Domain\TelegramBot\Dto\Table\TableDto;
+use Illuminate\Support\Collection;
 
 class TaskRepository
 {
@@ -37,5 +41,27 @@ class TaskRepository
         }
 
         return self::ERROR;
+    }
+
+    public static function getTable(int $userId): TableDto
+    {
+        $tasks = Task::query()
+            ->select(['title'])
+            ->where('telegram_user_id', $userId)
+            ->get();
+
+       return self::makeTable($tasks);
+    }
+
+    public static function makeTable(Collection $tasks): TableDto
+    {
+        $table = new TableDto();
+        foreach ($tasks as $task) {
+            $table->addRow(new RowDto([
+                new ColDto($task->title, 'title'),
+            ]));
+        }
+
+        return $table;
     }
 }

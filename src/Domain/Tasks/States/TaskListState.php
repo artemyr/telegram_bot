@@ -3,6 +3,7 @@
 namespace Domain\Tasks\States;
 
 use Domain\Tasks\Models\Task;
+use Domain\Tasks\Repository\TaskRepository;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Dto\Table\ColDto;
@@ -63,17 +64,7 @@ class TaskListState extends BotState
             try {
                 $userDto = tuser();
 
-                $tasks = Task::query()
-                    ->select(['title'])
-                    ->where('telegram_user_id', $userDto->userId)
-                    ->get();
-
-                $table = new TableDto();
-                foreach ($tasks as $task) {
-                    $table->addRow(new RowDto([
-                        new ColDto($task->title, 'title'),
-                    ]));
-                }
+                $table = TaskRepository::getTable($userDto->userId);
 
                 $row = $table->getRow((int)$text);
 

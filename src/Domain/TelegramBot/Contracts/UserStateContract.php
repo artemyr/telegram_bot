@@ -15,6 +15,7 @@ interface UserStateContract
         int $userId,
         string $path,
         BotState $state,
+        int $chatId = null,
         string $timezone = '',
         bool $keyboard = false,
         array $actions = []

@@ -40,6 +40,10 @@ class AuthMiddleware
             throw new RuntimeException('User init error');
         }
 
+        if (!empty($userDto->timezone)) {
+            config(['app.timezone' => $userDto->timezone]);
+        }
+
         $next($bot);
     }
 
@@ -114,11 +118,6 @@ class AuthMiddleware
 
         // если есть в бд но нет в кеше - создаем
         if (!$userDto) {
-            $timezone = $tuser->timezone;
-            if (!empty($timezone)) {
-                config(['app.timezone' => $timezone]);
-            }
-
             $chatId = $tuser->chat_id;
 
             if (empty($chatId)) {
@@ -136,7 +135,8 @@ class AuthMiddleware
             $tuser->telegram_id,
             troute('home'),
             new MenuBotState(),
-            $tuser->chat_id
+            $tuser->chat_id,
+            $tuser->timezone ?? ''
         );
 
         UserState::write($userDto);

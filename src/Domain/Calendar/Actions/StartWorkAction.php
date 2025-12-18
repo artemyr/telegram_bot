@@ -38,13 +38,20 @@ class StartWorkAction
 
         if (!empty($timer)) {
             $timer->restore();
+            $timer->update([
+                'class' => self::class,
+                'startDate' => $startDate,
+                'title' => self::TITLE,
+            ]);
+        } else {
+            $timer = Timer::create([
+                'telegram_user_id' => $userDto->userId,
+                'code' => self::CODE,
+                'class' => self::class,
+                'startDate' => $startDate,
+                'title' => self::TITLE,
+            ]);
         }
-
-        $timer->update([
-            'class' => self::class,
-            'startDate' => $startDate,
-            'title' => self::TITLE,
-        ]);
 
         dispatch(new TelegramTimerJob(
             bot()->chatId(),

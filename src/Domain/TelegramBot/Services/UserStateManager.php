@@ -18,7 +18,9 @@ class UserStateManager implements UserStateContract
     {
         $userDto = UserStateStore::get($userId);
 
-        $this->checkUser($userDto);
+        if ($userDto) {
+            $this->checkUser($userDto);
+        }
 
         return $userDto;
     }

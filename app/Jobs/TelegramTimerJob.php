@@ -15,20 +15,15 @@ class TelegramTimerJob implements ShouldQueue, ShouldBeUnique
         protected int    $userId,
         protected int    $timerId,
         protected string $class,
-        protected string $unique,
+        protected string $method,
     )
     {
     }
 
     public function handle(): void
     {
-        (new $this->class())->timeout($this->chatId, $this->timerId);
+        (new $this->class())->{$this->method}($this->chatId, $this->timerId);
 
         logger()->debug('Job executed. timer finished ' . $this->timerId);
-    }
-
-    public function uniqueId(): string
-    {
-        return $this->unique;
     }
 }

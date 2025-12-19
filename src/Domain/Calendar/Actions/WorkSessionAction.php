@@ -58,8 +58,16 @@ class WorkSessionAction
             bot()->userId(),
             $timer->id,
             self::class,
-            self::CODE . '_' . bot()->userId()
+            'timeout',
         ))->delay($startDate);
+
+        dispatch(new TelegramTimerJob(
+            bot()->chatId(),
+            bot()->userId(),
+            $timer->id,
+            self::class,
+            'revoke',
+        ))->delay($startDate->addMinutes(10));
 
         $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
         bot()->sendMessage("В $time отдых. Я напомню");
@@ -77,5 +85,13 @@ class WorkSessionAction
         Timer::query()
             ->where('id', $timerId)
             ->delete();
+    }
+
+    public function revoke(int $chatId, int $timerId): void
+    {
+        bot()->sendMessage(
+            text: 'Можно начинать работать',
+            chat_id: $chatId,
+        );
     }
 }

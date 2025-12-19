@@ -58,7 +58,7 @@ class StartWorkAction
             bot()->userId(),
             $timer->id,
             self::class,
-            self::CODE . '_' . bot()->userId()
+            'timeout'
         ))->delay($startDate);
 
         $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));

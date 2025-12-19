@@ -2,7 +2,6 @@
 
 namespace Domain\Tasks\States;
 
-use Domain\Tasks\Models\Task;
 use Domain\Tasks\Repository\TaskRepository;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;

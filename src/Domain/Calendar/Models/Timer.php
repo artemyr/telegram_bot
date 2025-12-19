@@ -18,6 +18,16 @@ class Timer extends Model
         'code',
         'title',
     ];
+
+    protected $casts = [
+        'startDate' => 'datetime',
+    ];
+
+    protected function getActiveAttribute(): bool
+    {
+        return (now()->getTimestamp() < $this->startDate->getTimestamp());
+    }
+
     public function telegramUser(): BelongsTo
     {
         return $this->belongsTo(TelegramUser::class, 'telegram_id', 'telegram_user_id');

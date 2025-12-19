@@ -8,14 +8,12 @@ use Domain\Calendar\Actions\WorkSessionAction;
 
 enum CalendarAddEnum: string
 {
-    case PI = '🚽 Отметить пись пись';
-    case WORK = '🔨 Отметить начало трудовой сессии';
-    case START_WORK = '🔨 Отметить приход на работу';
+    case WORK = '⏳ начало трудовой сессии';
+    case START_WORK = '🔨 приход на работу';
 
     public function action(): string
     {
         return match($this) {
-            self::PI => PiAction::class,
             self::WORK => WorkSessionAction::class,
             self::START_WORK => StartWorkAction::class,
         };

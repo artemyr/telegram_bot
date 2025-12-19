@@ -22,7 +22,7 @@ class WorkSessionAction
             ->where('code', self::CODE)
             ->first();
 
-        if (!empty($timer)) {
+        if ($timer && $timer->active) {
             bot()->sendMessage("Вы уже запустили таймер!");
             logger()->debug('Action ' . self::class . ' skipped');
             return;

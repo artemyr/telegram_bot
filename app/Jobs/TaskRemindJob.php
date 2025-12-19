@@ -18,28 +18,52 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        logger()->debug('Start job exec ' . TaskRemindJob::class);
+        logger()->debug('Start job exec ' . self::class);
 
         TelegramUser::query()
             ->select(['id', 'telegram_id', 'chat_id', 'timezone'])
             ->with('tasks')
             ->chunk(10, function ($users) {
-
                 logger()->debug('User batch ' . count($users));
 
                 foreach ($users as $user) {
+                    logger()->debug('Start finding user task ' . $user->telegram_id);
+
+                    $now = now();
+                    $start = now();
+                    $end = now();
+
+                    logger()->debug(sprintf('before timezone now %s start %s end %s', $now, $start, $end));
+
+                    if (!empty($user->timezone)) {
+                        logger()->debug('User timezone is ' . $user->timezone);
+                        $now->setTimezone($user->timezone);
+                        $start->setTimezone($user->timezone);
+                        $end->setTimezone($user->timezone);
+                    }
+
+                    $start = $start->setTime(8, 00);
+                    $end = $end->setTime(8, 05);
+
+                    logger()->debug(sprintf('after timezone now %s start %s end %s', $now, $start, $end));
+
+                    if (!$now->between($start, $end)) {
+                        logger()->debug('Not time yet');
+                        continue;
+                    }
+
                     $table = TaskRepository::makeTable($user->tasks);
 
                     logger()->debug('User task batch ' . count($user->tasks));
 
-                    $response = (string) $table;
+                    $response = (string)$table;
 
                     if (empty($response)) {
-                        logger()->debug('No messages for user');
+                        logger()->debug('No messages for user' . $user->telegram_id);
                         continue;
                     }
 
-                    logger()->debug('Sending '. $user->chat_id);
+                    logger()->debug('Sending ' . $user->chat_id);
 
                     bot()->sendMessage(
                         text: "У вас в плане на сегодня: \n" . $response,
@@ -48,6 +72,6 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
                 }
             });
 
-        logger()->debug('Job executed. ' . TaskRemindJob::class);
+        logger()->debug('Job executed. ' . self::class);
     }
 }

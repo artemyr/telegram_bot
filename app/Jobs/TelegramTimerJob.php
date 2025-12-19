@@ -26,4 +26,9 @@ class TelegramTimerJob implements ShouldQueue, ShouldBeUnique
 
         logger()->debug('Job executed. timer finished ' . $this->timerId);
     }
+
+    public function uniqueId(): string
+    {
+        return md5(self::class . $this->chatId . $this->userId . $this->timerId . $this->class . $this->method);
+    }
 }

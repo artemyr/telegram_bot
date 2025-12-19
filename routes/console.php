@@ -9,5 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::job(new \App\Jobs\TaskRemindJob())
-    ->dailyAt('09:00')
+    ->everyFifteenMinutes()
     ->withoutOverlapping();

@@ -6,6 +6,7 @@ use Domain\Tasks\Models\Task;
 use Domain\TelegramBot\Dto\Table\ColDto;
 use Domain\TelegramBot\Dto\Table\RowDto;
 use Domain\TelegramBot\Dto\Table\TableDto;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class TaskRepository
@@ -15,8 +16,17 @@ class TaskRepository
     public const EXISTS = 2;
     public const RESTORED = 3;
 
-    public static function save(int $userId, string $title): int
+    public static function save(int $userId, string $task): int
     {
+        $title = $task;
+
+        if (preg_match("~\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}~", $task, $matches)) {
+            $deadline = Carbon::make($matches[0]);
+            $title = str_replace($matches[0], '', $task);
+        }
+
+        $title = trim($title);
+
         $task = Task::query()
             ->where('telegram_user_id', $userId)
             ->where('title', $title)
@@ -33,10 +43,12 @@ class TaskRepository
         }
 
         if (empty($task)) {
-            $task = new Task();
-            $task->telegram_user_id = $userId;
-            $task->title = $title;
-            $task->save();
+            Task::create([
+                'telegram_user_id' => $userId,
+                'title' => $title,
+                'deadline' => $deadline ?? null,
+            ]);
+
             return self::SUCCESS_SAVED;
         }
 
@@ -46,7 +58,8 @@ class TaskRepository
     public static function getTable(int $userId): TableDto
     {
         $tasks = Task::query()
-            ->select(['title'])
+            ->select(['title', 'deadline'])
+            ->sorted()
             ->where('telegram_user_id', $userId)
             ->get();
 
@@ -59,6 +72,7 @@ class TaskRepository
         foreach ($tasks as $task) {
             $table->addRow(new RowDto([
                 new ColDto($task->title, 'title'),
+                new ColDto($task->deadline?->format('d.m.Y H:i'), 'deadline'),
             ]));
         }
 

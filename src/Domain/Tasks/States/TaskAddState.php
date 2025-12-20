@@ -19,7 +19,13 @@ class TaskAddState extends BotState
             KeyboardContract::BACK
         ];
 
-        Keyboard::send("Раздел: Задачи\nДобавить задачу\nВведите название задачи", $keyboard);
+        Keyboard::send(
+            "Раздел: Задачи\n" .
+            "Добавить задачу\n" .
+            "Введите название задачи в формате \"Помыть посуду 21.12.2025 17:00\"\n" .
+            "Можно вводить сразу несколько задач, каждая на новой строке",
+            $keyboard
+        );
     }
 
     public function handle(): ?BotState

@@ -23,17 +23,7 @@ class TaskListState extends BotState
     {
         $userDto = tuser();
 
-        $tasks = Task::query()
-            ->select(['title'])
-            ->where('telegram_user_id', $userDto->userId)
-            ->get();
-
-        $table = new TableDto();
-        foreach ($tasks as $task) {
-            $table->addRow(new RowDto([
-                new ColDto($task->title),
-            ]));
-        }
+        $table = TaskRepository::getTable($userDto->userId);
 
         $list = (string) $table;
 

@@ -5,14 +5,14 @@ namespace Domain\TelegramBot\Dto\Table;
 readonly class ColDto
 {
     public function __construct(
-        public string $value = '',
-        public string $code = '',
+        public ?string $value = '',
+        public ?string $code = '',
     )
     {
     }
 
     public function __toString(): string
     {
-        return $this->value;
+        return $this->value ?? '';
     }
 }

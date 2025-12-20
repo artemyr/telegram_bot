@@ -42,8 +42,8 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
                         $end->setTimezone($user->timezone);
                     }
 
-                    $start = $start->setTime(8, 00);
-                    $end = $end->setTime(8, 05);
+                    $start = $start->setTime(9, 00);
+                    $end = $end->setTime(9, 05);
 
                     logger()->debug(sprintf('after timezone now %s start %s end %s', $now, $start, $end));
 

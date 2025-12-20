@@ -12,11 +12,18 @@ class Task extends Model
 {
     use SoftDeletes;
 
-    protected function title(): Attribute
+    protected $fillable = [
+        'title',
+        'telegram_user_id',
+        'deadline',
+        'priority',
+    ];
+
+    public function title(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => ucfirst($value),
-            set: fn ($value) => strtolower($value),
+            get: fn($value) => ucfirst($value),
+            set: fn ($value) => mb_strtolower($value),
         );
     }
 

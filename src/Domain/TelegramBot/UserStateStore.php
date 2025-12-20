@@ -16,4 +16,9 @@ class UserStateStore
     {
         Cache::put("tg_state:$userId", $user, config('auth.telegram.user_state_lock_period'));
     }
+
+    public static function forget(int $userId): void
+    {
+        Cache::forget("tg_state:$userId");
+    }
 }

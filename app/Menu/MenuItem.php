@@ -48,7 +48,7 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
 
     public function isActive(): bool
     {
-        return tuser()->path === $this->link();
+        return tuser()->state->getPath() === $this->link();
     }
 
     public function getCurrentCategoryItem(): self

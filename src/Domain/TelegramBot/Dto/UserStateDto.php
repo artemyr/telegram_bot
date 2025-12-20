@@ -9,7 +9,6 @@ readonly class UserStateDto
     public function __construct(
         public int $userId,
         public int $chatId,
-        public string $path,
         public BotState $state,
         public string $timezone,
         public bool $keyboard,
@@ -21,7 +20,6 @@ readonly class UserStateDto
         return [
             'userId' => $this->userId,
             'chatId' => $this->chatId,
-            'path' => $this->path,
             'state' => $this->state,
             'timezone' => $this->timezone,
             'keyboard' => $this->keyboard,
@@ -33,7 +31,6 @@ readonly class UserStateDto
         return new self(
             $values['userId'],
             $values['chatId'],
-            $values['path'],
             $values['state'],
             $values['timezone'],
             $values['keyboard'],

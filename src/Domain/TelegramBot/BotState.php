@@ -6,6 +6,17 @@ abstract class BotState
 {
     public bool $silent = false;
 
+    public function __construct(
+        protected ?string $path = null
+    )
+    {
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
     public function silent(bool $silent = true): static
     {
         $this->silent = $silent;

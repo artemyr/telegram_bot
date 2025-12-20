@@ -39,7 +39,6 @@ class UserStateManager implements UserStateContract
 
     public function make(
         int      $userId,
-        string   $path,
         BotState $state,
         int      $chatId = null,
         string   $timezone = '',
@@ -49,19 +48,10 @@ class UserStateManager implements UserStateContract
         return new UserStateDto(
             $userId,
             $chatId,
-            $path,
             $state,
             $timezone ?? '',
             $keyboard,
         );
-    }
-
-    /**
-     * @throws UserStateManagerException
-     */
-    public function changePath(int $userId, string $path): void
-    {
-        $this->changeParam($userId, 'path', $path);
     }
 
     /**
@@ -126,6 +116,7 @@ class UserStateManager implements UserStateContract
         $a = $r->getProperties();
         foreach ($a as $property) {
             if (!$property->isInitialized($user)) {
+                UserStateStore::forget($user->userId);
                 throw new UserStateManagerException('User dto crashed');
             }
         }

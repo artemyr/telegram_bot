@@ -55,9 +55,9 @@ class TaskListState extends BotState
         $text = bot()->message()->getText();
 
         if ($text === KeyboardContract::BACK) {
-            UserState::changePath(bot()->userId(), troute('tasks'));
-
-            return new MenuBotState();
+            $newState = new MenuBotState(troute('tasks'));
+            UserState::changeState(bot()->userId(), $newState);
+            return $newState;
         }
 
         if (filter_var($text, FILTER_VALIDATE_INT)) {

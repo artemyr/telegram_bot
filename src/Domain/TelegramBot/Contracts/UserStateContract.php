@@ -11,14 +11,11 @@ interface UserStateContract
     public function write(UserStateDto $user): void;
     public function make(
         int $userId,
-        string $path,
         BotState $state,
         int $chatId = null,
         string $timezone = '',
         bool $keyboard = false,
     ): UserStateDto;
-
-    public function changePath(int $userId, string $path): void;
     public function changeState(int $userId, BotState $state): void;
     public function changeKeyboard(int $userId, bool $active): void;
     public function changeTimezone(int $userId, string $timezone): void;

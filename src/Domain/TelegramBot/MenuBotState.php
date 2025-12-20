@@ -44,15 +44,19 @@ class MenuBotState extends BotState
             if ($text === KeyboardContract::BACK) {
                 $found = true;
                 if ($currentMenuItem->getParent()) {
-                    UserState::changePath(bot()->userId(), $currentMenuItem->getParent()->link());
+                    $newState = new MenuBotState($currentMenuItem->getParent()->link());
+                    UserState::changeState(bot()->userId(), $newState);
+
                     $currentMenuItem = $currentMenuItem->getParent();
                 } else {
-                    logger()->warning('Button back not handled on path' . tuser()->path);
+                    logger()->warning('Button back not handled on path' . tuser()->state->getPath());
                 }
             } else {
                 foreach ($currentMenuItem->all() as $item) {
                     if ($item->label() === $text) {
-                        UserState::changePath(bot()->userId(), $item->link());
+                        $newState = new MenuBotState($item->link());
+                        UserState::changeState(bot()->userId(), $newState);
+
                         $currentMenuItem = $item;
                         $found = true;
                     }

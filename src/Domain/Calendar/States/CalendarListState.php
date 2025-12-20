@@ -42,9 +42,9 @@ class CalendarListState extends BotState
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
-            UserState::changePath(bot()->userId(), troute('calendar'));
-
-            return new MenuBotState();
+            $newState = new MenuBotState(troute('calendar'));
+            UserState::changeState(bot()->userId(), $newState);
+            return $newState;
         }
 
         return new CalendarListState();

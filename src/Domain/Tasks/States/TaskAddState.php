@@ -25,9 +25,9 @@ class TaskAddState extends BotState
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
-            UserState::changePath(bot()->userId(), troute('tasks'));
-
-            return new MenuBotState();
+            $newState = new MenuBotState(troute('tasks'));
+            UserState::changeState(bot()->userId(), $newState);
+            return $newState;
         }
 
         $tasks = bot()->message()->getText();

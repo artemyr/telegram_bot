@@ -32,9 +32,9 @@ class TimezoneState extends BotState
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
-            UserState::changePath(bot()->userId(), troute('settings'));
-
-            return new MenuBotState();
+            $newState = new MenuBotState(troute('settings'));
+            UserState::changeState(bot()->userId(), $newState);
+            return $newState;
         }
 
         foreach (TimezoneEnum::cases() as $case) {

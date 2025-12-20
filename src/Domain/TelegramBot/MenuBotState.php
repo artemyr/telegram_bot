@@ -68,8 +68,6 @@ class MenuBotState extends BotState
             bot()->sendMessage('Выберите значение из списка');
         }
 
-        $state = $currentMenuItem->state();
-
-        return new $state();
+        return $currentMenuItem->state();
     }
 }

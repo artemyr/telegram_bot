@@ -3,6 +3,7 @@
 namespace App\Menu;
 
 use Countable;
+use Domain\TelegramBot\BotState;
 use IteratorAggregate;
 use Support\Traits\Makeable;
 
@@ -36,9 +37,9 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
         return $this->label;
     }
 
-    public function state(): string
+    public function state(): BotState
     {
-        return $this->state;
+        return new $this->state($this->link);
     }
 
     public static function setDefaultState(string $state): void

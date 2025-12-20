@@ -2,6 +2,7 @@
 
 namespace App\Menu;
 
+use Domain\TelegramBot\BotState;
 use Illuminate\Support\Collection;
 
 interface MenuContract {
@@ -9,6 +10,6 @@ interface MenuContract {
     public function getParent(): ?self;
     public function link(): string;
     public function label(): string;
-    public function state(): string;
+    public function state(): BotState;
     public function all(): Collection;
 }

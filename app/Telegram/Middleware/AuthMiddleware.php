@@ -133,8 +133,7 @@ class AuthMiddleware
     {
         $userDto = UserState::make(
             $tuser->telegram_id,
-            troute('home'),
-            new MenuBotState(),
+            new MenuBotState(troute('home'),),
             $tuser->chat_id,
             $tuser->timezone ?? ''
         );

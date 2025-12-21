@@ -27,7 +27,7 @@ class CalendarListState extends BotState
 
         foreach ($timers as $timer) {
             $time = Carbon::make($timer->startDate)
-                ->setTimezone(config('app.timezone'));
+                ->setTimezone(tusertimezone());
             $list .= "$num) $timer->title: $time\n";
             $num++;
         }

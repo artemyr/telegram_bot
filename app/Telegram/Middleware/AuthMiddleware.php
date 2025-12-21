@@ -40,8 +40,12 @@ class AuthMiddleware
             throw new RuntimeException('User init error');
         }
 
-        if (!empty($userDto->timezone)) {
-            config(['app.timezone' => $userDto->timezone]);
+        $tuser = TelegramUser::query()
+            ->where('telegram_id', $userDto->userId)
+            ->first();
+
+        if (empty($tuser)) {
+            throw new RuntimeException('User init error');
         }
 
         $next($bot);
@@ -135,7 +139,6 @@ class AuthMiddleware
             $tuser->telegram_id,
             new MenuBotState(troute('home')),
             $tuser->chat_id,
-            $tuser->timezone ?? ''
         );
 
         UserState::write($userDto);

@@ -41,7 +41,6 @@ class UserStateManager implements UserStateContract
         int      $userId,
         BotState $state,
         int      $chatId = null,
-        string   $timezone = '',
         bool     $keyboard = false,
     ): UserStateDto
     {
@@ -49,7 +48,6 @@ class UserStateManager implements UserStateContract
             $userId,
             $chatId,
             $state,
-            $timezone ?? '',
             $keyboard,
         );
     }
@@ -68,14 +66,6 @@ class UserStateManager implements UserStateContract
     public function changeKeyboard(int $userId, bool $active): void
     {
         $this->changeParam($userId, 'keyboard', $active);
-    }
-
-    /**
-     * @throws UserStateManagerException
-     */
-    public function changeTimezone(int $userId, string $timezone): void
-    {
-        $this->changeParam($userId, 'timezone', $timezone);
     }
 
     /**

@@ -10,7 +10,6 @@ readonly class UserStateDto
         public int $userId,
         public int $chatId,
         public BotState $state,
-        public string $timezone,
         public bool $keyboard,
     ) {
     }
@@ -21,7 +20,6 @@ readonly class UserStateDto
             'userId' => $this->userId,
             'chatId' => $this->chatId,
             'state' => $this->state,
-            'timezone' => $this->timezone,
             'keyboard' => $this->keyboard,
         ];
     }
@@ -32,7 +30,6 @@ readonly class UserStateDto
             $values['userId'],
             $values['chatId'],
             $values['state'],
-            $values['timezone'],
             $values['keyboard'],
         );
     }

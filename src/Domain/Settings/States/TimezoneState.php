@@ -24,7 +24,7 @@ class TimezoneState extends BotState
             $keyboard[] = $case->value;
         }
 
-        $timezone = config('app.timezone');
+        $timezone = tusertimezone();
 
         Keyboard::send("Раздел: Настройки\nВаш часовой пояс: $timezone\nВыберите часовой пояс:", $keyboard);
     }
@@ -40,8 +40,6 @@ class TimezoneState extends BotState
         foreach (TimezoneEnum::cases() as $case) {
             if (bot()->message()->getText() === $case->value) {
                 bot()->sendMessage("Вы отметили: " . $case->value);
-                UserState::changeTimezone(bot()->userId(), $case->value);
-                config(['app.timezone' => $case->value]);
                 TelegramUser::query()
                     ->where('telegram_id', bot()->userId())
                     ->update([

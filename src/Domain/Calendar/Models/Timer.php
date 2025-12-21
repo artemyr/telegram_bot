@@ -2,9 +2,11 @@
 
 namespace Domain\Calendar\Models;
 
+use App\Models\Notifications;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Timer extends Model
@@ -31,5 +33,10 @@ class Timer extends Model
     public function telegramUser(): BelongsTo
     {
         return $this->belongsTo(TelegramUser::class, 'telegram_id', 'telegram_user_id');
+    }
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notifications::class, 'notifiable');
     }
 }

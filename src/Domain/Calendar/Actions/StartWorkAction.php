@@ -61,7 +61,7 @@ class StartWorkAction
             'timeout'
         ))->delay($startDate);
 
-        $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
+        $time = Carbon::make($startDate)->setTimezone(tusertimezone());
         bot()->sendMessage("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
 
         logger()->debug('Success execute action: ' . self::class);

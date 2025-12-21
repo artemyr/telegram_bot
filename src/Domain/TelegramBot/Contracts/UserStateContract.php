@@ -13,10 +13,8 @@ interface UserStateContract
         int $userId,
         BotState $state,
         int $chatId = null,
-        string $timezone = '',
         bool $keyboard = false,
     ): UserStateDto;
     public function changeState(int $userId, BotState $state): void;
     public function changeKeyboard(int $userId, bool $active): void;
-    public function changeTimezone(int $userId, string $timezone): void;
 }

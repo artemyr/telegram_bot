@@ -11,3 +11,7 @@ Artisan::command('inspire', function () {
 Schedule::job(new \App\Jobs\TaskRemindJob())
     ->everyFifteenMinutes()
     ->withoutOverlapping();
+
+Schedule::job(new \App\Jobs\NotificationCheckJob())
+    ->everyTenMinutes()
+    ->withoutOverlapping();

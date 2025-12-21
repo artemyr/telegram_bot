@@ -69,7 +69,7 @@ class WorkSessionAction
             'revoke',
         ))->delay($startDate->addMinutes(10));
 
-        $time = Carbon::make($startDate)->setTimezone(config('app.timezone'));
+        $time = Carbon::make($startDate)->setTimezone(tusertimezone());
         bot()->sendMessage("В $time отдых. Я напомню");
 
         logger()->debug('Success execute action: ' . self::class);

@@ -6,8 +6,10 @@ use Domain\Tasks\Models\Task;
 use Domain\TelegramBot\Dto\Table\ColDto;
 use Domain\TelegramBot\Dto\Table\RowDto;
 use Domain\TelegramBot\Dto\Table\TableDto;
+use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use function Illuminate\Support\minutes;
 
 class TaskRepository
 {
@@ -20,8 +22,13 @@ class TaskRepository
     {
         $title = $task;
 
+        $tuser = TelegramUser::query()
+            ->where('telegram_id', $userId)
+            ->first();
+
         if (preg_match("~\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}~", $task, $matches)) {
-            $deadline = Carbon::make($matches[0]);
+            $deadline = Carbon::make($matches[0], $tuser->timezone)
+                ->setTimezone(config('app.timezone'));
             $title = str_replace($matches[0], '', $task);
         }
 
@@ -34,7 +41,7 @@ class TaskRepository
             ->first();
 
         if (!empty($task) && !$task->trashed()) {
-           return self::EXISTS;
+            return self::EXISTS;
         }
 
         if (!empty($task) && $task->trashed()) {
@@ -43,11 +50,25 @@ class TaskRepository
         }
 
         if (empty($task)) {
-            Task::create([
+            $task = Task::create([
                 'telegram_user_id' => $userId,
                 'title' => $title,
                 'deadline' => $deadline ?? null,
             ]);
+
+            if (!empty($deadline) && ($deadline->getTimestamp() > now()->getTimestamp())) {
+                $task->notifications()
+                    ->create([
+                        'date' => $deadline,
+                    ]);
+                $warning = $deadline->minus(minutes: 10);
+                if (!empty($warning) && ($warning->getTimestamp() > now()->getTimestamp())) {
+                    $task->notifications()
+                        ->create([
+                            'date' => $warning,
+                        ]);
+                }
+            }
 
             return self::SUCCESS_SAVED;
         }
@@ -63,7 +84,7 @@ class TaskRepository
             ->where('telegram_user_id', $userId)
             ->get();
 
-       return self::makeTable($tasks);
+        return self::makeTable($tasks);
     }
 
     public static function makeTable(Collection $tasks): TableDto

@@ -59,3 +59,18 @@ if (!function_exists('tuser')) {
         return UserState::get(bot()->userId());
     }
 }
+
+if (!function_exists('tusertimezone')) {
+    function tusertimezone(): string
+    {
+        $tuser = \Domain\TelegramBot\Models\TelegramUser::query()
+            ->where('telegram_id', tuser()->userId)
+            ->first();
+
+        if ($tuser) {
+            return $tuser->timezone;
+        }
+
+        return app('app.timezone');
+    }
+}

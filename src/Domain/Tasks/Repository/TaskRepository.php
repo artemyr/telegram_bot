@@ -9,7 +9,6 @@ use Domain\TelegramBot\Dto\Table\TableDto;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use function Illuminate\Support\minutes;
 
 class TaskRepository
 {
@@ -93,7 +92,12 @@ class TaskRepository
         foreach ($tasks as $task) {
             $table->addRow(new RowDto([
                 new ColDto($task->title, 'title'),
-                new ColDto($task->deadline?->format('d.m.Y H:i'), 'deadline'),
+                new ColDto(
+                    $task->deadline
+                        ?->setTimezone(tusertimezone())
+                        ?->format('d.m.Y H:i'),
+                    'deadline'
+                ),
             ]));
         }
 

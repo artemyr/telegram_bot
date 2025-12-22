@@ -52,7 +52,7 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
                         continue;
                     }
 
-                    $table = TaskRepository::makeTable($user->tasks);
+                    $table = TaskRepository::makeTable($user->tasks, $user);
 
                     logger()->debug('User task batch ' . count($user->tasks));
 

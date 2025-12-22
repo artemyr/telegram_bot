@@ -61,7 +61,7 @@ class TaskRepository
                         'date' => $deadline,
                     ]);
                 $warning = $deadline->minus(minutes: 10);
-                if (!empty($warning) && ($warning->getTimestamp() > now()->getTimestamp())) {
+                if (($warning->getTimestamp() > now()->getTimestamp())) {
                     $task->notifications()
                         ->create([
                             'date' => $warning,
@@ -86,15 +86,21 @@ class TaskRepository
         return self::makeTable($tasks);
     }
 
-    public static function makeTable(Collection $tasks): TableDto
+    public static function makeTable(Collection $tasks, ?TelegramUser $user = null): TableDto
     {
+        if (!empty($user)) {
+            $timezone = $user->timezone;
+        } else {
+            $timezone = tusertimezone();
+        }
+
         $table = new TableDto();
         foreach ($tasks as $task) {
             $table->addRow(new RowDto([
                 new ColDto($task->title, 'title'),
                 new ColDto(
                     $task->deadline
-                        ?->setTimezone(tusertimezone())
+                        ?->setTimezone($timezone)
                         ?->format('d.m.Y H:i'),
                     'deadline'
                 ),

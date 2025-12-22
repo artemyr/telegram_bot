@@ -4,8 +4,8 @@ namespace Domain\Calendar\Models;
 
 use Domain\TelegramBot\Models\Notifications;
 use Domain\TelegramBot\Models\TelegramUser;
-use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Timer extends Model
 {
     use SoftDeletes;
-    use MassPrunable;
+    use Prunable;
 
     protected $fillable = [
         'telegram_user_id',

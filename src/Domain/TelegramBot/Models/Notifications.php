@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Notifications extends Model
 {
     protected $fillable = [
+        'notifiable_id',
+        'notifiable_type',
         'date',
         'pattern',
         'message',

@@ -19,6 +19,10 @@ class TableDto
 
     public function __toString(): string
     {
+        if ($this->empty()) {
+            return 'Пусто...';
+        }
+
         $res = [];
         $num = 1;
 

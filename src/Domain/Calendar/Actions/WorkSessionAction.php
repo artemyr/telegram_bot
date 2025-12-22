@@ -54,12 +54,12 @@ class WorkSessionAction
             ]);
         }
 
-        $timer->notifications()->create([
+        $timer->notifications()->firstOrCreate([
             'date' => $startDate,
             'message' => 'Пора отдыхать',
         ]);
 
-        $timer->notifications()->create([
+        $timer->notifications()->firstOrCreate([
             'date' => $startDate->addMinutes(10),
             'message' => 'Можно начинать работать',
         ]);

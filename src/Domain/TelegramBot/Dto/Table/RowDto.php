@@ -22,6 +22,9 @@ class RowDto
         $res = [];
 
         foreach ($this->cols as $col) {
+            if ($col->hidden) {
+                continue;
+            }
             $res[] = (string)$col;
         }
 

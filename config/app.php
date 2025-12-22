@@ -123,4 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'prunable_models' => [
+        \Domain\Calendar\Models\Timer::class,
+        \Domain\Tasks\Models\Task::class,
+    ]
 ];

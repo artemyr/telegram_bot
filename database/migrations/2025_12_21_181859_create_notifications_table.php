@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('notifiable_type');
 
             $table->dateTime('date')->nullable();
-            $table->string('pattern')->nullable();
             $table->string('message')->nullable();
 
             $table->timestamps();

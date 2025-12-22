@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\Facade;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
 /**
- * @method static void send(string $text, array $buttons)
  * @method static void remove()
- * @method static void back(string $text)
+ * @method static ReplyKeyboardMarkup back()
  * @method static ReplyKeyboardMarkup markup(array $buttons)
  */
 

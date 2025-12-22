@@ -12,8 +12,6 @@ use Illuminate\Support\Carbon;
 
 class CalendarListState extends BotState
 {
-    public bool $silent = true;
-
     public function render(): void
     {
         $userDto = tuser();
@@ -36,7 +34,7 @@ class CalendarListState extends BotState
             $list = 'Пусто...';
         }
 
-        Keyboard::back("Раздел: Календарь\nСписок событий:\n$list");
+        send("Раздел: Календарь\nСписок событий:\n$list", Keyboard::back());
     }
 
     public function handle(): ?BotState

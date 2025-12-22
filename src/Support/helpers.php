@@ -34,12 +34,11 @@ if (!function_exists('try')) {
         try {
             return $callback();
         } catch (Throwable $e) {
-            report($e);
-
             if ($fail !== null) {
                 try {
                     $fail($e);
                 } catch (Throwable) {
+                    report($e);
                 }
             }
         }

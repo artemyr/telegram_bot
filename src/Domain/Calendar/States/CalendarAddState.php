@@ -11,8 +11,6 @@ use Domain\TelegramBot\MenuBotState;
 
 class CalendarAddState extends BotState
 {
-    public bool $silent = true;
-
     public function render(): void
     {
         $keyboard = [
@@ -23,7 +21,10 @@ class CalendarAddState extends BotState
             $keyboard[] = $case->value;
         }
 
-        Keyboard::send("Раздел: Календарь\nВыберите что хотите отметить:", $keyboard);
+        send([
+            "Раздел: Календарь",
+            "Выберите что хотите отметить:"
+        ], Keyboard::markup($keyboard));
     }
 
     public function handle(): ?BotState

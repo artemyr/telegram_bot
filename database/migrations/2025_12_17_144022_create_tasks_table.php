@@ -26,8 +26,11 @@ return new class extends Migration
                 ->nullable();
             $table->unsignedInteger('priority')
                 ->default(0);
-            $table->softDeletes();
 
+            $table->boolean('repeat')
+                ->default(false);
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

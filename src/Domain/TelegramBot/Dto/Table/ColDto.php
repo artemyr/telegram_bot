@@ -7,6 +7,7 @@ readonly class ColDto
     public function __construct(
         public ?string $value = '',
         public ?string $code = '',
+        public bool $hidden = false,
     )
     {
     }

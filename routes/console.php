@@ -16,6 +16,12 @@ Schedule::job(new \App\Jobs\NotificationCheckJob())
     ->everyMinute()
     ->withoutOverlapping();
 
+Schedule::job(new \App\Jobs\GenerateTaskOccurrencesJob())
+    ->weekly()
+    ->withoutOverlapping();
+
 Schedule::call(function () {
-    Artisan::call('model:prune');
+    Artisan::call('model:prune', [
+        '--model' => config('app.prunable_models', []),
+    ]);
 })->monthly();

@@ -54,7 +54,7 @@ class StartWorkAction
             ]);
         }
 
-        $timer->notifications()->create([
+        $timer->notifications()->firstOrCreate([
             'date' => $startDate,
             'message' => 'Пора завершать рабочий день!',
         ]);

@@ -2,22 +2,16 @@
 
 namespace Domain\Tasks\Repository;
 
+use Domain\Tasks\Contracts\TaskRepositoryContract;
 use Domain\Tasks\Models\Task;
-use Domain\TelegramBot\Dto\Table\ColDto;
-use Domain\TelegramBot\Dto\Table\RowDto;
-use Domain\TelegramBot\Dto\Table\TableDto;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Support\Dto\RepositoryResult;
 
-class TaskRepository
+class TaskRepository implements TaskRepositoryContract
 {
-    public const SUCCESS_SAVED = 0;
-    public const ERROR = 1;
-    public const EXISTS = 2;
-    public const RESTORED = 3;
-
-    public static function save(int $userId, string $task): int
+    public function save(int $userId, string $task): RepositoryResult
     {
         $title = $task;
 
@@ -31,6 +25,10 @@ class TaskRepository
             $title = str_replace($matches[0], '', $task);
         }
 
+        if (!empty($deadline) && $deadline->isPast()) {
+            return RepositoryResult::error('Дедлайн задачи должен буть будущее');
+        }
+
         $title = trim($title);
 
         $task = Task::query()
@@ -40,71 +38,50 @@ class TaskRepository
             ->first();
 
         if (!empty($task) && !$task->trashed()) {
-            return self::EXISTS;
+            return new RepositoryResult(RepositoryResult::EXISTS, $task);
         }
 
         if (!empty($task) && $task->trashed()) {
             $task->restore();
-            return self::RESTORED;
+            return new RepositoryResult(RepositoryResult::RESTORED, $task);
         }
 
         if (empty($task)) {
-            Task::create([
+            $task = Task::create([
                 'telegram_user_id' => $userId,
                 'title' => $title,
                 'deadline' => $deadline ?? null,
             ]);
 
-            return self::SUCCESS_SAVED;
+            return new RepositoryResult(RepositoryResult::SUCCESS_SAVED, $task);
         }
 
-        return self::ERROR;
+        return new RepositoryResult(RepositoryResult::ERROR);
     }
 
-    public static function getTable(int $userId): TableDto
+    public function findByUserId(int $userId): Collection
     {
-        $tasks = Task::query()
-            ->select(['title', 'deadline'])
+        return Task::query()
+            ->select(['id', 'title', 'deadline'])
             ->sorted()
+            ->single()
             ->where('telegram_user_id', $userId)
             ->get();
-
-        return self::makeTable($tasks);
     }
 
-    public static function makeTable(Collection $tasks, ?TelegramUser $user = null): TableDto
+    public function deleteById(int $userId, int $id): RepositoryResult
     {
-        if (!empty($user)) {
-            $timezone = $user->timezone;
-        } else {
-            $timezone = tusertimezone();
+        $task = Task::query()
+            ->where('id', $id)
+            ->single()
+            ->first();
+
+        if (empty($task)) {
+            return new RepositoryResult(RepositoryResult::ERROR, null, 'Задача не найдена');
         }
 
-        $table = new TableDto();
-        foreach ($tasks as $task) {
+        $task->delete();
 
-            $now = now($timezone);
-            $deadline = $task->deadline
-                ?->setTimezone($timezone);
-
-            $diff = $now->diffForHumans($deadline);
-
-            $row = new RowDto();
-
-            $row->addCol(new ColDto($task->title, 'title'));
-            $row->addCol(new ColDto(
-                $deadline
-                    ?->format('d.m.Y H:i'),
-                'deadline'
-            ));
-
-            if ($deadline) {
-                $row->addCol(new ColDto("($diff)", 'diff'));
-            }
-
-            $table->addRow($row);
-        }
-
-        return $table;
+        return new RepositoryResult(RepositoryResult::SUCCESS_DELETED, $task);
     }
 }

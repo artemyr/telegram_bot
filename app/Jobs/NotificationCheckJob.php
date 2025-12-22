@@ -59,20 +59,12 @@ class NotificationCheckJob implements ShouldQueue, ShouldBeUnique
             if ($notifiable instanceof Timer) {
                 $timer = $notifiable;
 
-                $text = ["Сработал таймер"];
-                $text[] = $notification->message;
-
-                send($text, null, $timer->telegram_user_id);
+                send($notification->message, null, $timer->telegram_user_id);
             }
 
             $notification->delete();
         }
 
         logger()->debug('Job executed. ' . self::class);
-    }
-
-    public function uniqueId(): string
-    {
-        return md5(self::class);
     }
 }

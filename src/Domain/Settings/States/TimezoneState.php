@@ -12,8 +12,6 @@ use Domain\TelegramBot\Models\TelegramUser;
 
 class TimezoneState extends BotState
 {
-    public bool $silent = true;
-
     public function render(): void
     {
         $keyboard = [
@@ -26,7 +24,11 @@ class TimezoneState extends BotState
 
         $timezone = tusertimezone();
 
-        Keyboard::send("Раздел: Настройки\nВаш часовой пояс: $timezone\nВыберите часовой пояс:", $keyboard);
+        send([
+            "Раздел: Настройки",
+            "Ваш часовой пояс: $timezone",
+            "Выберите часовой пояс:"
+        ], Keyboard::markup($keyboard));
     }
 
     public function handle(): ?BotState

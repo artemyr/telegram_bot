@@ -18,22 +18,6 @@ class KeyboardManager implements KeyboardContract
         $this->bot = app(Nutgram::class);
     }
 
-    public function send(string $text, array $buttons): void
-    {
-        $keyboard = ReplyKeyboardMarkup::make();
-
-        foreach ($buttons as $button) {
-            $keyboard->addRow(KeyboardButton::make(text: $button));
-        }
-
-        $this->bot->sendMessage(
-            text: $text,
-            reply_markup: $keyboard
-        );
-
-        UserState::changeKeyboard($this->bot->userId(), true);
-    }
-
     public function remove(): void
     {
         $userDto = UserState::get(bot()->userId());
@@ -55,13 +39,13 @@ class KeyboardManager implements KeyboardContract
         }
     }
 
-    public function back(string $text): void
+    public function back(): ReplyKeyboardMarkup
     {
         $keyboard = [
             KeyboardContract::BACK
         ];
 
-        $this->send($text, $keyboard);
+        return $this->markup($keyboard);
     }
 
     public function markup(array $buttons):  ReplyKeyboardMarkup

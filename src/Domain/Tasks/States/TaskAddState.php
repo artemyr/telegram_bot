@@ -2,32 +2,40 @@
 
 namespace Domain\Tasks\States;
 
-use Domain\Tasks\Repository\TaskRepository;
+use Domain\Tasks\Contracts\TaskRepositoryContract;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Exceptions\PrintableException;
 use Domain\TelegramBot\Facades\Keyboard;
 use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
+use Support\Dto\RepositoryResult;
 
 class TaskAddState extends BotState
 {
-    public bool $silent = true;
+    protected TaskRepositoryContract $taskRepository;
+
+    public function __construct(protected ?string $path = null)
+    {
+        $this->taskRepository = app(TaskRepositoryContract::class);
+        parent::__construct($path);
+    }
 
     public function render(): void
     {
-        $keyboard = [
-            KeyboardContract::BACK
+        $response = [
+            "Раздел: Задачи",
+            "Добавить задачу",
+            "Введите название задачи в формате \"Помыть посуду 21.12.2025 17:00\"",
+            "Можно вводить сразу несколько задач, каждая на новой строке",
         ];
 
-        Keyboard::send(
-            "Раздел: Задачи\n" .
-            "Добавить задачу\n" .
-            "Введите название задачи в формате \"Помыть посуду 21.12.2025 17:00\"\n" .
-            "Можно вводить сразу несколько задач, каждая на новой строке",
-            $keyboard
-        );
+        send($response, Keyboard::back());
     }
 
+    /**
+     * @throws PrintableException
+     */
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
@@ -42,18 +50,22 @@ class TaskAddState extends BotState
         $response = [];
 
         foreach ($arTasks as $task) {
-            $result = TaskRepository::save(bot()->userId(), $task);
+            $result = $this->taskRepository->save(bot()->userId(), $task);
 
-            if ($result === TaskRepository::EXISTS) {
+            if ($result->state === RepositoryResult::EXISTS) {
                 $response[] = "Задача \"$task\" уже существует";
             }
 
-            if ($result === TaskRepository::RESTORED) {
+            if ($result->state === RepositoryResult::RESTORED) {
                 $response[] = "Задача \"$task\" востановленна";
             }
 
-            if ($result === TaskRepository::SUCCESS_SAVED) {
+            if ($result->state === RepositoryResult::SUCCESS_SAVED) {
                 $response[] = "Задача \"$task\" создана";
+            }
+
+            if ($result->state === RepositoryResult::ERROR) {
+                throw new PrintableException("Задача \"$task\" ошибка\n$result->message");
             }
         }
 

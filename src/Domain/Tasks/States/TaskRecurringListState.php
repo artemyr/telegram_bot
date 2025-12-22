@@ -2,8 +2,8 @@
 
 namespace Domain\Tasks\States;
 
-use Domain\Tasks\Contracts\TaskRepositoryContract;
-use Domain\Tasks\Presentations\TaskPresentation;
+use Domain\Tasks\Contracts\RecurrenceTaskRepositoryContract;
+use Domain\Tasks\Presentations\RecurrenceTaskPresentation;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Exceptions\PrintableException;
@@ -12,13 +12,13 @@ use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 use Support\Dto\RepositoryResult;
 
-class TaskListState extends BotState
+class TaskRecurringListState extends BotState
 {
-    protected TaskRepositoryContract $taskRepository;
+    protected RecurrenceTaskRepositoryContract $taskRepository;
 
     public function __construct(protected ?string $path = null)
     {
-        $this->taskRepository = app(TaskRepositoryContract::class);
+        $this->taskRepository = app(RecurrenceTaskRepositoryContract::class);
         parent::__construct($path);
     }
 
@@ -27,12 +27,12 @@ class TaskListState extends BotState
         $userDto = tuser();
 
         $tasks = $this->taskRepository->findByUserId($userDto->userId);
-        $table = (new TaskPresentation($tasks, tusertimezone()))->getTable();
+        $table = (new RecurrenceTaskPresentation($tasks, tusertimezone()))->getTable();
 
         $response = [
-            "Раздел: Задачи",
+            "Раздел: Повторяющиеся задачи",
             "Список задач:",
-            "Чтобы пометить задачу выполненной, отправте ее номер",
+            "Чтобы удалить задачу, отправте ее номер",
             (string)$table
         ];
 
@@ -56,7 +56,7 @@ class TaskListState extends BotState
             $userDto = tuser();
 
             $tasks = $this->taskRepository->findByUserId($userDto->userId);
-            $table = (new TaskPresentation($tasks))->getTable();
+            $table = (new RecurrenceTaskPresentation($tasks, tusertimezone()))->getTable();
 
             $row = $table->getRow((int)$text);
 
@@ -67,7 +67,7 @@ class TaskListState extends BotState
             $result = $this->taskRepository->deleteById($userDto->userId, $row->getCol('id')->value);
 
             if ($result->state === RepositoryResult::SUCCESS_DELETED) {
-                send("Задача \"{$result->model->title}\" помечена выполненной");
+                send("Задача \"{$result->model->task->title}\" удалена");
             }
 
             if ($result->state === RepositoryResult::ERROR) {
@@ -76,6 +76,6 @@ class TaskListState extends BotState
             }
         }
 
-        return new TaskListState();
+        return new TaskRecurringListState();
     }
 }

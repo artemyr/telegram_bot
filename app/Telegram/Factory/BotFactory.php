@@ -58,8 +58,6 @@ class BotFactory
         if ($next) {
             logger()->debug('next state is: ' . get_class($next));
 
-            $next->silent();
-
             UserState::changeState(bot()->userId(), $next);
 
             logger()->debug('next state written to user');

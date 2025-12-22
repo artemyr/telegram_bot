@@ -9,6 +9,8 @@ use Domain\Calendar\States\CalendarListState;
 use Domain\Settings\States\TimezoneState;
 use Domain\Tasks\States\TaskAddState;
 use Domain\Tasks\States\TaskListState;
+use Domain\Tasks\States\TaskRecurringAddState;
+use Domain\Tasks\States\TaskRecurringListState;
 use Domain\TelegramBot\MenuBotState;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +29,8 @@ class ViewServiceProvider extends ServiceProvider
                 ->add(MenuItem::make(troute('tasks'), '✅ Задачи')
                     ->add(MenuItem::make(troute('tasks.list'), '✅ Список задач', TaskListState::class))
                     ->add(MenuItem::make(troute('tasks.add'), '➕ Добавить задачу', TaskAddState::class))
+                    ->add(MenuItem::make(troute('tasks.recurrence.list'), '✅ Список повторяющихся задач', TaskRecurringListState::class))
+                    ->add(MenuItem::make(troute('tasks.recurrence.add'), '➕ Добавить повторяющуюся задачу', TaskRecurringAddState::class))
                 )
                 ->add(MenuItem::make(troute('food'), '🍗 Еда'))
                 ->add(

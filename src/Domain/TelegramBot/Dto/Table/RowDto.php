@@ -11,7 +11,7 @@ class RowDto
     {
     }
 
-    public function addRow(ColDto $col): self
+    public function addCol(ColDto $col): self
     {
         $this->cols[] = $col;
         return $this;

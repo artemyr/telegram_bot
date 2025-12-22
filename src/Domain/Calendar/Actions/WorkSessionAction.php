@@ -2,7 +2,6 @@
 
 namespace Domain\Calendar\Actions;
 
-use App\Jobs\TelegramTimerJob;
 use Domain\Calendar\Models\Timer;
 use Illuminate\Support\Carbon;
 
@@ -23,7 +22,7 @@ class WorkSessionAction
             ->first();
 
         if ($timer && $timer->active) {
-            bot()->sendMessage("Вы уже запустили таймер!");
+            send("Вы уже запустили таймер!");
             logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
@@ -37,7 +36,9 @@ class WorkSessionAction
         $startDate = now()->addSeconds(config('calendar.actions.work.pause_duration', 5));
 
         if (!empty($timer)) {
-            $timer->restore();
+            if ($timer->trashed()) {
+                $timer->restore();
+            }
             $timer->update([
                 'class' => self::class,
                 'startDate' => $startDate,
@@ -53,45 +54,20 @@ class WorkSessionAction
             ]);
         }
 
-        dispatch(new TelegramTimerJob(
-            bot()->chatId(),
-            bot()->userId(),
-            $timer->id,
-            self::class,
-            'timeout',
-        ))->delay($startDate);
+        $timer->notifications()->create([
+            'date' => $startDate,
+            'message' => 'Пора отдыхать',
+        ]);
 
-        dispatch(new TelegramTimerJob(
-            bot()->chatId(),
-            bot()->userId(),
-            $timer->id,
-            self::class,
-            'revoke',
-        ))->delay($startDate->addMinutes(10));
+        $timer->notifications()->create([
+            'date' => $startDate->addMinutes(10),
+            'message' => 'Можно начинать работать',
+        ]);
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
-        bot()->sendMessage("В $time отдых. Я напомню");
+        send("В $time отдых. Я напомню");
+
 
         logger()->debug('Success execute action: ' . self::class);
-    }
-
-    public function timeout(int $chatId, int $timerId): void
-    {
-        bot()->sendMessage(
-            text: 'Пора отдыхать',
-            chat_id: $chatId,
-        );
-
-        Timer::query()
-            ->where('id', $timerId)
-            ->delete();
-    }
-
-    public function revoke(int $chatId, int $timerId): void
-    {
-        bot()->sendMessage(
-            text: 'Можно начинать работать',
-            chat_id: $chatId,
-        );
     }
 }

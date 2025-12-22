@@ -18,7 +18,7 @@ class BotFactory
                 $userDto = tuser();
 
                 if (config('telegram_bot.debug', false)) {
-                    bot()->sendMessage("Состояние пользователя: \n```\n$userDto\n```");
+                    send("Состояние пользователя: \n```\n$userDto\n```");
                 }
 
                 $state = $userDto->state ?? new MenuBotState();
@@ -40,7 +40,7 @@ class BotFactory
         $userDto = tuser();
 
         if (config('telegram_bot.debug', false)) {
-            bot()->sendMessage("Состояние пользователя: \n```\n$userDto\n```");
+            send("Состояние пользователя: \n```\n$userDto\n```");
         }
 
         $current = $userDto->state;
@@ -75,14 +75,14 @@ class BotFactory
         try_to($call, function ($e) {
 
             if ($e instanceof PrintableException) {
-                bot()->sendMessage($e->getMessage());
+                send($e->getMessage());
                 return;
             }
 
             if (app()->hasDebugModeEnabled()) {
-                bot()->sendMessage("Error! " . $e->getMessage());
+                send($e->getMessage("Error! " . $e->getMessage()));
             } else {
-                bot()->sendMessage("Произошла ошибка");
+                send($e->getMessage("Произошла ошибка"));
             }
 
             report($e);

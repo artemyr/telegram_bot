@@ -23,10 +23,7 @@ class MenuBotState extends BotState
             $buttons[] = KeyboardContract::BACK;
         }
 
-        bot()->sendMessage(
-            text: $menu->label(),
-            reply_markup: Keyboard::markup($buttons)
-        );
+        send($menu->label(), Keyboard::markup($buttons));
 
         UserState::changeKeyboard(bot()->userId(), true);
     }
@@ -65,7 +62,7 @@ class MenuBotState extends BotState
         }
 
         if (!$found) {
-            bot()->sendMessage('Выберите значение из списка');
+            send('Выберите значение из списка');
         }
 
         return $currentMenuItem->state();

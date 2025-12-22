@@ -39,7 +39,7 @@ class TimezoneState extends BotState
 
         foreach (TimezoneEnum::cases() as $case) {
             if (bot()->message()->getText() === $case->value) {
-                bot()->sendMessage("Вы отметили: " . $case->value);
+                send("Вы отметили: " . $case->value);
                 TelegramUser::query()
                     ->where('telegram_id', bot()->userId())
                     ->update([

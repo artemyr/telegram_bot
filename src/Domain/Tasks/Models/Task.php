@@ -2,19 +2,22 @@
 
 namespace Domain\Tasks\Models;
 
-use App\Models\Notifications;
+use Domain\TelegramBot\Models\Notifications;
 use Domain\TelegramBot\Models\TelegramUser;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Support\Carbon;
 
 class Task extends Model
 {
     use SoftDeletes;
+    use MassPrunable;
 
     protected $fillable = [
         'title',
@@ -27,11 +30,48 @@ class Task extends Model
         'deadline' => 'datetime'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function (Task $task) {
+
+            /** @var Carbon $deadline */
+            $deadline = $task->deadline;
+
+            if (!empty($deadline) && ($deadline->getTimestamp() > now()->getTimestamp())) {
+                $task->notifications()
+                    ->create([
+                        'date' => $deadline,
+                    ]);
+                $warning = $deadline->subMinutes(10);
+                if (($warning->getTimestamp() > now()->getTimestamp())) {
+                    $task->notifications()
+                        ->create([
+                            'date' => $warning,
+                        ]);
+                }
+                $warning = $deadline->subHours(3);
+                if (($warning->getTimestamp() > now()->getTimestamp())) {
+                    $task->notifications()
+                        ->create([
+                            'date' => $warning,
+                        ]);
+                }
+            }
+        });
+    }
+
+    public function prunable()
+    {
+        return static::where('deleted_at', '<=', now()->subMonth());
+    }
+
     public function title(): Attribute
     {
         return Attribute::make(
             get: fn($value) => ucfirst($value),
-            set: fn ($value) => trim(mb_strtolower($value)),
+            set: fn($value) => trim(mb_strtolower($value)),
         );
     }
 

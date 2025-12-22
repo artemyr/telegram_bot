@@ -2,8 +2,9 @@
 
 namespace Domain\Calendar\Models;
 
-use App\Models\Notifications;
+use Domain\TelegramBot\Models\Notifications;
 use Domain\TelegramBot\Models\TelegramUser;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Timer extends Model
 {
     use SoftDeletes;
+    use MassPrunable;
 
     protected $fillable = [
         'telegram_user_id',
@@ -24,6 +26,11 @@ class Timer extends Model
     protected $casts = [
         'startDate' => 'datetime',
     ];
+
+    public function prunable()
+    {
+        return static::where('deleted_at', '<=', now()->subMonth());
+    }
 
     protected function getActiveAttribute(): bool
     {

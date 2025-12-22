@@ -112,8 +112,4 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
-    'telegram' => [
-        'register_pass' => env('REGISTER_PASS', 'password'),
-        'user_state_lock_period' => 3600 * 24 * 30
-    ]
 ];

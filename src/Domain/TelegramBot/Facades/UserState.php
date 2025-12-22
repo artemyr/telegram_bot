@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static UserStateDto|null get(int $userId);
  * @method static void write(UserStateDto $user)
- * @method static UserStateDto make(int $userId, BotState $state, int $chatId = null, bool $keyboard = false)
+ * @method static UserStateDto make(int $userId, BotState $state, bool $keyboard = false)
  *
  * @method static void changeState(int $userId, BotState $state)
  * @method static void changeKeyboard(int $userId, bool $active)

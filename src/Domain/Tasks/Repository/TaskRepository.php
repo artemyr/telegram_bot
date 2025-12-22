@@ -49,25 +49,11 @@ class TaskRepository
         }
 
         if (empty($task)) {
-            $task = Task::create([
+            Task::create([
                 'telegram_user_id' => $userId,
                 'title' => $title,
                 'deadline' => $deadline ?? null,
             ]);
-
-            if (!empty($deadline) && ($deadline->getTimestamp() > now()->getTimestamp())) {
-                $task->notifications()
-                    ->create([
-                        'date' => $deadline,
-                    ]);
-                $warning = $deadline->minus(minutes: 10);
-                if (($warning->getTimestamp() > now()->getTimestamp())) {
-                    $task->notifications()
-                        ->create([
-                            'date' => $warning,
-                        ]);
-                }
-            }
 
             return self::SUCCESS_SAVED;
         }
@@ -96,15 +82,27 @@ class TaskRepository
 
         $table = new TableDto();
         foreach ($tasks as $task) {
-            $table->addRow(new RowDto([
-                new ColDto($task->title, 'title'),
-                new ColDto(
-                    $task->deadline
-                        ?->setTimezone($timezone)
-                        ?->format('d.m.Y H:i'),
-                    'deadline'
-                ),
-            ]));
+
+            $now = now($timezone);
+            $deadline = $task->deadline
+                ?->setTimezone($timezone);
+
+            $diff = $now->diffForHumans($deadline);
+
+            $row = new RowDto();
+
+            $row->addCol(new ColDto($task->title, 'title'));
+            $row->addCol(new ColDto(
+                $deadline
+                    ?->format('d.m.Y H:i'),
+                'deadline'
+            ));
+
+            if ($deadline) {
+                $row->addCol(new ColDto("($diff)", 'diff'));
+            }
+
+            $table->addRow($row);
         }
 
         return $table;

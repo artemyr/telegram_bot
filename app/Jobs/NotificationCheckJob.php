@@ -2,8 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\Notifications;
+use Domain\Calendar\Models\Timer;
 use Domain\Tasks\Models\Task;
+use Domain\TelegramBot\Models\Notifications;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -19,8 +20,11 @@ class NotificationCheckJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
+        logger()->debug('Start job exec ' . self::class);
+
         $notifications = Notifications::query()
-            ->where('date', '<=', now())
+            ->with('notifiable')
+            ->arrived()
             ->get();
 
         foreach ($notifications as $notification) {
@@ -49,10 +53,16 @@ class NotificationCheckJob implements ShouldQueue, ShouldBeUnique
                         ->format('d.m.Y H:i');
                 }
 
-                bot()->sendMessage(
-                    text: implode("\n", $text),
-                    chat_id: $task->telegram_user_id
-                );
+                send($text, null, $task->telegram_user_id);
+            }
+
+            if ($notifiable instanceof Timer) {
+                $timer = $notifiable;
+
+                $text = ["Сработал таймер"];
+                $text[] = $notification->message;
+
+                send($text, null, $timer->telegram_user_id);
             }
 
             $notification->delete();

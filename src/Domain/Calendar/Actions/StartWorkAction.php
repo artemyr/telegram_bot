@@ -2,7 +2,6 @@
 
 namespace Domain\Calendar\Actions;
 
-use App\Jobs\TelegramTimerJob;
 use Domain\Calendar\Models\Timer;
 use Illuminate\Support\Carbon;
 
@@ -23,7 +22,7 @@ class StartWorkAction
             ->first();
 
         if ($timer && $timer->active) {
-            bot()->sendMessage("Вы уже запустили рабочий день!");
+            send("Вы уже запустили рабочий день!");
             logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
@@ -37,7 +36,9 @@ class StartWorkAction
         $startDate = now()->addSeconds(config('calendar.actions.work.start_work', 5));
 
         if (!empty($timer)) {
-            $timer->restore();
+            if ($timer->trashed()) {
+                $timer->restore();
+            }
             $timer->update([
                 'class' => self::class,
                 'startDate' => $startDate,
@@ -53,29 +54,14 @@ class StartWorkAction
             ]);
         }
 
-        dispatch(new TelegramTimerJob(
-            bot()->chatId(),
-            bot()->userId(),
-            $timer->id,
-            self::class,
-            'timeout'
-        ))->delay($startDate);
+        $timer->notifications()->create([
+            'date' => $startDate,
+            'message' => 'Пора завершать рабочий день!',
+        ]);
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
-        bot()->sendMessage("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
+        send("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
 
         logger()->debug('Success execute action: ' . self::class);
-    }
-
-    public function timeout(int $chatId, int $timerId): void
-    {
-        bot()->sendMessage(
-            text: 'Пора завершать рабочий день!',
-            chat_id: $chatId,
-        );
-
-        Timer::query()
-            ->where('id', $timerId)
-            ->delete();
     }
 }

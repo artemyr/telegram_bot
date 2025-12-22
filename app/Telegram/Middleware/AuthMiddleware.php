@@ -65,7 +65,7 @@ class AuthMiddleware
             )
         );
 
-        bot()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
+        send("Я вас еще не знаю\nВведите пароль для регистрации");
     }
 
     private function incorrectPassword(): void
@@ -84,7 +84,7 @@ class AuthMiddleware
             )
         );
 
-        bot()->sendMessage("Пароль не верный!");
+        send("Пароль не верный!");
     }
 
     private function newUserHandler(): void
@@ -96,7 +96,7 @@ class AuthMiddleware
         }
 
         // пароль не верный
-        if (!Hash::check($this->text, config("auth.telegram.register_pass"))) {
+        if (!Hash::check($this->text, config("telegram_bot.auth.register_pass"))) {
             $this->incorrectPassword();
             exit();
         }
@@ -106,8 +106,8 @@ class AuthMiddleware
         // создаем в кеше
         $this->createCacheUser($tuser);
 
-        bot()->sendMessage('Вы зарегистрированы!');
-        bot()->sendMessage('Обратите внимание на часовой пояс в настройках');
+        send("Вы зарегистрированы!");
+        send("Обратите внимание на часовой пояс в настройках");
     }
 
     private function existsUserHandler(TelegramUser $tuser): void
@@ -122,14 +122,8 @@ class AuthMiddleware
 
         // если есть в бд но нет в кеше - создаем
         if (!$userDto) {
-            $chatId = $tuser->chat_id;
-
-            if (empty($chatId)) {
-                throw new RuntimeException('Chat id is required parameter');
-            }
-
             $this->createCacheUser($tuser);
-            bot()->sendMessage('Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала');
+            send("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
         }
     }
 
@@ -138,7 +132,6 @@ class AuthMiddleware
         $userDto = UserState::make(
             $tuser->telegram_id,
             new MenuBotState(troute('home')),
-            $tuser->chat_id,
         );
 
         UserState::write($userDto);
@@ -148,7 +141,6 @@ class AuthMiddleware
     {
         $tuser = new TelegramUser();
         $tuser->telegram_id = $this->botUser->id;
-        $tuser->chat_id = bot()->chatId();
         $tuser->save();
         return $tuser;
     }

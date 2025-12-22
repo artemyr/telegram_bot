@@ -12,7 +12,6 @@ interface UserStateContract
     public function make(
         int $userId,
         BotState $state,
-        int $chatId = null,
         bool $keyboard = false,
     ): UserStateDto;
     public function changeState(int $userId, BotState $state): void;

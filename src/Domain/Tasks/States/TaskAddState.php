@@ -58,7 +58,7 @@ class TaskAddState extends BotState
         }
 
         if (!empty($response)) {
-            bot()->sendMessage(implode("\n", $response));
+            send($response);
         }
 
         return new TaskListState();

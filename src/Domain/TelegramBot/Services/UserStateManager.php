@@ -40,13 +40,11 @@ class UserStateManager implements UserStateContract
     public function make(
         int      $userId,
         BotState $state,
-        int      $chatId = null,
         bool     $keyboard = false,
     ): UserStateDto
     {
         return new UserStateDto(
             $userId,
-            $chatId,
             $state,
             $keyboard,
         );

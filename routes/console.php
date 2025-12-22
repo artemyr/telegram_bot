@@ -13,5 +13,9 @@ Schedule::job(new \App\Jobs\TaskRemindJob())
     ->withoutOverlapping();
 
 Schedule::job(new \App\Jobs\NotificationCheckJob())
-    ->everyTenMinutes()
+    ->everyMinute()
     ->withoutOverlapping();
+
+Schedule::call(function () {
+    Artisan::call('model:prune');
+})->monthly();

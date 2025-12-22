@@ -2,8 +2,10 @@
 
 use App\Menu\MenuContract;
 use Domain\TelegramBot\Dto\UserStateDto;
+use Domain\TelegramBot\Facades\Message;
 use Domain\TelegramBot\Facades\UserState;
 use SergiX44\Nutgram\Nutgram;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
 if (!function_exists('menu')) {
     function menu(): MenuContract
@@ -72,5 +74,20 @@ if (!function_exists('tusertimezone')) {
         }
 
         return app('app.timezone');
+    }
+}
+
+if (!function_exists('send')) {
+    function send(string|array $message, ?ReplyKeyboardMarkup $keyboard = null, ?int $userId = null): void
+    {
+        if (is_array($message)) {
+            $message = implode("\n", $message);
+        }
+
+        if (empty($userId)) {
+            $userId = bot()->userId();
+        }
+
+        Message::send($userId, $message, $keyboard);
     }
 }

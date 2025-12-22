@@ -21,7 +21,7 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
         logger()->debug('Start job exec ' . self::class);
 
         TelegramUser::query()
-            ->select(['id', 'telegram_id', 'chat_id', 'timezone'])
+            ->select(['id', 'telegram_id', 'timezone'])
             ->with('tasks')
             ->chunk(10, function ($users) {
                 logger()->debug('User batch ' . count($users));
@@ -63,12 +63,9 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
                         continue;
                     }
 
-                    logger()->debug('Sending ' . $user->chat_id);
+                    logger()->debug('Sending ' . $user->telegram_id);
 
-                    bot()->sendMessage(
-                        text: "У вас в плане на сегодня: \n" . $response,
-                        chat_id: $user->chat_id,
-                    );
+                    send("У вас в плане на сегодня: \n" . $response, null, $user->telegram_id);
                 }
             });
 

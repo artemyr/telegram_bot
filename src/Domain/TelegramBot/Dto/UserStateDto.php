@@ -8,7 +8,6 @@ readonly class UserStateDto
 {
     public function __construct(
         public int $userId,
-        public int $chatId,
         public BotState $state,
         public bool $keyboard,
     ) {
@@ -18,7 +17,6 @@ readonly class UserStateDto
     {
         return [
             'userId' => $this->userId,
-            'chatId' => $this->chatId,
             'state' => $this->state,
             'keyboard' => $this->keyboard,
         ];
@@ -28,7 +26,6 @@ readonly class UserStateDto
     {
         return new self(
             $values['userId'],
-            $values['chatId'],
             $values['state'],
             $values['keyboard'],
         );

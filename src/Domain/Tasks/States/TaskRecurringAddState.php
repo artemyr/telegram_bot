@@ -5,8 +5,6 @@ namespace Domain\Tasks\States;
 use Domain\Tasks\Contracts\RecurrenceTaskRepositoryContract;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
-use Domain\TelegramBot\Facades\Keyboard;
-use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 use RuntimeException;
 
@@ -50,14 +48,14 @@ class TaskRecurringAddState extends BotState
             $text[] = "1,5,10 числа месяца в 14:00";
         }
 
-        send($text, Keyboard::back());
+        send($text, keyboard()->back());
     }
 
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
             $newState = new MenuBotState(troute('tasks'));
-            UserState::changeState(bot()->userId(), $newState);
+            tuserstate()->changeState($newState);
             return $newState;
         }
 

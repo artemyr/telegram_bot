@@ -7,8 +7,6 @@ use Domain\Tasks\Presentations\TaskPresentation;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Exceptions\PrintableException;
-use Domain\TelegramBot\Facades\Keyboard;
-use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 use Support\Dto\RepositoryResult;
 
@@ -36,7 +34,7 @@ class TaskListState extends BotState
             (string)$table
         ];
 
-        send($response, Keyboard::back());
+        send($response, keyboard()->back());
     }
 
     /**
@@ -48,7 +46,7 @@ class TaskListState extends BotState
 
         if ($text === KeyboardContract::BACK) {
             $newState = new MenuBotState(troute('tasks'));
-            UserState::changeState(bot()->userId(), $newState);
+            tuserstate()->changeState($newState);
             return $newState;
         }
 

@@ -10,14 +10,21 @@ use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 class MessageManager implements MessageContract
 {
     protected string $driver;
+    protected static bool $fake = false;
+    protected array $log = [];
 
     public function __construct()
     {
-        $this->driver = config('telegram_bot.messages.driver');
+        $this->driver = config('telegram_bot.messages.driver', 'runtime');
     }
 
     public function send(int $userId, string $message, ?ReplyKeyboardMarkup $keyboard = null): void
     {
+        if (self::$fake) {
+            $this->log[] = $message;
+            return;
+        }
+
         if ($this->driver === 'jobs') {
             dispatch(
                 new SendMessageImmediatelyJob(
@@ -39,5 +46,15 @@ class MessageManager implements MessageContract
         }
 
         throw new RuntimeException('Driver not supported');
+    }
+
+    public static function fake(): void
+    {
+        self::$fake = true;
+    }
+
+    public function getLog(): array
+    {
+        return $this->log;
     }
 }

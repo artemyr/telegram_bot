@@ -6,17 +6,24 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Dto\UserStateDto;
 use Domain\TelegramBot\Exceptions\UserStateManagerException;
+use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\UserStateStore;
 use ReflectionClass;
 
 class UserStateManager implements UserStateContract
 {
+    protected static bool $fake = false;
+
     /**
      * @throws UserStateManagerException
      */
-    public function get(int $userId): ?UserStateDto
+    public function get(): ?UserStateDto
     {
-        $userDto = UserStateStore::get($userId);
+        if (self::$fake) {
+            return new UserStateDto(1, new MenuBotState(troute('home')), false);
+        }
+
+        $userDto = UserStateStore::get(bot()->userId());
 
         if ($userDto) {
             $this->checkUser($userDto);
@@ -53,17 +60,25 @@ class UserStateManager implements UserStateContract
     /**
      * @throws UserStateManagerException
      */
-    public function changeState(int $userId, BotState $state): void
+    public function changeState(BotState $state): void
     {
-        $this->changeParam($userId, 'state', $state);
+        if (self::$fake) {
+            return;
+        }
+
+        $this->changeParam(bot()->userId(), 'state', $state);
     }
 
     /**
      * @throws UserStateManagerException
      */
-    public function changeKeyboard(int $userId, bool $active): void
+    public function changeKeyboard(bool $active): void
     {
-        $this->changeParam($userId, 'keyboard', $active);
+        if (self::$fake) {
+            return;
+        }
+
+        $this->changeParam(bot()->userId(), 'keyboard', $active);
     }
 
     /**
@@ -71,6 +86,10 @@ class UserStateManager implements UserStateContract
      */
     public function changeParam(int $userId, string $param, $value): void
     {
+        if (self::$fake) {
+            return;
+        }
+
         $userDto = $this->get($userId);
         $fields = $userDto->toArray();
         $from = $fields[$param];
@@ -100,6 +119,10 @@ class UserStateManager implements UserStateContract
      */
     protected function checkUser(UserStateDto $user): void
     {
+        if (self::$fake) {
+            return;
+        }
+
         $r = new ReflectionClass($user);
         $a = $r->getProperties();
         foreach ($a as $property) {
@@ -108,5 +131,10 @@ class UserStateManager implements UserStateContract
                 throw new UserStateManagerException('User dto crashed');
             }
         }
+    }
+
+    public static function fake(): void
+    {
+        self::$fake = true;
     }
 }

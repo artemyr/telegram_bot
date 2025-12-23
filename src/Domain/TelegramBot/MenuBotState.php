@@ -4,8 +4,6 @@ namespace Domain\TelegramBot;
 
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Exceptions\BotMenuException;
-use Domain\TelegramBot\Facades\Keyboard;
-use Domain\TelegramBot\Facades\UserState;
 
 class MenuBotState extends BotState
 {
@@ -23,9 +21,9 @@ class MenuBotState extends BotState
             $buttons[] = KeyboardContract::BACK;
         }
 
-        send($menu->label(), Keyboard::markup($buttons));
+        send($menu->label(), keyboard()->markup($buttons));
 
-        UserState::changeKeyboard(bot()->userId(), true);
+        tuserstate()->changeKeyboard(true);
     }
 
     /**
@@ -42,7 +40,7 @@ class MenuBotState extends BotState
                 $found = true;
                 if ($currentMenuItem->getParent()) {
                     $newState = new MenuBotState($currentMenuItem->getParent()->link());
-                    UserState::changeState(bot()->userId(), $newState);
+                    tuserstate()->changeState($newState);
 
                     $currentMenuItem = $currentMenuItem->getParent();
                 } else {
@@ -52,7 +50,7 @@ class MenuBotState extends BotState
                 foreach ($currentMenuItem->all() as $item) {
                     if ($item->label() === $text) {
                         $newState = new MenuBotState($item->link());
-                        UserState::changeState(bot()->userId(), $newState);
+                        tuserstate()->changeState($newState);
 
                         $currentMenuItem = $item;
                         $found = true;

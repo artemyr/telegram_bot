@@ -1,9 +1,10 @@
 <?php
 
 use App\Menu\MenuContract;
+use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Contracts\MessageContract;
+use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Dto\UserStateDto;
-use Domain\TelegramBot\Facades\Message;
-use Domain\TelegramBot\Facades\UserState;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
@@ -57,7 +58,7 @@ if (!function_exists('bot')) {
 if (!function_exists('tuser')) {
     function tuser(): ?UserStateDto
     {
-        return UserState::get(bot()->userId());
+        return tuserstate()->get();
     }
 }
 
@@ -84,9 +85,31 @@ if (!function_exists('send')) {
         }
 
         if (empty($userId)) {
-            $userId = bot()->userId();
+            $userId = tuser()->userId;
         }
 
-        Message::send($userId, $message, $keyboard);
+        message()->send($userId, $message, $keyboard);
     }
 }
+
+if (!function_exists('message')) {
+    function message(): MessageContract
+    {
+        return app(MessageContract::class);
+    }
+}
+
+if (!function_exists('keyboard')) {
+    function keyboard(): KeyboardContract
+    {
+        return app(KeyboardContract::class);
+    }
+}
+
+if (!function_exists('tuserstate')) {
+    function tuserstate(): UserStateContract
+    {
+        return app(UserStateContract::class);
+    }
+}
+

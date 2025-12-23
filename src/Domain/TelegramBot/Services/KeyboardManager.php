@@ -3,7 +3,6 @@
 namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\Contracts\KeyboardContract;
-use Domain\TelegramBot\Facades\UserState;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
@@ -20,7 +19,7 @@ class KeyboardManager implements KeyboardContract
 
     public function remove(): void
     {
-        $userDto = UserState::get(bot()->userId());
+        $userDto = tuserstate()->get(bot()->userId());
 
         if (!$userDto) {
             $this->bot->sendMessage(
@@ -35,7 +34,7 @@ class KeyboardManager implements KeyboardContract
                 reply_markup: ReplyKeyboardRemove::make(true),
             )?->delete();
 
-            UserState::changeKeyboard($this->bot->userId(), false);
+            tuserstate()->changeKeyboard(false);
         }
     }
 

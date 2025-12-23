@@ -5,8 +5,6 @@ namespace Domain\Calendar\States;
 use Domain\Calendar\Enum\CalendarAddEnum;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
-use Domain\TelegramBot\Facades\Keyboard;
-use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 
 class CalendarAddState extends BotState
@@ -24,14 +22,14 @@ class CalendarAddState extends BotState
         send([
             "Раздел: Календарь",
             "Выберите что хотите отметить:"
-        ], Keyboard::markup($keyboard));
+        ], keyboard()->markup($keyboard));
     }
 
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
             $newState = new MenuBotState(troute('calendar'));
-            UserState::changeState(bot()->userId(), $newState);
+            tuserstate()->changeState($newState);
             return $newState;
         }
 

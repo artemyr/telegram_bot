@@ -7,4 +7,6 @@ use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 interface MessageContract
 {
     public function send(int $userId, string $message, ?ReplyKeyboardMarkup $keyboard = null): void;
+    public static function fake(): void;
+    public function getLog(): array;
 }

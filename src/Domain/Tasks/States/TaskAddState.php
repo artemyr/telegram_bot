@@ -6,8 +6,6 @@ use Domain\Tasks\Contracts\TaskRepositoryContract;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Exceptions\PrintableException;
-use Domain\TelegramBot\Facades\Keyboard;
-use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 use Support\Dto\RepositoryResult;
 
@@ -30,7 +28,7 @@ class TaskAddState extends BotState
             "Можно вводить сразу несколько задач, каждая на новой строке",
         ];
 
-        send($response, Keyboard::back());
+        send($response, keyboard()->back());
     }
 
     /**
@@ -40,7 +38,7 @@ class TaskAddState extends BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
             $newState = new MenuBotState(troute('tasks'));
-            UserState::changeState(bot()->userId(), $newState);
+            tuserstate()->changeState($newState);
             return $newState;
         }
 

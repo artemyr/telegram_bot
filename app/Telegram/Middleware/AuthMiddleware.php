@@ -129,12 +129,12 @@ class AuthMiddleware
 
     private function createCacheUser(TelegramUser $tuser): void
     {
-        $userDto = UserState::make(
+        $userDto = tuserstate()->make(
             $tuser->telegram_id,
             new MenuBotState(troute('home')),
         );
 
-        UserState::write($userDto);
+        tuserstate()->write($userDto);
     }
 
     private function createDatabaseUser(): TelegramUser

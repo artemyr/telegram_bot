@@ -4,45 +4,19 @@ set -e
 # Переходим в директорию скрипта
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-# Установка цветов для терминала
-set_terminal_colors() {
-    local shell=$(basename "$SHELL")
-
-    case $shell in
-        bash)
-            export COLOR_RESET='\e[0m'
-            export COLOR_ERROR='\e[31m'
-            export COLOR_SUCCESS='\e[32m'
-            export COLOR_WARNING='\e[33m'
-            export COLOR_INFO='\e[34m'
-            ;;
-        zsh)
-            export COLOR_RESET='%{\e[0m%}'
-            export COLOR_ERROR='%{\e[31m%}'
-            export COLOR_SUCCESS='%{\e[32m%}'
-            export COLOR_WARNING='%{\e[33m%}'
-            export COLOR_INFO='%{\e[34m%}'
-            ;;
-        fish)
-            export COLOR_RESET='\033[0m'
-            export COLOR_ERROR='\033[0;31m'
-            export COLOR_SUCCESS='\033[0;32m'
-            export COLOR_WARNING='\033[0;33m'
-            export COLOR_INFO='\033[0;34m'
-            ;;
-        *)
-            echo "Неизвестная оболочка: $shell"
-            return 1
-            ;;
-    esac
-}
+export COMPOSE_COMMAND="docker-compose"
+export LOCAL_VENDOR_PATH="/var/www/html/local/php_interface/vendor"
+if ! command -v ${COMPOSE_COMMAND} 2>&1 >/dev/null
+  then
+    COMPOSE_COMMAND="docker compose"
+fi
 
 # Проверка зависимостей
 check_dependencies() {
-    local dependencies=("docker-compose" "sshpass" "rsync" "git")
+    local dependencies=("${COMPOSE_COMMAND}" "sshpass" "rsync" "git")
     for dep in "${dependencies[@]}"; do
         if ! command -v $dep &> /dev/null; then
-            echo -e "${COLOR_ERROR}Ошибка: $dep не установлен.${COLOR_RESET}"
+            echo -e "Ошибка: $dep не установлен."
             exit 1
         fi
     done
@@ -56,6 +30,7 @@ export DEFAULT_GROUP="1000"
 export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
 export USER=$USER
+export COMPOSER_AUTH=
 
 # Если ID пользователя или группы равен 0, устанавливаем дефолтные значения
 if [ "$USER_ID" == "0" ]; then
@@ -67,21 +42,25 @@ if [ "$GROUP_ID" == "0" ]; then
 fi
 
 # Проверяем наличие .env файла и создаем его, если он отсутствует
-test -e "./.env" || { cp .env.example .env; echo -e "${COLOR_SUCCESS}Создан файл .env из .env.example${COLOR_RESET}"; }
+test -e "./.env" || { cp .env.example .env; echo -e "Создан файл .env из .env.example"; }
 
 # Загружаем переменные окружения из .env файла
 if [ -f "./.env" ]; then
     source ./.env
-    echo -e "${COLOR_SUCCESS}Загружены переменные окружения из .env${COLOR_RESET}"
 else
-    echo -e "${COLOR_ERROR}Файл .env не найден${COLOR_RESET}"
+    echo -e "Файл .env не найден"
     exit 1
+fi
+
+# Загружаем доступы к реестру композера из composer.auth.json если он существует
+if [ -f composer.auth.json ]; then
+  COMPOSER_AUTH=$(cat composer.auth.json)
 fi
 
 # Функция для выполнения команд в контейнере PHP
 runInPhp() {
     local command=$@
-    echo -e "${COLOR_INFO}Выполнение команды в контейнере PHP: $command${COLOR_RESET}"
+    echo -e "Выполнение команды в контейнере PHP: $command"
     docker exec -i "${PROJECT_PREFIX}"_php bash -c "cd /var/www/html/; $command"
     return $?
 }
@@ -89,7 +68,7 @@ runInPhp() {
 # Функция для выполнения команд в контейнере MySQL
 runInMySql() {
     local command=$@
-    docker exec -i ${PROJECT_PREFIX}_mysql su mysql -c "$command"
+    docker exec -i ${PROJECT_PREFIX}_mysql bash -c "$command"
     return $?
 }
 
@@ -104,6 +83,7 @@ makeDump() {
     runInMySql "export MYSQL_PWD='$MYSQL_PASSWORD'; mysqldump -u $MYSQL_USER $MYSQL_DATABASE" > $1
     return $?
 }
+
 function enterInPhp {
     docker exec -u www-data -it "${PROJECT_PREFIX}"_php bash
     return $?
@@ -159,41 +139,79 @@ loadDumpToDocker() {
     return $?
 }
 
+# Функция для просмотра логов
+showLogs() {
+    ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" logs -f "$@"
+}
+
+# Функция для перезапуска контейнеров
+restartContainers() {
+    ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" restart "$@"
+}
+
+# Функция для проверки статуса контейнеров
+checkStatus() {
+    ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" ps
+}
+
+# Функция для выполнения composer install
+composerInstall() {
+    echo "Выполнение composer install в /local/php_interface/"
+    runInPhp "cd /var/www/html/local/php_interface/ && composer install"
+    return $?
+}
+
+# Функция для выполнения composer update
+composerUpdate() {
+    echo "Выполнение composer update -W в /local/php_interface/"
+    runInPhp "cd /var/www/html/local/php_interface/ && composer update -W"
+    return $?
+}
+
 # Интерактивный режим
+# shellcheck disable=SC2120
 interactive_mode() {
-    echo -e "${COLOR_WARNING}Добро пожаловать в интерактивный режим!${COLOR_RESET}"
+    echo -e "Добро пожаловать в интерактивный режим!"
 
     while true; do
-        read -r -e -p  "Введите команду (help для справки, exit для выхода): " cmd
+        read -r -e -p "Введите команду (help для справки, exit для выхода): " cmd
         case $cmd in
             help)
-                echo -e "${COLOR_WARNING}ПОМОЩЬ:${COLOR_RESET}"
-                echo "make env - скопировать .env.example в .env"
-                echo "init - инициализировать проект и репозитории Bitrix"
-                echo "make dump - создать дамп и отправить в репозиторий базы данных"
-                echo "db import FILE - загрузить FILE в MySQL"
-                echo "db renew - загрузить дамп из репозитория, обновить базу данных и применить"
-                echo "db - запустить CLI базы данных"
-                echo "db export > file.sql - экспортировать базу данных в файл"
-                echo "build - собрать Docker-образы"
-                echo "up - запустить Docker-контейнеры в режиме демона"
-                echo "down - остановить и удалить Docker-контейнеры"
-                echo "down full - остановить и удалить все Docker-контейнеры"
-                echo "run - выполнить команду в контейнере PHP из корня проекта"
-                echo "sync files - синхронизировать файлы с сервера"
-                echo "sync db - синхронизировать базу данных с сервера"
-                echo "sync upload - синхронизировать папку upload с сервера"
-                echo "sync bitrix - синхронизировать папку Bitrix с сервера"
-                echo "sync all - синхронизировать базу данных, папку upload и Bitrix с сервера"
+                echo -e "\n\033[1mПОМОЩЬ:\033[0m"
+                echo -e "\n\033[1;34mDocker:\033[0m"
+                echo "  build          - собрать Docker-образы"
+                echo "  up             - запустить контейнеры"
+                echo "  down           - остановить контейнеры"
+                echo "  down full      - остановить все контейнеры"
+                echo "  restart        - перезапустить контейнеры"
+                echo "  status         - показать статус контейнеров"
+                echo "  logs [SERVICE] - просмотр логов (php/nginx/mysql)"
+
+                echo -e "\n\033[1;34mБаза данных:\033[0m"
+                echo "  db             - подключиться к MySQL"
+                echo "  db export      - экспорт базы данных"
+                echo "  db import FILE - импорт SQL-файла"
+                echo "  db renew       - обновить базу из репозитория"
+                echo "  make dump      - создать дамп базы"
+
+                echo -e "\n\033[1;34mПроект:\033[0m"
+                echo "  init           - инициализировать проект"
+                echo "  make env       - создать .env файл"
+                echo "  in             - войти в PHP-контейнер"
+                echo "  run CMD        - выполнить команду в PHP-контейнере"
+                echo "  sync files     - синхронизировать файлы с сервера"
+                echo "  sync db        - синхронизировать базу данных с сервера"
+
+                echo -e "\n\033[1;34mComposer:\033[0m"
+                echo "  composer install - установка зависимостей"
+                echo "  composer update  - обновление зависимостей"
                 ;;
-            exit)
-                echo -e "${COLOR_INFO}Выход из интерактивного режима.${COLOR_RESET}"
-                break
-                ;;
+
             make\ env)
                 cp .env.example .env
-                echo -e "${COLOR_SUCCESS}Скопирован .env.example в .env${COLOR_RESET}"
+                echo -e "Скопирован .env.example в .env"
                 ;;
+
             init)
                 if [ ! -d "../${PROJECT_PREFIX}" ]; then
                     git clone "$PROJECT_REPO" ../"${PROJECT_PREFIX}" || echo "Project repo not found"
@@ -202,72 +220,111 @@ interactive_mode() {
                 if [ ! -d "../${PROJECT_PREFIX}/bitrix" ]; then
                     git clone "$BITRIX_REPO" ../"${PROJECT_PREFIX}"/bitrix/ || echo "Bitrix repo not found"
                 fi
-                docker-compose -p "${PROJECT_PREFIX}" build
-                docker-compose -p "${PROJECT_PREFIX}" up -d
+                ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" build
+                ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" up -d
                 if [ ! -d "../${PROJECT_PREFIX}/${LOCAL_VENDOR_PATH}" ]; then
-                    runInPhp "cd ${PROJECT_PREFIX}/local/php_interface/ && composer install"
+                    runInPhp "cd local/php_interface/ && composer install"
+                fi
+                if [ ! -f "../${PROJECT_PREFIX}/local/php_interface/auth.json" ]; then
+                    echo "Файла нет — условие выполнилось"
+                    echo ${PROJECT_PREFIX}
+                    cp ./composer.auth.json.example ../${PROJECT_PREFIX}/local/php_interface/auth.json
+                else
+                    echo "Файл существует — условие не сработало"
                 fi
                 ;;
+
             make\ dump)
-                git clone "$DATABASE_REPO" ../docker/data/mysql/dump || echo "not clone repo"
-                makeDump ../docker/data/mysql/dump/database.sql
-                cd ../docker/data/mysql/dump
+                git clone "$DATABASE_REPO" ../docker/tmp/dump || echo "not clone repo"
+                makeDump ../docker/tmp/dump/database.sql
+                cd ../docker/tmp/dump
                 git add database.sql
                 git commit -a -m 'update database'
                 git push origin master
                 echo "PUSH SUCCESS"
                 ;;
+
             db\ import\ *)
                 file=$(echo "$cmd" | awk '{print $3}')
                 applyDump "$file"
                 ;;
+
             db\ renew)
-                rm -rf "../docker/data/mysql/dump" || echo "old dump not found"
-                git clone "$DATABASE_REPO" ../docker/data/mysql/dump
+                rm -rf "../docker/tmp/dump" || echo "old dump not found"
+                git clone "$DATABASE_REPO" ../docker/tmp/dump
                 applyDump "../docker/containers/mysql/drop_all_tables.sql"
-                applyDump "../docker/data/mysql/dump/database.sql"
+                applyDump "../docker/tmp/dump/database.sql"
                 ;;
+
             db)
                 docker exec -it "${PROJECT_PREFIX}"_mysql mysql -u $MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE
                 ;;
+
             db\ export)
                 runInMySql "export MYSQL_PWD='$MYSQL_PASSWORD'; mysqldump -u $MYSQL_USER $MYSQL_DATABASE"
                 ;;
+
             build)
-                docker-compose -p "${PROJECT_PREFIX}" build
+                ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" build
                 ;;
+
             up)
-                docker-compose -p "${PROJECT_PREFIX}" up -d
+                ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" up -d
                 ;;
+
             down)
-                docker-compose -p "${PROJECT_PREFIX}" down
+                ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" down
                 ;;
+
             down\ full)
                 docker stop $(docker ps -q)
                 ;;
+
             run\ *)
                 command=$(echo "$cmd" | awk '{print $2}')
                 runInPhp "$command"
                 ;;
+
+            logs\ *)
+                service=$(echo "$cmd" | awk '{print $2}')
+                showLogs $service
+                ;;
+
+            restart)
+                restartContainers "${@:2}"
+                ;;
+
+            status)
+                checkStatus
+                ;;
+
+            in)
+                enterInPhp
+                ;;
+
+            composer\ install)
+                composerInstall
+                ;;
+
+            composer\ update)
+                composerUpdate
+                ;;
+
             sync\ files)
                 syncFiles
                 ;;
+
             sync\ db)
                 syncDb
                 ;;
-            sync\ upload)
-                sshpass -p $REMOTE_SSH_PASS rsync -rzclEt -e "ssh -p $REMOTE_SSH_PORT" --progress --delete-after --exclude='*.gz' $REMOTE_SSH_USER@$REMOTE_SSH_HOST:$REMOTE_UPLOAD_URL $LOCAL_UPLOAD_URL
+
+            exit)
+                echo -e "Выход из интерактивного режима."
+                break
                 ;;
-            sync\ bitrix)
-                syncFiles
-                ;;
-            sync\ all)
-                syncDb
-                syncFiles
-                sshpass -p "$REMOTE_SSH_PASS" rsync -rzclEt -e "ssh -p $REMOTE_SSH_PORT" --progress --delete-after --exclude='*.gz' "$REMOTE_SSH_USER"@"$REMOTE_SSH_HOST":"$REMOTE_UPLOAD_URL" "$LOCAL_UPLOAD_URL"
-                ;;
+
             *)
-                echo -e "${COLOR_ERROR}Неизвестная команда: $cmd${COLOR_RESET}"
+                echo -e "Неизвестная команда: $cmd"
                 ;;
         esac
     done
@@ -282,43 +339,21 @@ else
             case "$2" in
                 "env")
                     cp .env.example .env
-                    echo -e "${COLOR_SUCCESS}Скопирован .env.example в .env${COLOR_RESET}"
+                    echo -e "Скопирован .env.example в .env"
                     ;;
                 "dump")
-                    git clone "$DATABASE_REPO" ../docker/data/mysql/dump || echo "not clone repo"
-                    makeDump ../docker/data/mysql/dump/database.sql
-                    cd ../docker/data/mysql/dump
-                    git add database.sql
+                    git clone "$DATABASE_REPO" ../docker/tmp/dump || echo "not clone repo"
+                    makeDump ../docker/tmp/dump/database.sql
+                    cd ../docker/tmp/dump
+                    tar -cjvf database.tar.bz2 database.sql
+                    rm database.sql
+                    git add database.tar.bz2
                     git commit -a -m 'update database'
                     git push origin master
                     echo "PUSH SUCCESS"
                     ;;
                 *)
-                    echo -e "${COLOR_ERROR}Неизвестная подкоманда: $2${COLOR_RESET}"
-                    ;;
-            esac
-            ;;
-        "sync")
-            case "$2" in
-                "files")
-                    syncFiles
-                    ;;
-                "db")
-                    syncDb
-                    ;;
-                "upload")
-                    sshpass -p "$REMOTE_SSH_PASS" rsync -rzclEt -e "ssh -p $REMOTE_SSH_PORT" --progress --delete-after --exclude='*.gz' "$REMOTE_SSH_USER"@"$REMOTE_SSH_HOST":"$REMOTE_UPLOAD_URL" "$LOCAL_UPLOAD_URL"
-                    ;;
-                "bitrix")
-                    syncFiles
-                    ;;
-                "all")
-                    syncDb
-                    syncFiles
-                    sshpass -p "$REMOTE_SSH_PASS" rsync -rzclEt -e "ssh -p $REMOTE_SSH_PORT" --progress --delete-after --exclude='*.gz' "$REMOTE_SSH_USER"@"$REMOTE_SSH_HOST":"$REMOTE_UPLOAD_URL" "$LOCAL_UPLOAD_URL"
-                    ;;
-                *)
-                    echo -e "${COLOR_ERROR}Неизвестная подкоманда: $2${COLOR_RESET}"
+                    echo -e "Неизвестная подкоманда: $2"
                     ;;
             esac
             ;;
@@ -334,18 +369,19 @@ else
                     applyDump $3
                     ;;
                 "renew")
-                    rm -rf "../docker/data/mysql/dump" || echo "old dump not found"
-                    git clone "$DATABASE_REPO" ../docker/data/mysql/dump
+                    rm -rf "../docker/tmp/dump" || echo "old dump not found"
+                    git clone "$DATABASE_REPO" ../docker/tmp/dump
+                    tar -xvf ../docker/tmp/dump/database.tar.bz2 -C ../docker/tmp/dump/
                     applyDump "../docker/containers/mysql/drop_all_tables.sql"
-                    applyDump "../docker/data/mysql/dump/database.sql"
+                    applyDump "../docker/tmp/dump/database.sql"
                     ;;
                 *)
-                    echo -e "${COLOR_ERROR}Неизвестная подкоманда: $2${COLOR_RESET}"
+                    echo -e "Неизвестная подкоманда: $2"
                     ;;
             esac
             ;;
         "build")
-            docker-compose -p "${PROJECT_PREFIX}" build
+            ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" build
             ;;
         "init")
             if [ ! -d "../${PROJECT_PREFIX}" ]; then
@@ -355,15 +391,18 @@ else
             if [ ! -d "../${PROJECT_PREFIX}/bitrix" ]; then
                 git clone "$BITRIX_REPO" ../"${PROJECT_PREFIX}"/bitrix/ || echo "Bitrix repo not found"
             fi
-            docker-compose -p "${PROJECT_PREFIX}" build
-            docker-compose -p "${PROJECT_PREFIX}" up -d
+            ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" build
+            ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" up -d
             if [ ! -d "../${PROJECT_PREFIX}/${LOCAL_VENDOR_PATH}" ]; then
-                runInPhp "cd ${PROJECT_PREFIX}/local/php_interface/ && composer install"
+                runInPhp "cd local/php_interface/ && composer install"
+            fi
+            if [ ! -f "../${PROJECT_PREFIX}/local/php_interface/auth.json" ]; then
+                cp ./composer.auth.json.example ../${PROJECT_PREFIX}/local/php_interface/auth.json
             fi
             ;;
         "up")
-#            docker-compose -p "${PROJECT_PREFIX}" build
-            docker-compose -p "${PROJECT_PREFIX}" up -d
+            ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" build
+            ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" up -d
             ;;
         "in")
             enterInPhp "${@:2}"
@@ -374,10 +413,10 @@ else
                     docker stop $(docker ps -q)
                     ;;
                 "")
-                    docker-compose -p "${PROJECT_PREFIX}" down
+                    ${COMPOSE_COMMAND} -p "${PROJECT_PREFIX}" down
                     ;;
                 *)
-                    echo -e "${COLOR_ERROR}Неизвестная подкоманда: $2${COLOR_RESET}"
+                    echo -e "Неизвестная подкоманда: $2"
                     ;;
             esac
             ;;
@@ -388,11 +427,49 @@ else
                 runInPhp "${@:2}"
             fi
             ;;
+        "logs")
+            showLogs "${@:2}"
+            ;;
+        "restart")
+            restartContainers "${@:2}"
+            ;;
+        "status")
+            checkStatus
+            ;;
+        "composer")
+            case "$2" in
+                "install")
+                    composerInstall
+                    ;;
+                "update")
+                    composerUpdate
+                    ;;
+                *)
+                    echo -e "Неизвестная подкоманда: $2"
+                    echo "Доступные команды:"
+                    echo "  composer install - установка зависимостей"
+                    echo "  composer update - обновление зависимостей"
+                    ;;
+            esac
+            ;;
+        "sync")
+            case "$2" in
+                "files")
+                    syncFiles
+                    ;;
+                "db")
+                    syncDb
+                    ;;
+                *)
+                    echo -e "Неизвестная подкоманда: $2"
+                    echo "Доступные команды:"
+                    echo "  sync files - синхронизировать файлы"
+                    echo "  sync db - синхронизировать базу данных"
+                    ;;
+            esac
+            ;;
         *)
-            echo -e "${COLOR_ERROR}Неизвестная команда: $1${COLOR_RESET}"
+            echo -e "Неизвестная команда: $1"
             ;;
     esac
 fi
-
-# Установка цветов и автодополнения
-set_terminal_colors

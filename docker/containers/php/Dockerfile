@@ -1,9 +1,5 @@
 FROM php:8.3.6-fpm-alpine3.19
 
-#ARG APP_ENV='prod'
-#ARG APP_ENV=${APP_ENV}
-#ENV APP_ENV=${APP_ENV}
-
 ARG USER_ID='1000'
 ARG USER_ID=${USER_ID}
 ENV USER_ID=${USER_ID}
@@ -32,11 +28,18 @@ RUN chmod +x /usr/local/bin/install-php-extensions
 RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick
 RUN install-php-extensions xdebug
 
+RUN apk add supervisor
+
 ADD ./conf/php.ini /usr/local/etc/php/php.ini
 ADD ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./conf/ssmtp.conf /etc/ssmtp/ssmtp.conf
+COPY ./supervisor/supervisord.conf /etc/supervisord.conf
+
+RUN mkdir -p /var/log/supervisor /var/run/supervisor
 
 WORKDIR /var/www/html
 RUN export HOME="/var/www/html"
 
 EXPOSE 9000
+
+CMD ["/usr/bin/supervisord", "-n"]

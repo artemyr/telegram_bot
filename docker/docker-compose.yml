@@ -36,6 +36,7 @@ services:
     volumes:
       - ./../:/var/www/html
       - ./logs/php:/var/log/php
+      - ./logs/supervisor:/var/log/supervisor
       - ./data/sessions:/var/www/sessions
     links:
       - mysql

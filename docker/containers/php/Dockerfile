@@ -28,18 +28,18 @@ RUN chmod +x /usr/local/bin/install-php-extensions
 RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick
 RUN install-php-extensions xdebug
 
-RUN apk add supervisor
+RUN #apk add supervisor
 
 ADD ./conf/php.ini /usr/local/etc/php/php.ini
 ADD ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./conf/ssmtp.conf /etc/ssmtp/ssmtp.conf
-COPY ./supervisor/supervisord.conf /etc/supervisord.conf
+#COPY ./supervisor/supervisord.conf /etc/supervisord.conf
 
-RUN mkdir -p /var/log/supervisor /var/run/supervisor
+RUN #mkdir -p /var/log/supervisor /var/run/supervisor
 
 WORKDIR /var/www/html
 RUN export HOME="/var/www/html"
 
 EXPOSE 9000
 
-CMD ["/usr/bin/supervisord", "-n"]
+#CMD ["/usr/bin/supervisord", "-n"]

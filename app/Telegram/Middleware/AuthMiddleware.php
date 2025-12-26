@@ -65,7 +65,7 @@ class AuthMiddleware
             )
         );
 
-        send("Я вас еще не знаю\nВведите пароль для регистрации");
+        bot()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
     }
 
     private function incorrectPassword(): void
@@ -84,7 +84,7 @@ class AuthMiddleware
             )
         );
 
-        send("Пароль не верный!");
+        bot()->sendMessage("Пароль не верный!");
     }
 
     private function newUserHandler(): void
@@ -106,8 +106,8 @@ class AuthMiddleware
         // создаем в кеше
         $this->createCacheUser($tuser);
 
-        send("Вы зарегистрированы!");
-        send("Обратите внимание на часовой пояс в настройках");
+        bot()->sendMessage("Вы зарегистрированы!");
+        bot()->sendMessage("Обратите внимание на часовой пояс в настройках");
     }
 
     private function existsUserHandler(TelegramUser $tuser): void
@@ -123,7 +123,7 @@ class AuthMiddleware
         // если есть в бд но нет в кеше - создаем
         if (!$userDto) {
             $this->createCacheUser($tuser);
-            send("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
+            bot()->sendMessage("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
         }
     }
 

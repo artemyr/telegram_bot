@@ -13,12 +13,12 @@ class MenuBotState extends BotState
 
         $buttons = [];
 
-        foreach ($menu->all() as $category) {
-            $buttons[] = $category->label();
-        }
-
         if ($parent = $menu->getParent()) {
             $buttons[] = KeyboardContract::BACK;
+        }
+
+        foreach ($menu->all() as $category) {
+            $buttons[] = $category->label();
         }
 
         send($menu->label(), keyboard()->markup($buttons));

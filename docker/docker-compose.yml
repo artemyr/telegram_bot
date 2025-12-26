@@ -32,6 +32,7 @@ services:
       args:
         USER_ID: "$USER_ID"
         GROUP_ID: "$GROUP_ID"
+        XDEBUG_MODE: "$XDEBUG_MODE"
     container_name: ${PROJECT_PREFIX}_php
     volumes:
       - ./../:/var/www/html

@@ -12,6 +12,9 @@ ARG PROJECT_PREFIX='web'
 ARG PROJECT_PREFIX=${PROJECT_PREFIX}
 ENV PROJECT_PREFIX=${PROJECT_PREFIX}
 
+ARG XDEBUG_MODE='off'
+ARG XDEBUG_MODE=${XDEBUG_MODE}
+
 RUN apk --no-cache add shadow && \
     groupmod -o -g ${GROUP_ID} www-data && \
     usermod -o -u ${USER_ID} -g www-data www-data
@@ -26,14 +29,22 @@ RUN chmod +x /usr/local/bin/install-php-extensions
 
 
 RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick
-RUN install-php-extensions xdebug
+
+RUN if [ ${XDEBUG_MODE} != 'off' ]; then \
+      install-php-extensions xdebug; \
+fi
 
 RUN #apk add supervisor
 
 ADD ./conf/php.ini /usr/local/etc/php/php.ini
+ADD ./conf/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 ADD ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./conf/ssmtp.conf /etc/ssmtp/ssmtp.conf
 #COPY ./supervisor/supervisord.conf /etc/supervisord.conf
+
+RUN if [ ${XDEBUG_MODE} != 'off' ]; then \
+    sed -i "s/#XDEBUG_MODE#/$XDEBUG_MODE/g" /usr/local/etc/php/conf.d/xdebug.ini; \
+fi
 
 RUN #mkdir -p /var/log/supervisor /var/run/supervisor
 

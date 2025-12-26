@@ -19,32 +19,32 @@ class KeyboardManager implements KeyboardContract
 
     public function remove(): void
     {
-        $userDto = tuserstate()->get(bot()->userId());
+        $userDto = tuser();
 
         if (!$userDto) {
-            $this->bot->sendMessage(
-                text: 'Removing keyboard...',
-                reply_markup: ReplyKeyboardRemove::make(true),
-            )?->delete();
+            $this->removeForce();
         }
 
         if ($userDto && $userDto->keyboard) {
-            $this->bot->sendMessage(
-                text: 'Removing keyboard...',
-                reply_markup: ReplyKeyboardRemove::make(true),
-            )?->delete();
-
-            tuserstate()->changeKeyboard(false);
+            $this->removeForce();
         }
     }
 
-    public function back(): ReplyKeyboardMarkup
+    public function removeForce(): void
     {
-        $keyboard = [
+        $this->bot->sendMessage(
+            text: 'Removing keyboard...',
+            reply_markup: ReplyKeyboardRemove::make(true),
+        )?->delete();
+
+        tuserstate()->changeKeyboard(false);
+    }
+
+    public function back(): array
+    {
+        return [
             KeyboardContract::BACK
         ];
-
-        return $this->markup($keyboard);
     }
 
     public function markup(array $buttons):  ReplyKeyboardMarkup

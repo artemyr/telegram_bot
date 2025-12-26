@@ -19,15 +19,18 @@ class CalendarAddState extends BotState
             $keyboard[] = $case->value;
         }
 
-        send([
-            "Раздел: Календарь",
-            "Выберите что хотите отметить:"
-        ], keyboard()->markup($keyboard));
+        message()
+            ->text([
+                "Раздел: Календарь",
+                "Выберите что хотите отметить:"
+            ])->replyKeyboard($keyboard)
+            ->send();
     }
 
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
+            keyboard()->remove();
             $newState = new MenuBotState(troute('calendar'));
             tuserstate()->changeState($newState);
             return $newState;
@@ -35,7 +38,7 @@ class CalendarAddState extends BotState
 
         foreach (CalendarAddEnum::cases() as $case) {
             if (bot()->message()->getText() === $case->value) {
-                send("Вы отметили: " . $case->value);
+                message("Вы отметили: " . $case->value);
                 $action = new ($case->action());
                 $action();
             }

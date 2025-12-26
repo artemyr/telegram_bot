@@ -13,8 +13,10 @@ interface UserStateContract
         int $userId,
         BotState $state,
         bool $keyboard = false,
+        bool $blockEditBotMessage = false,
     ): UserStateDto;
     public function changeState(BotState $state): void;
+    public function changeBlockEditBotMessage(bool $state): void;
     public function changeKeyboard(bool $active): void;
     public static function fake(): void;
 }

@@ -53,13 +53,19 @@ class NotificationCheckJob implements ShouldQueue, ShouldBeUnique
                         ->format('d.m.Y H:i');
                 }
 
-                send($text, null, $task->telegram_user_id);
+                message()
+                    ->text($text)
+                    ->userId($task->telegram_user_id)
+                    ->send();
             }
 
             if ($notifiable instanceof Timer) {
                 $timer = $notifiable;
 
-                send($notification->message, null, $timer->telegram_user_id);
+                message()
+                    ->text($notification->message)
+                    ->userId($timer->telegram_user_id)
+                    ->send();
             }
 
             $notification->delete();

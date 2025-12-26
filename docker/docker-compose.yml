@@ -72,6 +72,8 @@ services:
     container_name: ${PROJECT_PREFIX}_redis
 
   mysql:
+    ports:
+      - "33060:3306"
     platform: linux/amd64
     build:
         context: ./containers/mysql

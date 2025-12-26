@@ -19,7 +19,7 @@ class TelegramUser extends Model
     public function timezone(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => $value ?? config('app.timezone')
+            get: fn($value) => $value ?: config('app.timezone')
         );
     }
 

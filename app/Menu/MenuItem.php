@@ -2,6 +2,7 @@
 
 namespace App\Menu;
 
+use Closure;
 use Countable;
 use Domain\TelegramBot\BotState;
 use IteratorAggregate;
@@ -17,14 +18,24 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
     protected static string $defaultState;
 
     public function __construct(
-        protected string $link,
-        protected string $label,
-        protected ?string $state = null,
+        protected string              $link,
+        protected string              $label,
+        protected string|Closure|null $state = null,
     )
     {
         if ($state === null) {
             $this->state = static::$defaultState;
         }
+    }
+
+    public function isCallback(): bool
+    {
+        return is_callable($this->state);
+    }
+
+    public function getCallback(): Closure
+    {
+        return $this->state;
     }
 
     public function link(): string

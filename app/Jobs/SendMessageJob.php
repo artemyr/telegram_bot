@@ -6,7 +6,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
-class SendMessageImmediatelyJob implements ShouldQueue
+class SendMessageJob implements ShouldQueue
 {
     use Queueable;
 

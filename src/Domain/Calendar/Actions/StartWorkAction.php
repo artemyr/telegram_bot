@@ -22,7 +22,7 @@ class StartWorkAction
             ->first();
 
         if ($timer && $timer->active) {
-            send("Вы уже запустили рабочий день!");
+            message("Вы уже запустили рабочий день!");
             logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
@@ -60,7 +60,7 @@ class StartWorkAction
         ]);
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
-        send("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
+        message("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
 
         logger()->debug('Success execute action: ' . self::class);
     }

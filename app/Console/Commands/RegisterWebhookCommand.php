@@ -12,7 +12,8 @@ class RegisterWebhookCommand extends Command
     public function handle()
     {
         $this->call('nutgram:hook:set', [
-            'url' => config('app.url') . "/api/webhook"
+            'url' => config('app.url') . "/api/webhook",
+            'ip' => config('telegram_bot.serverip')
         ]);
     }
 }

@@ -22,7 +22,7 @@ RUN apk add --no-cache curl bash vim ssmtp autoconf build-base zlib-dev onigurum
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
 
-RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick
+RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick redis
 
 RUN apk add supervisor
 

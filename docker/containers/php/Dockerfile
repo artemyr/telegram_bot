@@ -28,29 +28,22 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 
-RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick
+RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick redis
 
 RUN if [ ${XDEBUG_MODE} != 'off' ]; then \
       install-php-extensions xdebug; \
 fi
 
-RUN #apk add supervisor
-
 ADD ./conf/php.ini /usr/local/etc/php/php.ini
 ADD ./conf/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 ADD ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./conf/ssmtp.conf /etc/ssmtp/ssmtp.conf
-#COPY ./supervisor/supervisord.conf /etc/supervisord.conf
 
 RUN if [ ${XDEBUG_MODE} != 'off' ]; then \
     sed -i "s/#XDEBUG_MODE#/$XDEBUG_MODE/g" /usr/local/etc/php/conf.d/xdebug.ini; \
 fi
 
-RUN #mkdir -p /var/log/supervisor /var/run/supervisor
-
 WORKDIR /var/www/html
 RUN export HOME="/var/www/html"
 
 EXPOSE 9000
-
-#CMD ["/usr/bin/supervisord", "-n"]

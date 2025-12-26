@@ -66,14 +66,17 @@ services:
       - php
       - mysql
 
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    container_name: ${PROJECT_PREFIX}_redis
+
   mysql:
     platform: linux/amd64
     build:
         context: ./containers/mysql
         dockerfile: ./Dockerfile
     container_name: ${PROJECT_PREFIX}_mysql
-    ports:
-      - "33060:3306"
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}

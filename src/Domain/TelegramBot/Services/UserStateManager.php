@@ -20,7 +20,7 @@ class UserStateManager implements UserStateContract
     public function get(): ?UserStateDto
     {
         if (self::$fake) {
-            return new UserStateDto(1, new MenuBotState(troute('home')), false);
+            return new UserStateDto(1, new MenuBotState(troute('home')), false, false);
         }
 
         $userDto = UserStateStore::get(bot()->userId());
@@ -45,15 +45,16 @@ class UserStateManager implements UserStateContract
     }
 
     public function make(
-        int      $userId,
+        int $userId,
         BotState $state,
-        bool     $keyboard = false,
-    ): UserStateDto
-    {
+        bool $keyboard = false,
+        bool $lastMessage = true,
+    ): UserStateDto {
         return new UserStateDto(
             $userId,
             $state,
             $keyboard,
+            $lastMessage,
         );
     }
 
@@ -66,7 +67,19 @@ class UserStateManager implements UserStateContract
             return;
         }
 
-        $this->changeParam(bot()->userId(), 'state', $state);
+        $this->changeParam('state', $state);
+    }
+
+    /**
+     * @throws UserStateManagerException
+     */
+    public function changeLastMessage(bool $state): void
+    {
+        if (self::$fake) {
+            return;
+        }
+
+        $this->changeParam('lastMessage', $state);
     }
 
     /**
@@ -78,21 +91,21 @@ class UserStateManager implements UserStateContract
             return;
         }
 
-        $this->changeParam(bot()->userId(), 'keyboard', $active);
+        $this->changeParam('keyboard', $active);
     }
 
     /**
      * @throws UserStateManagerException
      */
-    public function changeParam(int $userId, string $param, $value): void
+    public function changeParam(string $param, $value): void
     {
         if (self::$fake) {
             return;
         }
 
-        $userDto = $this->get($userId);
+        $userDto = $this->get();
         $fields = $userDto->toArray();
-        $from = $fields[$param];
+        $from = $fields[$param] ?? null;
 
         if (is_array($value)) {
             $fields[$param] = array_merge($fields[$param], $value);
@@ -111,7 +124,7 @@ class UserStateManager implements UserStateContract
             $value = json_encode($value);
         }
 
-        logger()->debug("User $userId change param $param from $from to $value");
+        logger()->debug("User " . bot()->userId() . " change param $param from $from to $value");
     }
 
     /**

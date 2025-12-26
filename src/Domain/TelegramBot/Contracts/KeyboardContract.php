@@ -8,6 +8,6 @@ interface KeyboardContract
 {
     public const BACK = '⏪ Назад';
     public function remove(): void;
-    public function back(): ReplyKeyboardMarkup;
+    public function back(): array;
     public function markup(array $buttons): ReplyKeyboardMarkup;
 }

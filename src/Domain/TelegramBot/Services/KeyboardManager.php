@@ -38,13 +38,11 @@ class KeyboardManager implements KeyboardContract
         }
     }
 
-    public function back(): ReplyKeyboardMarkup
+    public function back(): array
     {
-        $keyboard = [
+        return [
             KeyboardContract::BACK
         ];
-
-        return $this->markup($keyboard);
     }
 
     public function markup(array $buttons):  ReplyKeyboardMarkup

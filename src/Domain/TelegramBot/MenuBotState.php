@@ -2,6 +2,7 @@
 
 namespace Domain\TelegramBot;
 
+use App\Menu\MenuItem;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Exceptions\BotMenuException;
 
@@ -14,14 +15,15 @@ class MenuBotState extends BotState
         $buttons = [];
 
         if ($parent = $menu->getParent()) {
-            $buttons[] = KeyboardContract::BACK;
+            $buttons[KeyboardContract::BACK] = KeyboardContract::BACK;
         }
 
         foreach ($menu->all() as $category) {
-            $buttons[] = $category->label();
+            /** @var MenuItem $category */
+            $buttons[$category->link()] = $category->label();
         }
 
-        send($menu->label(), keyboard()->markup($buttons));
+        message()->text($menu->label())->inlineKeyboard($buttons)->send();
 
         tuserstate()->changeKeyboard(true);
     }
@@ -33,7 +35,8 @@ class MenuBotState extends BotState
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
-        $text = bot()->message()?->getText();
+//        $text = bot()->message()?->getText();
+        $text = bot()->callbackQuery()->data;
 
         if (!empty($text)) {
             if ($text === KeyboardContract::BACK) {
@@ -48,7 +51,8 @@ class MenuBotState extends BotState
                 }
             } else {
                 foreach ($currentMenuItem->all() as $item) {
-                    if ($item->label() === $text) {
+                    /** @var $item MenuItem */
+                    if ($item->link() === $text) {
                         $newState = new MenuBotState($item->link());
                         tuserstate()->changeState($newState);
 
@@ -60,7 +64,8 @@ class MenuBotState extends BotState
         }
 
         if (!$found) {
-            send('Выберите значение из списка');
+            message('Выберите значение из списка');
+            sleep(2);
         }
 
         return $currentMenuItem->state();

@@ -9,5 +9,6 @@ return [
     'messages' => [
         // jobs/runtime
         'driver' => env('TELEGRAM_MESSAGES_DRIVER', 'jobs'),
-    ]
+    ],
+    'serverip' => env('SERVER_IP')
 ];

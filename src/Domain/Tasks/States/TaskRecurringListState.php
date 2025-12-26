@@ -34,7 +34,7 @@ class TaskRecurringListState extends BotState
             (string)$table
         ];
 
-        send($response, keyboard()->back());
+        message()->text($response)->replyKeyboard(keyboard()->back())->send();
     }
 
     /**
@@ -65,7 +65,7 @@ class TaskRecurringListState extends BotState
             $result = $this->taskRepository->deleteById($userDto->userId, $row->getCol('id')->value);
 
             if ($result->state === RepositoryResult::SUCCESS_DELETED) {
-                send("Задача \"{$result->model->task->title}\" удалена");
+                message("Задача \"{$result->model->task->title}\" удалена");
             }
 
             if ($result->state === RepositoryResult::ERROR) {

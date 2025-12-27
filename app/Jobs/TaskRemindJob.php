@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Domain\Tasks\Presentations\TaskPresentation;
 use Domain\Tasks\Repository\TaskRepository;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -52,11 +53,9 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
                         continue;
                     }
 
-                    $table = TaskRepository::makeTable($user->tasks, $user);
-
                     logger()->debug('User task batch ' . count($user->tasks));
 
-                    $response = (string)$table;
+                    $response = (string)(new TaskPresentation($user->tasks, $user->timezone));
 
                     if (empty($response)) {
                         logger()->debug('No messages for user' . $user->telegram_id);

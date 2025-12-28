@@ -3,6 +3,7 @@
 namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Enum\KeyboardEnum;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
@@ -43,7 +44,7 @@ class KeyboardManager implements KeyboardContract
     public function back(): array
     {
         return [
-            KeyboardContract::BACK
+            KeyboardEnum::BACK->value => KeyboardEnum::BACK->label()
         ];
     }
 

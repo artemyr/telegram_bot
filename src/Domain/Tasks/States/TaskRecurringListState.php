@@ -5,7 +5,7 @@ namespace Domain\Tasks\States;
 use Domain\Tasks\Contracts\RecurrenceTaskRepositoryContract;
 use Domain\Tasks\Presentations\RecurrenceTaskPresentation;
 use Domain\TelegramBot\BotState;
-use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\Exceptions\PrintableException;
 use Domain\TelegramBot\MenuBotState;
 use Support\Dto\RepositoryResult;
@@ -22,58 +22,63 @@ class TaskRecurringListState extends BotState
 
     public function render(): void
     {
-        $userDto = tuser();
-
-        $tasks = $this->taskRepository->findByUserId($userDto->userId);
+        $tasks = $this->taskRepository->findByUserId(bot()->userId());
         $table = (new RecurrenceTaskPresentation($tasks, tusertimezone()))->getTable();
 
-        $response = [
-            "Раздел: Повторяющиеся задачи",
-            "Список задач:",
-            "Чтобы удалить задачу, отправте ее номер",
-            (string)$table
-        ];
-
-        message()->text($response)->replyKeyboard(keyboard()->back())->send();
+        message()
+            ->text([
+                "Раздел: Повторяющиеся задачи",
+                "Список задач:",
+                "Чтобы удалить задачу, отправте ее номер",
+                (string)$table
+            ])
+            ->inlineKeyboard(keyboard()->back())
+            ->tryEditLast()
+            ->send();
     }
 
     /**
      * @throws PrintableException
      */
-    public function handle(): ?BotState
+    public function handle(): void
     {
-        $text = bot()->message()->getText();
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
 
-        if ($text === KeyboardContract::BACK) {
-            $newState = new MenuBotState(troute('tasks'));
-            tuserstate()->changeState($newState);
-            return $newState;
+            if ($query === KeyboardEnum::BACK->value) {
+                keyboard()->remove();
+                $newState = new MenuBotState(troute('tasks'));
+                tuserstate()->changeState($newState);
+                return;
+            }
+        } else {
+            $text = bot()->message()?->getText();
+
+            if (filter_var($text, FILTER_VALIDATE_INT)) {
+                $userDto = tuser();
+
+                $tasks = $this->taskRepository->findByUserId($userDto->userId);
+                $table = (new RecurrenceTaskPresentation($tasks, tusertimezone()))->getTable();
+
+                $row = $table->getRow((int)$text);
+
+                if (empty($row)) {
+                    throw new PrintableException('Выберите из списка');
+                }
+
+                $result = $this->taskRepository->deleteById($userDto->userId, $row->getCol('id')->value);
+
+                if ($result->state === RepositoryResult::SUCCESS_DELETED) {
+                    message("Задача \"{$result->model->task->title}\" удалена");
+                    tuserstate()->changeBlockEditBotMessage(true);
+                }
+
+                if ($result->state === RepositoryResult::ERROR) {
+                    throw new PrintableException($result->message);
+                }
+
+                return;
+            }
         }
-
-        if (filter_var($text, FILTER_VALIDATE_INT)) {
-            $userDto = tuser();
-
-            $tasks = $this->taskRepository->findByUserId($userDto->userId);
-            $table = (new RecurrenceTaskPresentation($tasks, tusertimezone()))->getTable();
-
-            $row = $table->getRow((int)$text);
-
-            if (empty($row)) {
-                throw new PrintableException('Выберите из списка');
-            }
-
-            $result = $this->taskRepository->deleteById($userDto->userId, $row->getCol('id')->value);
-
-            if ($result->state === RepositoryResult::SUCCESS_DELETED) {
-                message("Задача \"{$result->model->task->title}\" удалена");
-            }
-
-            if ($result->state === RepositoryResult::ERROR) {
-                throw new PrintableException($result->message);
-
-            }
-        }
-
-        return new TaskRecurringListState();
     }
 }

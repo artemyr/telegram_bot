@@ -12,10 +12,12 @@ abstract class AbstractTelegramController extends Controller
         $userDto = tuser();
 
         $current = $userDto->state;
-        $next = $current->handle();
+        $current->handle();
+
+        $userDto = tuser();
+        $next = $userDto->state;
 
         if ($next) {
-            tuserstate()->changeState($next);
             $next->render();
         }
     }
@@ -26,13 +28,16 @@ abstract class AbstractTelegramController extends Controller
 
             if ($e instanceof PrintableException) {
                 message($e->getMessage());
+                tuserstate()->changeBlockEditBotMessage(true);
                 return;
             }
 
             if (app()->hasDebugModeEnabled()) {
                 message("Error! " . $e->getMessage());
+                tuserstate()->changeBlockEditBotMessage(true);
             } else {
                 message("Произошла ошибка");
+                tuserstate()->changeBlockEditBotMessage(true);
             }
 
             report($e);

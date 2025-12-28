@@ -3,50 +3,74 @@
 namespace Domain\Calendar\States;
 
 use Domain\Calendar\Models\Timer;
+use Domain\Calendar\Presentations\TimerPresentation;
 use Domain\TelegramBot\BotState;
-use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Enum\KeyboardEnum;
+use Domain\TelegramBot\Exceptions\PrintableException;
 use Domain\TelegramBot\MenuBotState;
-use Illuminate\Support\Carbon;
 
 class CalendarListState extends BotState
 {
     public function render(): void
     {
-        $userDto = tuser();
-
-        $list = '';
-        $num = 1;
-
         $timers = Timer::query()
-            ->where('telegram_user_id', $userDto->userId)
+            ->where('telegram_user_id', bot()->userId())
             ->get();
 
-        foreach ($timers as $timer) {
-            $time = Carbon::make($timer->startDate)
-                ->setTimezone(tusertimezone());
-            $list .= "$num) $timer->title: $time\n";
-            $num++;
-        }
-
-        if (empty($list)) {
-            $list = 'Пусто...';
-        }
-
         message()
-            ->text("Раздел: Календарь\nСписок событий:\n$list")
-            ->replyKeyboard(keyboard()->back())
+            ->text([
+                "Раздел: Календарь",
+                "Напишите номер тамймера, чтобы его отменить",
+                "Список событий:",
+                (string)(new TimerPresentation($timers, tusertimezone()))
+            ])
+            ->tryEditLast()
+            ->inlineKeyboard(keyboard()->back())
             ->send();
     }
 
-    public function handle(): ?BotState
+    /**
+     * @throws PrintableException
+     */
+    public function handle(): void
     {
-        if (bot()->message()->getText() === KeyboardContract::BACK) {
-            keyboard()->remove();
-            $newState = new MenuBotState(troute('calendar'));
-            tuserstate()->changeState($newState);
-            return $newState;
-        }
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
 
-        return new CalendarListState();
+            if ($query === KeyboardEnum::BACK->value) {
+                keyboard()->remove();
+                $newState = new MenuBotState(troute('calendar'));
+                tuserstate()->changeState($newState);
+                return;
+            }
+        } else {
+            $query = bot()->message()?->getText();
+
+            if (filter_var($query, FILTER_VALIDATE_INT)) {
+                $timers = Timer::query()
+                    ->where('telegram_user_id', bot()->userId())
+                    ->get();
+                $table = (new TimerPresentation($timers))->getTable();
+
+                $row = $table->getRow((int)$query);
+
+                if (empty($row)) {
+                    throw new PrintableException('Выберите из списка');
+                }
+
+                $timer = Timer::query()
+                    ->where('id', $row->getCol('id'))
+                    ->first();
+
+                if($timer) {
+                    $timer->delete();
+                    message("Таймер \"{$timer->title}\" удален");
+                } else {
+                    message("Таймер не найден");
+                }
+                tuserstate()->changeBlockEditBotMessage(true);
+                return;
+            }
+        }
     }
 }

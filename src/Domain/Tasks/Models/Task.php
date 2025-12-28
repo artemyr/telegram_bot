@@ -63,6 +63,12 @@ class Task extends Model
                 }
             }
         });
+
+        static::deleted(function (Task $model) {
+            foreach ($model->notifications as $notification) {
+                $notification->delete();
+            }
+        });
     }
 
     public function prunable()

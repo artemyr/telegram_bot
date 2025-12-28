@@ -27,6 +27,17 @@ class Timer extends Model
         'startDate' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function (Timer $model) {
+            foreach ($model->notifications as $notification) {
+                $notification->delete();
+            }
+        });
+    }
+
     public function prunable()
     {
         return static::where('deleted_at', '<=', now()->subMonth());

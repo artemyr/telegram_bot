@@ -23,6 +23,7 @@ class WorkSessionAction
 
         if ($timer && $timer->active) {
             message("Вы уже запустили таймер!");
+            tuserstate()->changeBlockEditBotMessage(true);
             logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
@@ -66,6 +67,7 @@ class WorkSessionAction
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
         message("В $time отдых. Я напомню");
+        tuserstate()->changeBlockEditBotMessage(true);
 
 
         logger()->debug('Success execute action: ' . self::class);

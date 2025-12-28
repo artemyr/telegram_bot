@@ -17,9 +17,8 @@ abstract class BotState
 
     abstract public function render(): void;
 
-    public function handle(): ?BotState
+    public function handle(): void
     {
-        return null;
     }
 
     protected function transition(BotState $state): BotState

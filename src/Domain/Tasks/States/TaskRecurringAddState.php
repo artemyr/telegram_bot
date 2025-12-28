@@ -4,7 +4,7 @@ namespace Domain\Tasks\States;
 
 use Domain\Tasks\Contracts\RecurrenceTaskRepositoryContract;
 use Domain\TelegramBot\BotState;
-use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use RuntimeException;
 
@@ -51,17 +51,19 @@ class TaskRecurringAddState extends BotState
         message()->text($text)->replyKeyboard(keyboard()->back())->send();
     }
 
-    public function handle(): ?BotState
+    public function handle(): void
     {
-        if (bot()->message()->getText() === KeyboardContract::BACK) {
+        if (bot()->message()->getText() === KeyboardEnum::BACK->label()) {
             $newState = new MenuBotState(troute('tasks'));
             tuserstate()->changeState($newState);
-            return $newState;
+            return;
         }
 
         if ($this->stage === self::TITLE_STAGE) {
             $title = bot()->message()->getText();
-            return new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
+            $newState =  new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
+            tuserstate()->changeState($newState);
+            return;
         }
 
         if ($this->stage === self::DATE_STAGE) {
@@ -70,7 +72,9 @@ class TaskRecurringAddState extends BotState
            $this->taskRepository->save(bot()->userId(), $this->title, $repeat);
 
             message("Задача \"$this->title\" создана");
-            return new MenuBotState(troute('tasks'));
+            $newState = new MenuBotState(troute('tasks'));
+            tuserstate()->changeState($newState);
+            return;
         }
 
         throw new RuntimeException('Unknown stage');

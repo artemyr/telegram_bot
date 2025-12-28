@@ -3,7 +3,7 @@
 namespace Domain\TelegramBot;
 
 use App\Menu\MenuItem;
-use Domain\TelegramBot\Contracts\KeyboardContract;
+use Domain\TelegramBot\Enum\KeyboardEnum;
 
 class MenuBotState extends BotState
 {
@@ -16,7 +16,7 @@ class MenuBotState extends BotState
         $buttons = [];
 
         if ($parent = $menu->getParent()) {
-            $buttons[KeyboardContract::BACK] = KeyboardContract::BACK;
+            $buttons[KeyboardEnum::BACK->value] = KeyboardEnum::BACK->label();
         }
 
         foreach ($menu->all() as $category) {
@@ -33,22 +33,21 @@ class MenuBotState extends BotState
         tuserstate()->changeBlockEditBotMessage(false);
     }
 
-    public function handle(): ?BotState
+    public function handle(): void
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
-//        $text = bot()->message()?->getText();
 
         if (!bot()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
             tuserstate()->changeBlockEditBotMessage(true);
-            return $currentMenuItem->state();
+            tuserstate()->changeState($currentMenuItem->state());
         }
 
         $text = bot()->callbackQuery()->data;
 
         if (!empty($text)) {
-            if ($text === KeyboardContract::BACK) {
+            if ($text === KeyboardEnum::BACK->value) {
                 $found = true;
                 if ($currentMenuItem->getParent()) {
                     $newState = new MenuBotState($currentMenuItem->getParent()->link());
@@ -67,14 +66,13 @@ class MenuBotState extends BotState
                             $call = $item->getCallback();
                             $call();
                             $currentMenuItem = $item->getParent();
-                            $found = true;
                         } else {
                             $newState = new MenuBotState($item->link());
                             tuserstate()->changeState($newState);
 
                             $currentMenuItem = $item;
-                            $found = true;
                         }
+                        $found = true;
                     }
                 }
             }
@@ -87,10 +85,6 @@ class MenuBotState extends BotState
 
         $newState = $currentMenuItem->state();
 
-        if (!$newState instanceof MenuBotState) {
-            bot()->message()?->delete();
-        }
-
-        return $newState;
+        tuserstate()->changeState($newState);
     }
 }

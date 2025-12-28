@@ -3,7 +3,10 @@
 namespace App\Console\Commands;
 
 use Domain\TelegramBot\Exceptions\PrintableException;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
+use JsonException;
+use SergiX44\Nutgram\Telegram\Exceptions\TelegramException;
 
 class RemoveWebhookCommand extends Command
 {
@@ -12,6 +15,9 @@ class RemoveWebhookCommand extends Command
 
     /**
      * @throws PrintableException
+     * @throws GuzzleException
+     * @throws JsonException
+     * @throws TelegramException
      */
     public function handle()
     {
@@ -19,6 +25,8 @@ class RemoveWebhookCommand extends Command
             throw new PrintableException("Can't use it on local");
         }
 
-        $this->call('nutgram:hook:remove');
+        bot()->deleteWebhook();
+
+        exit();
     }
 }

@@ -37,7 +37,7 @@ class ViewServiceProvider extends ServiceProvider
                 ->add(
                     MenuItem::make(troute('settings'), '⚙️ Настройки')
                         ->add(MenuItem::make(troute('timezone'), '🕒 Часовой пояс', TimezoneState::class))
-                        ->add(MenuItem::make(troute('webhook_off'), 'Отключить webhook', fn() => Artisan::call('telegram:hook:remove')))
+                        ->add(MenuItem::make(troute('webhook_off'), 'Отключить webhook', fn() => bot()->deleteWebhook()))
                 );
         });
     }

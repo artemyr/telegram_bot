@@ -85,6 +85,12 @@ class MenuBotState extends BotState
             tuserstate()->changeBlockEditBotMessage(true);
         }
 
-        return $currentMenuItem->state();
+        $newState = $currentMenuItem->state();
+
+        if (!$newState instanceof MenuBotState) {
+            bot()->message()?->delete();
+        }
+
+        return $newState;
     }
 }

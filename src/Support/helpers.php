@@ -36,11 +36,7 @@ if (!function_exists('try')) {
             return $callback();
         } catch (Throwable $e) {
             if ($fail !== null) {
-                try {
-                    $fail($e);
-                } catch (Throwable) {
-                    report($e);
-                }
+                $fail($e);
             }
         }
 
@@ -77,24 +73,13 @@ if (!function_exists('tusertimezone')) {
     }
 }
 
-if (!function_exists('send')) {
-    function send(string|array $message, ?ReplyKeyboardMarkup $keyboard = null, ?int $userId = null): void
-    {
-        if (is_array($message)) {
-            $message = implode("\n", $message);
-        }
-
-        if (empty($userId)) {
-            $userId = tuser()->userId;
-        }
-
-        message()->send($userId, $message, $keyboard);
-    }
-}
-
 if (!function_exists('message')) {
-    function message(): MessageContract
+    function message(?string $text = null): MessageContract
     {
+        if (!empty($text)) {
+            app(MessageContract::class)->text($text)->send();
+        }
+
         return app(MessageContract::class);
     }
 }

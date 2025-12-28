@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Telegram;
 
-class MessageController extends AbstractTelegramController
+class CallbackController extends AbstractTelegramController
 {
     public function __invoke()
     {
-        tuserstate()->changeBlockEditBotMessage(true);
-
         $this->try(function () {
             $this->handleState();
         });

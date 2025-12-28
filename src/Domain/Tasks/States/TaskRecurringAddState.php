@@ -48,7 +48,7 @@ class TaskRecurringAddState extends BotState
             $text[] = "1,5,10 числа месяца в 14:00";
         }
 
-        send($text, keyboard()->back());
+        message()->text($text)->replyKeyboard(keyboard()->back())->send();
     }
 
     public function handle(): ?BotState
@@ -69,7 +69,7 @@ class TaskRecurringAddState extends BotState
 
            $this->taskRepository->save(bot()->userId(), $this->title, $repeat);
 
-            send("Задача \"$this->title\" создана");
+            message("Задача \"$this->title\" создана");
             return new MenuBotState(troute('tasks'));
         }
 

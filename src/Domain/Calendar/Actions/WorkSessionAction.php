@@ -22,7 +22,7 @@ class WorkSessionAction
             ->first();
 
         if ($timer && $timer->active) {
-            send("Вы уже запустили таймер!");
+            message("Вы уже запустили таймер!");
             logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
@@ -65,7 +65,7 @@ class WorkSessionAction
         ]);
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
-        send("В $time отдых. Я напомню");
+        message("В $time отдых. Я напомню");
 
 
         logger()->debug('Success execute action: ' . self::class);

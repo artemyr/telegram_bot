@@ -10,6 +10,7 @@ readonly class UserStateDto
         public int $userId,
         public BotState $state,
         public bool $keyboard,
+        public bool $blockEditBotMessage,
     ) {
     }
 
@@ -19,6 +20,7 @@ readonly class UserStateDto
             'userId' => $this->userId,
             'state' => $this->state,
             'keyboard' => $this->keyboard,
+            'blockEditBotMessage' => $this->blockEditBotMessage,
         ];
     }
 
@@ -28,6 +30,7 @@ readonly class UserStateDto
             $values['userId'],
             $values['state'],
             $values['keyboard'],
+            $values['blockEditBotMessage'],
         );
     }
 

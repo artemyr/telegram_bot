@@ -32,12 +32,16 @@ class CalendarListState extends BotState
             $list = 'Пусто...';
         }
 
-        send("Раздел: Календарь\nСписок событий:\n$list", keyboard()->back());
+        message()
+            ->text("Раздел: Календарь\nСписок событий:\n$list")
+            ->replyKeyboard(keyboard()->back())
+            ->send();
     }
 
     public function handle(): ?BotState
     {
         if (bot()->message()->getText() === KeyboardContract::BACK) {
+            keyboard()->remove();
             $newState = new MenuBotState(troute('calendar'));
             tuserstate()->changeState($newState);
             return $newState;

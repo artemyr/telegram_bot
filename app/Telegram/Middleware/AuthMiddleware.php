@@ -2,7 +2,6 @@
 
 namespace App\Telegram\Middleware;
 
-use Domain\TelegramBot\Facades\UserState;
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Facades\Hash;
@@ -123,6 +122,7 @@ class AuthMiddleware
         // если есть в бд но нет в кеше - создаем
         if (!$userDto) {
             $this->createCacheUser($tuser);
+            keyboard()->removeForce();
             bot()->sendMessage("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
         }
     }

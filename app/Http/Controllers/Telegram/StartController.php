@@ -12,7 +12,7 @@ class StartController extends AbstractTelegramController
             $userDto = tuser();
 
             if (config('telegram_bot.debug', false)) {
-                send("Состояние пользователя: \n```\n$userDto\n```");
+                message()->text("Состояние пользователя: \n```\n$userDto\n```")->send();
             }
 
             $state = $userDto->state ?? new MenuBotState();

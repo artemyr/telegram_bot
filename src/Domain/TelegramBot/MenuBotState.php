@@ -2,38 +2,50 @@
 
 namespace Domain\TelegramBot;
 
+use App\Menu\MenuItem;
 use Domain\TelegramBot\Contracts\KeyboardContract;
-use Domain\TelegramBot\Exceptions\BotMenuException;
 
 class MenuBotState extends BotState
 {
     public function render(): void
     {
+        keyboard()->remove();
+
         $menu = menu()->getCurrentCategoryItem();
 
         $buttons = [];
 
         if ($parent = $menu->getParent()) {
-            $buttons[] = KeyboardContract::BACK;
+            $buttons[KeyboardContract::BACK] = KeyboardContract::BACK;
         }
 
         foreach ($menu->all() as $category) {
-            $buttons[] = $category->label();
+            /** @var MenuItem $category */
+            $buttons[$category->link()] = $category->label();
         }
 
-        send($menu->label(), keyboard()->markup($buttons));
+        message()
+            ->text($menu->label())
+            ->inlineKeyboard($buttons)
+            ->tryEditLast()
+            ->send();
 
-        tuserstate()->changeKeyboard(true);
+        tuserstate()->changeBlockEditBotMessage(false);
     }
 
-    /**
-     * @throws BotMenuException
-     */
     public function handle(): ?BotState
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
-        $text = bot()->message()?->getText();
+//        $text = bot()->message()?->getText();
+
+        if (!bot()->isCallbackQuery()) {
+            message('Используйте кнопки для навигации');
+            tuserstate()->changeBlockEditBotMessage(true);
+            return $currentMenuItem->state();
+        }
+
+        $text = bot()->callbackQuery()->data;
 
         if (!empty($text)) {
             if ($text === KeyboardContract::BACK) {
@@ -48,19 +60,29 @@ class MenuBotState extends BotState
                 }
             } else {
                 foreach ($currentMenuItem->all() as $item) {
-                    if ($item->label() === $text) {
-                        $newState = new MenuBotState($item->link());
-                        tuserstate()->changeState($newState);
+                    /** @var $item MenuItem */
+                    if ($item->link() === $text) {
 
-                        $currentMenuItem = $item;
-                        $found = true;
+                        if ($item->isCallback()) {
+                            $call = $item->getCallback();
+                            $call();
+                            $currentMenuItem = $item->getParent();
+                            $found = true;
+                        } else {
+                            $newState = new MenuBotState($item->link());
+                            tuserstate()->changeState($newState);
+
+                            $currentMenuItem = $item;
+                            $found = true;
+                        }
                     }
                 }
             }
         }
 
         if (!$found) {
-            send('Выберите значение из списка');
+            message('Выберите значение из списка');
+            tuserstate()->changeBlockEditBotMessage(true);
         }
 
         return $currentMenuItem->state();

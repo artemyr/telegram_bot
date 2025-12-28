@@ -28,7 +28,7 @@ class TaskAddState extends BotState
             "Можно вводить сразу несколько задач, каждая на новой строке",
         ];
 
-        send($response, keyboard()->back());
+        message()->text($response)->replyKeyboard(keyboard()->back())->send();
     }
 
     /**
@@ -68,7 +68,7 @@ class TaskAddState extends BotState
         }
 
         if (!empty($response)) {
-            send($response);
+            message()->text($response)->send();
         }
 
         return new TaskListState();

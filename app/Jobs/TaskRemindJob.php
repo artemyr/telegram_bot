@@ -64,7 +64,7 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
 
                     logger()->debug('Sending ' . $user->telegram_id);
 
-                    send("У вас в плане на сегодня: \n" . $response, null, $user->telegram_id);
+                    message()->text("У вас в плане на сегодня: \n" . $response)->userId($user->telegram_id)->send();
                 }
             });
 

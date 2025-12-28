@@ -12,6 +12,7 @@ use Domain\Tasks\States\TaskListState;
 use Domain\Tasks\States\TaskRecurringAddState;
 use Domain\Tasks\States\TaskRecurringListState;
 use Domain\TelegramBot\MenuBotState;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 
 class ViewServiceProvider extends ServiceProvider
@@ -36,6 +37,7 @@ class ViewServiceProvider extends ServiceProvider
                 ->add(
                     MenuItem::make(troute('settings'), '⚙️ Настройки')
                         ->add(MenuItem::make(troute('timezone'), '🕒 Часовой пояс', TimezoneState::class))
+                        ->add(MenuItem::make(troute('webhook_off'), 'Отключить webhook', fn() => Artisan::call('telegram:hook:remove')))
                 );
         });
     }

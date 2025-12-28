@@ -7,22 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
+use Services\HumanDateParser\Parser;
 use Services\Telegram\TelegramBotApi;
 use Services\Telegram\TelegramBotApiContract;
+use Support\Contracts\HumanDateParserContract;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        $this->app->bind(TelegramBotApiContract::class, TelegramBotApi::class);
-    }
+    public $bindings = [
+        TelegramBotApiContract::class => TelegramBotApi::class,
+        HumanDateParserContract::class => Parser::class,
+    ];
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Model::shouldBeStrict(! app()->isProduction());

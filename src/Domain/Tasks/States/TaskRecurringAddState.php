@@ -7,6 +7,7 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use RuntimeException;
+use Support\Dto\RepositoryResult;
 
 class TaskRecurringAddState extends BotState
 {
@@ -48,35 +49,53 @@ class TaskRecurringAddState extends BotState
             $text[] = "1,5,10 числа месяца в 14:00";
         }
 
-        message()->text($text)->replyKeyboard(keyboard()->back())->send();
+        message()
+            ->text($text)
+            ->inlineKeyboard(keyboard()->back())
+            ->tryEditLast()
+            ->send();
     }
 
     public function handle(): void
     {
-        if (bot()->message()->getText() === KeyboardEnum::BACK->label()) {
-            $newState = new MenuBotState(troute('tasks'));
-            tuserstate()->changeState($newState);
-            return;
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
+
+            if ($query === KeyboardEnum::BACK->value) {
+                keyboard()->remove();
+                $newState = new MenuBotState(troute('tasks'));
+                tuserstate()->changeState($newState);
+                return;
+            }
+        } else {
+            if ($this->stage === self::TITLE_STAGE) {
+                $title = bot()->message()->getText();
+                $newState = new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
+                tuserstate()->changeState($newState);
+                return;
+            }
+
+            if ($this->stage === self::DATE_STAGE) {
+                $repeat = bot()->message()->getText();
+
+                $result = $this->taskRepository->save(bot()->userId(), $this->title, $repeat);
+
+                if ($result->state === RepositoryResult::SUCCESS_SAVED) {
+                    message("Задача \"$this->title\" создана");
+                    tuserstate()->changeBlockEditBotMessage(true);
+                    $newState = new MenuBotState(troute('tasks'));
+                    tuserstate()->changeState($newState);
+                    return;
+                }
+
+                if ($result->state === RepositoryResult::ERROR) {
+                    message("Ошибка создания задачи \"$this->title\"");
+                    tuserstate()->changeBlockEditBotMessage(true);
+                    return;
+                }
+            }
+
+            throw new RuntimeException('Unknown stage');
         }
-
-        if ($this->stage === self::TITLE_STAGE) {
-            $title = bot()->message()->getText();
-            $newState =  new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
-            tuserstate()->changeState($newState);
-            return;
-        }
-
-        if ($this->stage === self::DATE_STAGE) {
-            $repeat = bot()->message()->getText();
-
-           $this->taskRepository->save(bot()->userId(), $this->title, $repeat);
-
-            message("Задача \"$this->title\" создана");
-            $newState = new MenuBotState(troute('tasks'));
-            tuserstate()->changeState($newState);
-            return;
-        }
-
-        throw new RuntimeException('Unknown stage');
     }
 }

@@ -42,6 +42,7 @@ class MenuBotState extends BotState
             message('Используйте кнопки для навигации');
             tuserstate()->changeBlockEditBotMessage(true);
             tuserstate()->changeState($currentMenuItem->state());
+            return;
         }
 
         $text = bot()->callbackQuery()->data;
@@ -81,6 +82,7 @@ class MenuBotState extends BotState
         if (!$found) {
             message('Выберите значение из списка');
             tuserstate()->changeBlockEditBotMessage(true);
+            return;
         }
 
         $newState = $currentMenuItem->state();

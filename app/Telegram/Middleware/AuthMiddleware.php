@@ -25,7 +25,9 @@ class AuthMiddleware
 
         // если пользователя нет в базе
         if (empty($tuser)) {
-            $this->newUserHandler();
+            if (!$this->newUserHandler()) {
+                return;
+            }
         }
 
         // если есть в базе
@@ -86,18 +88,18 @@ class AuthMiddleware
         bot()->sendMessage("Пароль не верный!");
     }
 
-    private function newUserHandler(): void
+    private function newUserHandler(): bool
     {
         // запрос пароля
         if ((empty($this->text) || $this->text === '/start')) {
             $this->requestOfPassword();
-            exit();
+            return false;
         }
 
         // пароль не верный
         if (!Hash::check($this->text, config("telegram_bot.auth.register_pass"))) {
             $this->incorrectPassword();
-            exit();
+            return false;
         }
 
         // создаем пользователя в базе
@@ -106,7 +108,7 @@ class AuthMiddleware
         $this->createCacheUser($tuser);
 
         bot()->sendMessage("Вы зарегистрированы!");
-        bot()->sendMessage("Обратите внимание на часовой пояс в настройках");
+        return true;
     }
 
     private function existsUserHandler(TelegramUser $tuser): void

@@ -17,13 +17,26 @@ class RecurrenceTaskRepository implements RecurrenceTaskRepositoryContract
             ->where('telegram_id', $userId)
             ->first();
 
-        TaskRecurrence::firstOrCreate([
-            'task_id' => '',
-            'type' => '',
-            'rule' => '',
-            'start_at' => '',
-            'end_at' => '',
+        $task = Task::firstOrCreate([
+            'telegram_user_id' => $tuser->telegram_id,
+            'title' => $title
         ]);
+
+        $parsedDate = humandateparser($date);
+
+        if ($parsedDate->isError()) {
+            return RepositoryResult::error('Не удалось определить график повторений');
+        }
+//
+//        $rtask = TaskRecurrence::firstOrCreate([
+//            'task_id' => $task->id,
+//            'type' => $parsedDate->getType(),
+//            'rule' => $parsedDate->getRule(),
+//            'start_at' => null,
+//            'end_at' => null,
+//        ]);
+
+        return new RepositoryResult(RepositoryResult::SUCCESS_SAVED);
     }
 
     public function findByUserId(int $userId): Collection
@@ -39,6 +52,6 @@ class RecurrenceTaskRepository implements RecurrenceTaskRepositoryContract
 
     public function deleteById(int $userId, int $id): RepositoryResult
     {
-        // TODO: Implement deleteById() method.
+        return new RepositoryResult(RepositoryResult::SUCCESS_DELETED);
     }
 }

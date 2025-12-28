@@ -6,7 +6,7 @@ use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Dto\UserStateDto;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
+use Support\Contracts\HumanDateParserContract;
 
 if (!function_exists('menu')) {
     function menu(): MenuContract
@@ -98,3 +98,13 @@ if (!function_exists('tuserstate')) {
     }
 }
 
+if (!function_exists('humandateparser')) {
+    function humandateparser(?string $date = null): HumanDateParserContract
+    {
+        if (!empty($date)) {
+            return app(HumanDateParserContract::class)->fromString($date);
+        }
+
+        return app(HumanDateParserContract::class);
+    }
+}

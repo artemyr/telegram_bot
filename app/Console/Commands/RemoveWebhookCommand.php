@@ -26,7 +26,5 @@ class RemoveWebhookCommand extends Command
         }
 
         bot()->deleteWebhook();
-
-        exit();
     }
 }

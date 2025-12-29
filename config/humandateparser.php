@@ -11,6 +11,7 @@ return [
         'sun' => 'Воскресенье',
     ],
     'key_words' => [
-        'month_day' => 'числа'
+        'month_day' => 'числа',
+        'every_day' => 'каждый день'
     ]
 ];

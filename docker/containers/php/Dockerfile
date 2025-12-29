@@ -43,6 +43,8 @@ RUN if [ ${XDEBUG_MODE} != 'off' ]; then \
     sed -i "s/#XDEBUG_MODE#/$XDEBUG_MODE/g" /usr/local/etc/php/conf.d/xdebug.ini; \
 fi
 
+RUN echo "alias a='php artisan'" > /home/www-data/.bashrc
+
 WORKDIR /var/www/html
 RUN export HOME="/var/www/html"
 

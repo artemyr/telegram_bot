@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use Domain\Tasks\Models\Task;
 use Domain\Tasks\Presentations\TaskPresentation;
-use Domain\Tasks\Repository\TaskRepository;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -65,9 +64,9 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
 
                     $tasks = Task::query()
                         ->where('telegram_user_id', $user->telegram_id)
-                        ->where(function (Builder $q) use ($todayStart, $todayEnd) {
+                        ->where(function (Builder $q) use ($todayEnd) {
                             $q->whereNull('deadline')
-                                ->orWhereBetween('deadline', [$todayStart, $todayEnd]);
+                                ->orWhere('deadline', '<=', $todayEnd);
                         })
                         ->get();
 

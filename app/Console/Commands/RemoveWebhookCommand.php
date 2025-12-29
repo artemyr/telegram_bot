@@ -10,7 +10,7 @@ use SergiX44\Nutgram\Telegram\Exceptions\TelegramException;
 
 class RemoveWebhookCommand extends Command
 {
-    protected $signature = 'telegram:hook:remove';
+    protected $signature = 't:hook:remove';
     protected $description = 'Удалить вебхук для бота';
 
     /**

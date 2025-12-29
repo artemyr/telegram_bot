@@ -26,63 +26,92 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
             ->select(['id', 'telegram_id', 'timezone'])
             ->with('tasks')
             ->chunk(10, function ($users) {
-                logger()->debug('User batch ' . count($users));
-
                 foreach ($users as $user) {
-                    logger()->debug('Start finding user task ' . $user->telegram_id);
-
-                    $now = now();
-                    $start = now();
-                    $end = now();
-                    $todayStart = now();
-                    $todayEnd = now();
-
-                    logger()->debug(sprintf('before timezone now %s start %s end %s', $now, $start, $end));
-
-                    if (!empty($user->timezone)) {
-                        logger()->debug('User timezone is ' . $user->timezone);
-                        $now->setTimezone($user->timezone);
-                        $start->setTimezone($user->timezone);
-                        $end->setTimezone($user->timezone);
-                        $todayStart->setTimezone($user->timezone);
-                        $todayEnd->setTimezone($user->timezone);
+                    if ($this->isTime($user)) {
+                        $this->recalculateTaskPriority($user);
+                        $this->notify($user);
                     }
-
-                    $start = $start->setTime(9, 00);
-                    $end = $end->setTime(9, 05);
-                    $todayStart = $todayStart->startOfDay();
-                    $todayEnd = $todayEnd->endOfDay();
-
-                    logger()->debug(sprintf('after timezone now %s start %s end %s', $now, $start, $end));
-
-                    if (!$now->between($start, $end)) {
-                        logger()->debug('Not time yet');
-                        continue;
-                    }
-
-                    logger()->debug('User task batch ' . count($user->tasks));
-
-                    $tasks = Task::query()
-                        ->where('telegram_user_id', $user->telegram_id)
-                        ->where(function (Builder $q) use ($todayEnd) {
-                            $q->whereNull('deadline')
-                                ->orWhere('deadline', '<=', $todayEnd);
-                        })
-                        ->get();
-
-                    $response = (string)(new TaskPresentation($tasks, $user->timezone));
-
-                    if (empty($response)) {
-                        logger()->debug('No messages for user' . $user->telegram_id);
-                        continue;
-                    }
-
-                    logger()->debug('Sending ' . $user->telegram_id);
-
-                    message()->text("У вас в плане на сегодня: \n" . $response)->userId($user->telegram_id)->send();
                 }
             });
 
         logger()->debug('Job executed. ' . self::class);
+    }
+
+    protected function isTime(TelegramUser $user): bool
+    {
+        $now = now();
+        $start = now();
+        $end = now();
+
+        if (!empty($user->timezone)) {
+            $now->setTimezone($user->timezone);
+            $start->setTimezone($user->timezone);
+            $end->setTimezone($user->timezone);
+        }
+
+        $start = $start->setTime(9, 00);
+        $end = $end->setTime(9, 05);
+
+
+        if (!$now->between($start, $end)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function recalculateTaskPriority(TelegramUser $user): void
+    {
+        $now = now();
+        if (!empty($user->timezone)) {
+            $now->setTimezone($user->timezone);
+        }
+
+        $tasks = Task::query()
+            ->select(['id', 'priority'])
+            ->where('telegram_user_id', $user->telegram_id)
+            ->single()
+            ->whereNull('deadline')
+            ->get();
+
+        foreach ($tasks as $task) {
+            if ($task->priority < 100) {
+                $task->increment('priority');
+            }
+        }
+    }
+
+    private function notify(TelegramUser $user): void
+    {
+        $now = now();
+        $todayEnd = now();
+
+        if (!empty($user->timezone)) {
+            $now->setTimezone($user->timezone);
+            $todayEnd->setTimezone($user->timezone);
+        }
+
+        $todayEnd = $todayEnd->endOfDay();
+
+        $tasks = Task::query()
+            ->where('telegram_user_id', $user->telegram_id)
+            ->where(function (Builder $q) use ($todayEnd) {
+                $q->whereNull('deadline')
+                    ->orWhere('deadline', '<=', $todayEnd);
+            })
+            ->get();
+
+        $response = (string)(new TaskPresentation($tasks, $user->timezone));
+
+        if (empty($response)) {
+            return;
+        }
+
+        logger()->debug('Sending ' . $user->telegram_id);
+
+        message()
+            ->text("У вас в плане на сегодня: \n" . $response)
+            ->userId($user->telegram_id)
+            ->send();
     }
 }

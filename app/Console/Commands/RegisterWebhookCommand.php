@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class RegisterWebhookCommand extends Command
 {
-    protected $signature = 'telegram:hook:set';
+    protected $signature = 't:hook:set';
     protected $description = 'Зарегистрировать вебхук для бота';
 
     /**

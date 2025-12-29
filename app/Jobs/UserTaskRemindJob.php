@@ -10,11 +10,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Queue\Queueable;
 
-class TaskRemindJob implements ShouldQueue, ShouldBeUnique
+class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
 {
     use Queueable;
 
-    public function __construct()
+    public function __construct(
+        protected int $userId
+    )
     {
     }
 
@@ -22,42 +24,16 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
     {
         logger()->debug('Start job exec ' . self::class);
 
-        TelegramUser::query()
+        $tuser = TelegramUser::query()
             ->select(['id', 'telegram_id', 'timezone'])
+            ->where('telegram_id', $this->userId)
             ->with('tasks')
-            ->chunk(10, function ($users) {
-                foreach ($users as $user) {
-                    if ($this->isTime($user)) {
-                        $this->recalculateTaskPriority($user);
-                        $this->notify($user);
-                    }
-                }
-            });
+            ->first();
+
+        $this->recalculateTaskPriority($tuser);
+        $this->notify($tuser);
 
         logger()->debug('Job executed. ' . self::class);
-    }
-
-    protected function isTime(TelegramUser $user): bool
-    {
-        $now = now();
-        $start = now();
-        $end = now();
-
-        if (!empty($user->timezone)) {
-            $now->setTimezone($user->timezone);
-            $start->setTimezone($user->timezone);
-            $end->setTimezone($user->timezone);
-        }
-
-        $start = $start->setTime(9, 00);
-        $end = $end->setTime(9, 05);
-
-
-        if (!$now->between($start, $end)) {
-            return false;
-        }
-
-        return true;
     }
 
     private function recalculateTaskPriority(TelegramUser $user): void
@@ -70,7 +46,6 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
         $tasks = Task::query()
             ->select(['id', 'priority'])
             ->where('telegram_user_id', $user->telegram_id)
-            ->single()
             ->whereNull('deadline')
             ->get();
 
@@ -113,5 +88,10 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
             ->text("У вас в плане на сегодня: \n" . $response)
             ->userId($user->telegram_id)
             ->send();
+    }
+
+    public function uniqueId(): string
+    {
+        return self::class .'_'. $this->userId;
     }
 }

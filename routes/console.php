@@ -8,8 +8,8 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::job(new \App\Jobs\TaskRemindJob())
-    ->everyFifteenMinutes()
+Schedule::job(new \App\Jobs\GlobalTaskRemindJob())
+    ->daily()
     ->withoutOverlapping();
 
 Schedule::job(new \App\Jobs\NotificationCheckJob())

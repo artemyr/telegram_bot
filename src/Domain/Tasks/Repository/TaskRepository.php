@@ -62,7 +62,7 @@ class TaskRepository implements TaskRepositoryContract
     public function findByUserId(int $userId): Collection
     {
         return Task::query()
-            ->select(['id', 'title', 'deadline'])
+            ->select(['id', 'title', 'deadline', 'created_at'])
             ->sorted()
             ->single()
             ->where('telegram_user_id', $userId)

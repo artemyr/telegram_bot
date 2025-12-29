@@ -51,6 +51,12 @@ class TaskPresentation
 
             if ($deadline) {
                 $row->addCol(new ColDto("($diff)", 'diff'));
+            } else {
+                $createdAt = $task->created_at;
+                $diff = floor($createdAt->diffInDays($now));
+                if ($diff > 0) {
+                    $row->addCol(new ColDto("(создано $diff дней назад)", 'diff'));
+                }
             }
 
             $table->addRow($row);

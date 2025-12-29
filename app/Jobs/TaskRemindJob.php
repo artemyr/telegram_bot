@@ -2,11 +2,13 @@
 
 namespace App\Jobs;
 
+use Domain\Tasks\Models\Task;
 use Domain\Tasks\Presentations\TaskPresentation;
 use Domain\Tasks\Repository\TaskRepository;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Queue\Queueable;
 
 class TaskRemindJob implements ShouldQueue, ShouldBeUnique
@@ -33,6 +35,8 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
                     $now = now();
                     $start = now();
                     $end = now();
+                    $todayStart = now();
+                    $todayEnd = now();
 
                     logger()->debug(sprintf('before timezone now %s start %s end %s', $now, $start, $end));
 
@@ -41,10 +45,14 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
                         $now->setTimezone($user->timezone);
                         $start->setTimezone($user->timezone);
                         $end->setTimezone($user->timezone);
+                        $todayStart->setTimezone($user->timezone);
+                        $todayEnd->setTimezone($user->timezone);
                     }
 
                     $start = $start->setTime(9, 00);
                     $end = $end->setTime(9, 05);
+                    $todayStart = $todayStart->startOfDay();
+                    $todayEnd = $todayEnd->endOfDay();
 
                     logger()->debug(sprintf('after timezone now %s start %s end %s', $now, $start, $end));
 
@@ -55,7 +63,15 @@ class TaskRemindJob implements ShouldQueue, ShouldBeUnique
 
                     logger()->debug('User task batch ' . count($user->tasks));
 
-                    $response = (string)(new TaskPresentation($user->tasks, $user->timezone));
+                    $tasks = Task::query()
+                        ->where('telegram_user_id', $user->telegram_id)
+                        ->where(function (Builder $q) use ($todayStart, $todayEnd) {
+                            $q->whereNull('deadline')
+                                ->orWhereBetween('deadline', [$todayStart, $todayEnd]);
+                        })
+                        ->get();
+
+                    $response = (string)(new TaskPresentation($tasks, $user->timezone));
 
                     if (empty($response)) {
                         logger()->debug('No messages for user' . $user->telegram_id);

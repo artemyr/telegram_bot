@@ -2,8 +2,8 @@
 
 namespace Domain\Tasks\Presentations;
 
-use App\Models\TaskRecurrence;
 use Domain\Tasks\Models\Task;
+use Domain\Tasks\Models\TaskRecurrence;
 use Domain\TelegramBot\Dto\Table\ColDto;
 use Domain\TelegramBot\Dto\Table\RowDto;
 use Domain\TelegramBot\Dto\Table\TableDto;
@@ -29,14 +29,9 @@ class RecurrenceTaskPresentation
         foreach ($this->tasks as $task) {
 
             /** @var TaskRecurrence $rtask */
-            /** @var Task $rtask */
-
-            $rtask = $task->taskRecurrence;
-
             $row = new RowDto();
 
             $row->addCol(new ColDto($task->id, 'id', true));
-            $row->addCol(new ColDto($rtask->id, 'rid', true));
             $row->addCol(new ColDto($task->title, 'title'));
 
             $table->addRow($row);

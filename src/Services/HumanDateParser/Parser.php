@@ -2,61 +2,104 @@
 
 namespace Services\HumanDateParser;
 
+use Domain\Tasks\Enum\TaskRepeatTypesEnum;
 use Illuminate\Pipeline\Pipeline;
+use Services\HumanDateParser\Collection\RecurrenceCollection;
+use Services\HumanDateParser\Exceptions\ParserError;
+use Services\HumanDateParser\Parsers\Day;
+use Services\HumanDateParser\Parsers\Month;
+use Services\HumanDateParser\Parsers\Week;
 use Support\Contracts\HumanDateParserContract;
 
 class Parser implements HumanDateParserContract
 {
-    protected string $type;
-    protected array $rule;
+    const DOUBLE_SET_TYPE_ERROR = 1;
+    const UNKNOWN_FORMAT_ERROR = 2;
+
+    protected TaskRepeatTypesEnum $type;
+    protected string $tz;
+    protected RecurrenceCollection $recurrenceCollection;
 
     protected string $startString;
-    protected bool $error = false;
+    protected int $errorCode;
 
     public function __construct()
     {
+        $this->recurrenceCollection = RecurrenceCollection::make();
     }
 
-    public function fromString(string $date): HumanDateParserContract
+    /**
+     * @throws ParserError
+     */
+    public function fromString(string $date, ?string $tz = null): HumanDateParserContract
     {
+        if (empty($tz)) {
+            $this->tz = config('app.timezone');
+        } else {
+            $this->tz = $tz;
+        }
+
         $this->startString = mb_strtolower($date);
         $this->parse();
         return $this;
     }
 
-    public function getType(): string
+    public function getTimezone(): string
     {
-        return $this->type;
+        return $this->tz;
     }
 
-    public function getRule(): array
+    public function getStartString(): string
     {
-        return $this->rule;
+        return $this->startString;
     }
 
     public function isError(): bool
     {
-        return $this->error;
+        return !empty($this->errorCode);
     }
 
+    public function getErrorCode(): int
+    {
+        return $this->errorCode;
+    }
+
+    /**
+     * @throws ParserError
+     */
     private function parse(): void
     {
-        $result = app(Pipeline::class)
-            ->send([
-                'startString' => $this->startString
-            ])
+        app(Pipeline::class)
+            ->send($this)
             ->through([
                 new Month(),
-                new Week()
+                new Week(),
+                new Day(),
             ])
             ->thenReturn();
 
-        if (empty($result['type'])) {
-            $this->error = true;
-            return;
+        if ($this->getCollection()->isEmpty()) {
+            $this->errorCode = self::UNKNOWN_FORMAT_ERROR;
+        }
+    }
+
+    public function getType(): TaskRepeatTypesEnum
+    {
+        return $this->type;
+    }
+
+    public function setType(TaskRepeatTypesEnum $value): self
+    {
+        if (!empty($this->type)) {
+            $this->errorCode = self::DOUBLE_SET_TYPE_ERROR;
         }
 
-        $this->type = $result['type'];
-        $this->rule = $result['rule'];
+        $this->type = $value;
+        return $this;
+    }
+
+    public function getCollection(): RecurrenceCollection
+    {
+        return $this->recurrenceCollection;
     }
 }

@@ -1,14 +1,16 @@
 <?php
 
+use Carbon\Carbon;
+
 return [
     'week_words' => [
-        'mon' => 'Понедельник',
-        'tue' => 'Вторник',
-        'wed' => 'Среда',
-        'thu' => 'Четверг',
-        'fri' => 'Пятница',
-        'sat' => 'Суббота',
-        'sun' => 'Воскресенье',
+        Carbon::SUNDAY => 'Воскресенье',
+        Carbon::MONDAY => 'Понедельник',
+        Carbon::TUESDAY => 'Вторник',
+        Carbon::WEDNESDAY => 'Среда',
+        Carbon::THURSDAY => 'Четверг',
+        Carbon::FRIDAY => 'Пятница',
+        Carbon::SATURDAY => 'Суббота',
     ],
     'key_words' => [
         'month_day' => 'числа',

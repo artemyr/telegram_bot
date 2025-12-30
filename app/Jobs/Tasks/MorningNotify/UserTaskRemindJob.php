@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Tasks\MorningNotify;
 
 use Domain\Tasks\Models\Task;
 use Domain\Tasks\Presentations\TaskPresentation;

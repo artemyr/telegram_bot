@@ -16,12 +16,22 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
-            $table->string('type');
-            $table->json('rule');
-            $table->timestamp('start_at')
-                ->nullable();
-            $table->timestamp('end_at')
-                ->nullable();
+            $table->enum('type', [
+                'daily',
+                'weekly',
+                'monthly',
+                'custom'
+            ]);
+
+            $table->json('days_of_week')->nullable(); // [1,3] → Пн, Ср
+            $table->json('days_of_month')->nullable(); // [1,5,10]
+
+            $table->time('time'); // 10:00
+
+            $table->boolean('is_active')->default(true);
+
+            $table->timestamp('start_date')->nullable();
+            $table->timestamp('end_date')->nullable();
 
             $table->timestamps();
         });

@@ -69,7 +69,7 @@ class TaskRecurringListState extends BotState
                 $result = $this->taskRepository->deleteById($userDto->userId, $row->getCol('id')->value);
 
                 if ($result->state === RepositoryResult::SUCCESS_DELETED) {
-                    message("Задача \"{$result->model->task->title}\" удалена");
+                    message("Задача \"{$result->model->title}\" удалена");
                     tuserstate()->changeBlockEditBotMessage(true);
                 }
 

@@ -2,7 +2,6 @@
 
 namespace Domain\Tasks\Models;
 
-use App\Models\TaskRecurrence;
 use Domain\TelegramBot\Models\Notifications;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -11,7 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -44,20 +43,20 @@ class Task extends Model
 
             if (!empty($deadline) && ($deadline->getTimestamp() > now()->getTimestamp())) {
                 $task->notifications()
-                    ->create([
+                    ->firstOrCreate([
                         'date' => $deadline,
                     ]);
                 $warning = $deadline->subMinutes(10);
                 if (($warning->getTimestamp() > now()->getTimestamp())) {
                     $task->notifications()
-                        ->create([
+                        ->firstOrCreate([
                             'date' => $warning,
                         ]);
                 }
                 $warning = $deadline->subHours(3);
                 if (($warning->getTimestamp() > now()->getTimestamp())) {
                     $task->notifications()
-                        ->create([
+                        ->firstOrCreate([
                             'date' => $warning,
                         ]);
                 }
@@ -67,6 +66,11 @@ class Task extends Model
         static::deleted(function (Task $model) {
             foreach ($model->notifications as $notification) {
                 $notification->delete();
+            }
+
+            $recurrences = $model->taskRecurrences;
+            foreach ($recurrences as $recurrence) {
+                $recurrence->delete();
             }
         });
     }
@@ -113,8 +117,8 @@ class Task extends Model
         return $this->morphMany(Notifications::class, 'notifiable');
     }
 
-    public function taskRecurrence(): HasOne
+    public function taskRecurrences(): HasMany
     {
-        return $this->hasOne(TaskRecurrence::class);
+        return $this->hasMany(TaskRecurrence::class);
     }
 }

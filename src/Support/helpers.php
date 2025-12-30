@@ -99,10 +99,10 @@ if (!function_exists('tuserstate')) {
 }
 
 if (!function_exists('humandateparser')) {
-    function humandateparser(?string $date = null): HumanDateParserContract
+    function humandateparser(?string $date = null, ?string $tz = null): HumanDateParserContract
     {
         if (!empty($date)) {
-            return app(HumanDateParserContract::class)->fromString($date);
+            return app(HumanDateParserContract::class)->fromString($date, $tz);
         }
 
         return app(HumanDateParserContract::class);

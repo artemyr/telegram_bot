@@ -29,12 +29,12 @@ class TimezoneState extends BotState
         ])->replyKeyboard($keyboard)->send();
     }
 
-    public function handle(): ?BotState
+    public function handle(): void
     {
         if (bot()->message()->getText() === KeyboardEnum::BACK->label()) {
             $newState = new MenuBotState(troute('settings'));
             tuserstate()->changeState($newState);
-            return $newState;
+            return;
         }
 
         foreach (TimezoneEnum::cases() as $case) {
@@ -48,6 +48,7 @@ class TimezoneState extends BotState
             }
         }
 
-        return new TimezoneState();
+        $newState = new TimezoneState();
+        tuserstate()->changeState($newState);
     }
 }

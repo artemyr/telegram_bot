@@ -3,6 +3,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    image:
+      artemyr/telegram_bot/nginx
     build:
       context: ./containers/nginx
       dockerfile: ./Dockerfile
@@ -26,6 +28,8 @@ services:
 
   php:
     platform: linux/amd64
+    image:
+      artemyr/telegram_bot/php
     build:
       context: ./containers/php
       dockerfile: ./Dockerfile
@@ -53,6 +57,8 @@ services:
 
   supervisor:
     container_name: ${PROJECT_PREFIX}_supervisor
+    image:
+      artemyr/telegram_bot/supervisor
     build:
       context: ./containers/supervisor
       dockerfile: ./Dockerfile
@@ -75,6 +81,8 @@ services:
     ports:
       - "33060:3306"
     platform: linux/amd64
+    image:
+      artemyr/telegram_bot/mysql
     build:
         context: ./containers/mysql
         dockerfile: ./Dockerfile

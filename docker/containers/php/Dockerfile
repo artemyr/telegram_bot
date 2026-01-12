@@ -28,7 +28,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 
-RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick redis
+RUN install-php-extensions openssl pdo_mysql mbstring tokenizer xml mysqli imagick redis intl zip
 
 RUN if [ ${XDEBUG_MODE} != 'off' ]; then \
       install-php-extensions xdebug; \

@@ -2,8 +2,8 @@
 
 namespace App\Jobs\Tasks\Recurrence;
 
+use App\Jobs\NotificationJob;
 use Domain\Tasks\Models\Task;
-use Domain\TelegramBot\Models\Notifications;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -49,11 +49,8 @@ class GenerateOneTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
         };
 
         foreach ($dates as $date) {
-            Notifications::firstOrCreate([
-                'date' => $date,
-                'notifiable_id' => $rule->task_id,
-                'notifiable_type' => Task::class,
-            ]);
+            dispatch(new NotificationJob(Task::class, $rule->task_id))
+                ->delay($date);
         }
     }
 

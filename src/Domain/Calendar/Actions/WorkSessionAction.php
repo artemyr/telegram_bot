@@ -2,6 +2,7 @@
 
 namespace Domain\Calendar\Actions;
 
+use App\Jobs\NotificationJob;
 use Domain\Calendar\Models\Timer;
 use Illuminate\Support\Carbon;
 
@@ -34,7 +35,7 @@ class WorkSessionAction
             ->withTrashed()
             ->first();
 
-        $startDate = now()->addSeconds(config('calendar.actions.work.pause_duration', 5));
+        $startDate = now()->addSeconds(5);
 
         if (!empty($timer)) {
             if ($timer->trashed()) {
@@ -55,15 +56,11 @@ class WorkSessionAction
             ]);
         }
 
-        $timer->notifications()->firstOrCreate([
-            'date' => $startDate,
-            'message' => 'Пора отдыхать',
-        ]);
+        dispatch(new NotificationJob(Timer::class, $timer->id, 'Пора отдыхать'))
+            ->delay($startDate);
 
-        $timer->notifications()->firstOrCreate([
-            'date' => $startDate->addMinutes(10),
-            'message' => 'Можно начинать работать',
-        ]);
+        dispatch(new NotificationJob(Timer::class, $timer->id, 'Можно начинать работать'))
+            ->delay($startDate->addSeconds(5));
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
         message("В $time отдых. Я напомню");

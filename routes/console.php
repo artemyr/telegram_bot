@@ -12,10 +12,6 @@ Schedule::job(new \App\Jobs\Tasks\MorningNotify\GlobalTaskRemindJob())
     ->daily()
     ->withoutOverlapping();
 
-Schedule::job(new \App\Jobs\NotificationCheckJob())
-    ->everyMinute()
-    ->withoutOverlapping();
-
 Schedule::job(new \App\Jobs\Tasks\Recurrence\GenerateTaskOccurrencesJob())
     ->weekly()
     ->withoutOverlapping();

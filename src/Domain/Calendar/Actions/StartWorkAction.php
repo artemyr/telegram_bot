@@ -2,6 +2,7 @@
 
 namespace Domain\Calendar\Actions;
 
+use App\Jobs\NotificationJob;
 use Domain\Calendar\Models\Timer;
 use Illuminate\Support\Carbon;
 
@@ -55,10 +56,8 @@ class StartWorkAction
             ]);
         }
 
-        $timer->notifications()->firstOrCreate([
-            'date' => $startDate,
-            'message' => 'Пора завершать рабочий день!',
-        ]);
+        dispatch(new NotificationJob(Timer::class, $timer->id, 'Пора завершать рабочий день!'))
+            ->delay($startDate);
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
         message("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");

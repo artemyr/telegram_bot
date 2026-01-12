@@ -2,7 +2,7 @@
 
 namespace Domain\Tasks\Models;
 
-use Domain\TelegramBot\Models\Notifications;
+use App\Jobs\NotificationJob;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -42,35 +41,20 @@ class Task extends Model
             $deadline = $task->deadline;
 
             if (!empty($deadline) && ($deadline->getTimestamp() > now()->getTimestamp())) {
-                $task->notifications()
-                    ->firstOrCreate([
-                        'date' => $deadline,
-                    ]);
+                dispatch(new NotificationJob(Task::class, $task->id))
+                    ->delay($deadline);
+
                 $warning = $deadline->subMinutes(10);
                 if (($warning->getTimestamp() > now()->getTimestamp())) {
-                    $task->notifications()
-                        ->firstOrCreate([
-                            'date' => $warning,
-                        ]);
+                    dispatch(new NotificationJob(Task::class, $task->id))
+                        ->delay($warning);
                 }
+
                 $warning = $deadline->subHours(3);
                 if (($warning->getTimestamp() > now()->getTimestamp())) {
-                    $task->notifications()
-                        ->firstOrCreate([
-                            'date' => $warning,
-                        ]);
+                    dispatch(new NotificationJob(Task::class, $task->id))
+                        ->delay($warning);
                 }
-            }
-        });
-
-        static::deleted(function (Task $model) {
-            foreach ($model->notifications as $notification) {
-                $notification->delete();
-            }
-
-            $recurrences = $model->taskRecurrences;
-            foreach ($recurrences as $recurrence) {
-                $recurrence->delete();
             }
         });
     }
@@ -110,11 +94,6 @@ class Task extends Model
     public function telegramUser(): BelongsTo
     {
         return $this->belongsTo(TelegramUser::class, 'telegram_user_id', 'telegram_id');
-    }
-
-    public function notifications(): MorphMany
-    {
-        return $this->morphMany(Notifications::class, 'notifiable');
     }
 
     public function taskRecurrences(): HasMany

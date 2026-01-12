@@ -35,7 +35,7 @@ class WorkSessionAction
             ->withTrashed()
             ->first();
 
-        $startDate = now()->addSeconds(5);
+        $startDate = now()->addSeconds(config('calendar.actions.work.pause_duration', 5));
 
         if (!empty($timer)) {
             if ($timer->trashed()) {
@@ -60,7 +60,7 @@ class WorkSessionAction
             ->delay($startDate);
 
         dispatch(new NotificationJob(Timer::class, $timer->id, 'Можно начинать работать'))
-            ->delay($startDate->addSeconds(5));
+            ->delay($startDate->addMinutes(10));
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
         message("В $time отдых. Я напомню");

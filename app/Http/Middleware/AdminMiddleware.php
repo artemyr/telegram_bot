@@ -15,10 +15,6 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->id()) {
-            return redirect(route('filament.admin.auth.login'));
-        }
-
         if (auth()->id() > 0 && auth()->user()->role !== 'admin') {
             return redirect(route('home'));
         }

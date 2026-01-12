@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
+use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\Services\KeyboardManager;
 use Domain\TelegramBot\Services\MessageManager;
 use Domain\TelegramBot\Services\UserStateManager;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class TelegramServiceProvider extends ServiceProvider
@@ -21,5 +24,29 @@ class TelegramServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Gate::define('remove_telegram_hook', function (?User $user) {
+            $tuserId = bot()->userId();
+
+            if (empty($tuserId)) {
+                return false;
+            }
+
+            $tuser = TelegramUser::query()
+                ->with('user')
+                ->where('telegram_id', $tuserId)
+                ->first();
+
+            if (empty($tuser) || empty($tuser->user)) {
+                return false;
+            }
+
+            $user = $tuser->user;
+
+            if ($user->role !== 'admin') {
+                return false;
+            }
+
+            return true;
+        });
     }
 }

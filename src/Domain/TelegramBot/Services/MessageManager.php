@@ -120,6 +120,10 @@ class MessageManager implements MessageContract
             tuserstate()->changeKeyboard(true);
         }
 
+        if ($this->keyboard instanceof InlineKeyboardMarkup) {
+            tuserstate()->changeBlockEditBotMessage(false);
+        }
+
         $this->flush();
     }
 

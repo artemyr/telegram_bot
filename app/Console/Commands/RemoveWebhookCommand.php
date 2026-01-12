@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Domain\TelegramBot\Exceptions\PrintableException;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Gate;
 use JsonException;
 use SergiX44\Nutgram\Telegram\Exceptions\TelegramException;
 
@@ -25,6 +26,11 @@ class RemoveWebhookCommand extends Command
             throw new PrintableException("Can't use it on local");
         }
 
-        bot()->deleteWebhook();
+        if (!Gate::allows('remove_telegram_hook')) {
+            bot()->sendMessage('Запрещено!');
+        } else {
+            bot()->sendMessage('Отключаю!');
+            bot()->deleteWebhook();
+        }
     }
 }

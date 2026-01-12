@@ -19,6 +19,7 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
         protected string $model,
         protected int $id,
         protected ?string $message = null,
+        protected ?string $salt = null
     ) {
     }
 
@@ -95,6 +96,6 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
 
     public function uniqueId(): string
     {
-        return md5(self::class . $this->model . $this->id . $this->message);
+        return md5(self::class . $this->model . $this->id . $this->message . $this->salt);
     }
 }

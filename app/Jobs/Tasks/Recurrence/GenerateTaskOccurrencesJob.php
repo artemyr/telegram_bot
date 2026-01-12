@@ -45,7 +45,7 @@ class GenerateTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
         };
 
         foreach ($dates as $date) {
-            dispatch(new NotificationJob(Task::class, $rule->task_id))
+            dispatch(new NotificationJob(Task::class, $rule->task_id, null, $date))
                 ->delay($date);
         }
     }

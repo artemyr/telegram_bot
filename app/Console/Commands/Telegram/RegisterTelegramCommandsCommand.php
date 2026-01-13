@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Telegram;
 
 use Illuminate\Console\Command;
 use SergiX44\Nutgram\Nutgram;

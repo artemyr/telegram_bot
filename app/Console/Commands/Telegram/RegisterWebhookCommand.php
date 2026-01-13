@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Telegram;
 
 use Domain\TelegramBot\Exceptions\PrintableException;
 use Illuminate\Console\Command;

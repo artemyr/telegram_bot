@@ -19,6 +19,7 @@ Route::get('/tasks/recurrence/list')->name('tasks.recurrence.list');
 Route::get('/food')->name('food');
 
 Route::get('/settings')->name('settings');
+Route::get('/settings/notifications/recreate')->name('notifications.recreate');
 Route::get('/settings/timezone')->name('timezone');
 Route::get('/settings/webhook/on')->name('webhook_on');
 Route::get('/settings/webhook/off')->name('webhook_off');

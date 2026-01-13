@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Telegram;
+namespace App\Console\Commands\Telegram\ButtonCommands;
 
 use Domain\TelegramBot\Exceptions\PrintableException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -11,7 +11,7 @@ use SergiX44\Nutgram\Telegram\Exceptions\TelegramException;
 
 class RemoveWebhookCommand extends Command
 {
-    protected $signature = 't:hook:remove';
+    protected $signature = 'bot:t:hook:remove';
     protected $description = 'Удалить вебхук для бота';
 
     /**
@@ -23,14 +23,17 @@ class RemoveWebhookCommand extends Command
     public function handle()
     {
         if (app()->isLocal()) {
-            throw new PrintableException("Can't use it on local");
+            bot()->sendMessage('Запрещено!');
+            $this->fail("Can't use it on local");
         }
 
         if (!Gate::allows('remove_telegram_hook')) {
             bot()->sendMessage('Запрещено!');
-        } else {
-            bot()->sendMessage('Отключаю!');
-            bot()->deleteWebhook();
+            $this->fail("Forbidden");
         }
+
+        bot()->sendMessage('Отключаю!');
+        bot()->deleteWebhook();
+        return self::SUCCESS;
     }
 }

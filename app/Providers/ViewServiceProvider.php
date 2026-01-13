@@ -36,7 +36,7 @@ class ViewServiceProvider extends ServiceProvider
                 ->add(MenuItem::make(troute('food'), '🍗 Еда'))
                 ->add(
                     MenuItem::make(troute('settings'), '⚙️ Настройки')
-                        ->add(MenuItem::make(troute('notifications.recreate'), 'Пересоздать все напоминания по задачам', fn() => Artisan::call('user:notifications:recreate')))
+                        ->add(MenuItem::make(troute('notifications.recreate'), 'Пересоздать мои напоминания по задачам', fn() => Artisan::call('user:notifications:recreate')))
                         ->add(MenuItem::make(troute('timezone'), '🕒 Часовой пояс', TimezoneState::class))
                         ->add(MenuItem::make(troute('webhook_off'), 'Отключить webhook', fn() => Artisan::call('t:hook:remove')))
                 );

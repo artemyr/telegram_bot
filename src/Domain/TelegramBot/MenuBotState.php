@@ -60,6 +60,7 @@ class MenuBotState extends BotState
                     if ($item->link() === $text) {
 
                         if ($item->isCallback()) {
+                            message("Выполнение \"{$item->label()}\"");
                             $call = $item->getCallback();
                             $call();
                             $currentMenuItem = $item->getParent();

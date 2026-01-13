@@ -5,6 +5,7 @@ namespace Tests;
 use Domain\TelegramBot\Services\MessageManager;
 use Domain\TelegramBot\Services\UserStateManager;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Queue;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -14,5 +15,6 @@ abstract class TestCase extends BaseTestCase
 
         MessageManager::fake();
         UserStateManager::fake();
+        Queue::fake();
     }
 }

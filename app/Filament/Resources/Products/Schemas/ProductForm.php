@@ -19,12 +19,12 @@ class ProductForm
                 Toggle::make('exists')
                     ->required(),
                 TextInput::make('expire_days')
-                    ->required()
                     ->numeric(),
                 DateTimePicker::make('expire'),
                 DateTimePicker::make('buy_at'),
                 Select::make('store')
                     ->options(['fridge' => 'Fridge', 'grocery' => 'Grocery', 'other' => 'Other'])
+                    ->default('other')
                     ->required(),
             ]);
     }

@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->string('title');
             $table->boolean('exists');
-            $table->unsignedInteger('expire_days');
+            $table->unsignedInteger('expire_days')->nullable();
             $table->timestamp('expire')->nullable();
             $table->timestamp('buy_at')->nullable();
 
@@ -24,7 +24,7 @@ return new class extends Migration
                 'fridge',
                 'grocery',
                 'other',
-            ]);
+            ])->default('other');
 
             $table->timestamps();
         });

@@ -20,14 +20,10 @@ class SendMessageJob implements ShouldQueue
 
     public function handle(): void
     {
-        logger()->debug('Start job exec ' . self::class);
-
         bot()->sendMessage(
             text: $this->message,
             chat_id: $this->userId,
             reply_markup: $this->keyboard,
         );
-
-        logger()->debug('Job executed. ' . self::class);
     }
 }

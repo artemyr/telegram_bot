@@ -4,6 +4,7 @@ namespace Domain\TelegramBot\Services;
 
 use App\Jobs\SendMessageJob;
 use Domain\TelegramBot\Contracts\MessageContract;
+use Domain\TelegramBot\Enum\LastMessageType;
 use Domain\TelegramBot\Exceptions\MessageManagerException;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
@@ -22,7 +23,6 @@ class MessageManager implements MessageContract
     protected bool $replyKeyboard = false;
     protected int $userId;
     protected int $delay = 0;
-    protected bool $tryEditLast = false;
 
     public function __construct()
     {
@@ -47,12 +47,6 @@ class MessageManager implements MessageContract
     public function delay(int $delay): MessageContract
     {
         $this->delay = $delay;
-        return $this;
-    }
-
-    public function tryEditLast(bool $try = true): MessageContract
-    {
-        $this->tryEditLast = $try;
         return $this;
     }
 
@@ -105,7 +99,7 @@ class MessageManager implements MessageContract
 
         $userDto = tuser();
 
-        if ($this->tryEditLast && !empty($userDto) && $userDto->blockEditBotMessage === false) {
+        if (!empty($userDto) && $userDto->lastMessageType === LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE) {
             try {
                 $this->editLastMessage();
             } catch (Throwable $e) {
@@ -121,7 +115,11 @@ class MessageManager implements MessageContract
         }
 
         if ($this->keyboard instanceof InlineKeyboardMarkup) {
-            tuserstate()->changeBlockEditBotMessage(false);
+            tuserstate()->changeLastMessageType(LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE);
+        } elseif ($this->keyboard instanceof ReplyKeyboardMarkup) {
+            tuserstate()->changeLastMessageType(LastMessageType::REPLY_KEYBOARD_BOT_MESSAGE);
+        } else {
+            tuserstate()->changeLastMessageType(LastMessageType::TEXT_BOT_MESSAGE);
         }
 
         $this->flush();
@@ -143,7 +141,7 @@ class MessageManager implements MessageContract
     private function editLastMessage(): void
     {
         if ($this->driver === 'jobs') {
-            throw new MessageManagerException('Driver not supported');
+            throw MessageManagerException::driverNotSupported();
         }
 
         if ($this->driver === 'runtime') {
@@ -155,7 +153,7 @@ class MessageManager implements MessageContract
             return;
         }
 
-        throw new MessageManagerException('Driver not supported');
+        throw MessageManagerException::driverNotSupported();
     }
 
     /**
@@ -183,7 +181,7 @@ class MessageManager implements MessageContract
             return;
         }
 
-        throw new MessageManagerException('Driver not supported');
+        throw MessageManagerException::driverNotSupported();
     }
 
     private function flush(): void
@@ -192,6 +190,5 @@ class MessageManager implements MessageContract
         $this->keyboard = null;
         $this->replyKeyboard = false;
         $this->delay = 0;
-        $this->tryEditLast = false;
     }
 }

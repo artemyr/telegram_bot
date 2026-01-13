@@ -13,8 +13,6 @@ class StartWorkAction
 
     public function __invoke(): void
     {
-        logger()->debug('Start to execute action: ' . self::class);
-
         $userDto = tuser();
 
         $timer = Timer::query()
@@ -24,8 +22,6 @@ class StartWorkAction
 
         if ($timer && $timer->active) {
             message("Вы уже запустили рабочий день!");
-            tuserstate()->changeBlockEditBotMessage(true);
-            logger()->debug('Action ' . self::class . ' skipped');
             return;
         }
 
@@ -61,8 +57,5 @@ class StartWorkAction
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
         message("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
-        tuserstate()->changeBlockEditBotMessage(true);
-
-        logger()->debug('Success execute action: ' . self::class);
     }
 }

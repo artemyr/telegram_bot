@@ -27,10 +27,7 @@ class MenuBotState extends BotState
         message()
             ->text($menu->label())
             ->inlineKeyboard($buttons)
-            ->tryEditLast()
             ->send();
-
-        tuserstate()->changeBlockEditBotMessage(false);
     }
 
     public function handle(): void
@@ -40,7 +37,6 @@ class MenuBotState extends BotState
 
         if (!bot()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
-            tuserstate()->changeBlockEditBotMessage(true);
             tuserstate()->changeState($currentMenuItem->state());
             return;
         }
@@ -81,7 +77,6 @@ class MenuBotState extends BotState
 
         if (!$found) {
             message('Выберите значение из списка');
-            tuserstate()->changeBlockEditBotMessage(true);
             return;
         }
 

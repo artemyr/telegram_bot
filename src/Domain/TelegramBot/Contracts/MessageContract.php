@@ -8,7 +8,6 @@ interface MessageContract
     public function delay(int $delay): self;
     public function replyKeyboard(array $keyboard): self;
     public function inlineKeyboard(array $keyboard): self;
-    public function tryEditLast(bool $try = true): self;
     public function userId(int $userId): self;
     public function send(): void;
 

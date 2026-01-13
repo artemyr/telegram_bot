@@ -17,8 +17,6 @@ class GlobalTaskRemindJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        logger()->debug('Start job exec ' . self::class);
-
         TelegramUser::query()
             ->select(['id', 'telegram_id', 'timezone'])
             ->with('tasks')
@@ -36,7 +34,5 @@ class GlobalTaskRemindJob implements ShouldQueue, ShouldBeUnique
                         ->delay($startDate);
                 }
             });
-
-        logger()->debug('Job executed. ' . self::class);
     }
 }

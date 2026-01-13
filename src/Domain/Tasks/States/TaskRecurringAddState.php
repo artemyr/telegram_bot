@@ -58,7 +58,6 @@ class TaskRecurringAddState extends BotState
         message()
             ->text($text)
             ->inlineKeyboard(keyboard()->back())
-            ->tryEditLast()
             ->send();
     }
 
@@ -88,7 +87,6 @@ class TaskRecurringAddState extends BotState
 
                 if ($result->state === RepositoryResult::SUCCESS_SAVED) {
                     message("Задача \"$this->title\" создана");
-                    tuserstate()->changeBlockEditBotMessage(true);
                     $newState = new MenuBotState(troute('tasks'));
                     tuserstate()->changeState($newState);
                     return;
@@ -96,7 +94,6 @@ class TaskRecurringAddState extends BotState
 
                 if ($result->state === RepositoryResult::ERROR) {
                     message("Ошибка создания задачи \"$this->title\"");
-                    tuserstate()->changeBlockEditBotMessage(true);
                     return;
                 }
             }

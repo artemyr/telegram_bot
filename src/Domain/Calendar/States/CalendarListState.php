@@ -24,7 +24,6 @@ class CalendarListState extends BotState
                 "Список событий:",
                 (string)(new TimerPresentation($timers, tusertimezone()))
             ])
-            ->tryEditLast()
             ->inlineKeyboard(keyboard()->back())
             ->send();
     }
@@ -68,7 +67,6 @@ class CalendarListState extends BotState
                 } else {
                     message("Таймер не найден");
                 }
-                tuserstate()->changeBlockEditBotMessage(true);
                 return;
             }
         }

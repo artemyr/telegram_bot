@@ -33,7 +33,6 @@ class TaskRecurringListState extends BotState
                 (string)$table
             ])
             ->inlineKeyboard(keyboard()->back())
-            ->tryEditLast()
             ->send();
     }
 
@@ -70,7 +69,6 @@ class TaskRecurringListState extends BotState
 
                 if ($result->state === RepositoryResult::SUCCESS_DELETED) {
                     message("Задача \"{$result->model->title}\" удалена");
-                    tuserstate()->changeBlockEditBotMessage(true);
                 }
 
                 if ($result->state === RepositoryResult::ERROR) {

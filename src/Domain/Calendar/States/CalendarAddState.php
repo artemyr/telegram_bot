@@ -22,7 +22,6 @@ class CalendarAddState extends BotState
                 "Раздел: Календарь",
                 "Выберите что хотите отметить:"
             ])->inlineKeyboard($keyboard)
-            ->tryEditLast()
             ->send();
     }
 
@@ -30,7 +29,6 @@ class CalendarAddState extends BotState
     {
         if (!bot()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
-            tuserstate()->changeBlockEditBotMessage(true);
             return;
         }
 
@@ -45,7 +43,6 @@ class CalendarAddState extends BotState
 
         foreach (CalendarAddEnum::cases() as $case) {
             if ($text === $case->value) {
-                bot()->message()?->delete();
                 message("Вы отметили: " . $case->label());
                 $action = new ($case->action());
                 $action();

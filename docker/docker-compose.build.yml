@@ -1,0 +1,29 @@
+services:
+  nginx:
+    build:
+      context: ./containers/nginx
+      dockerfile: ./Dockerfile
+      args:
+        DOMAIN: "$DOMAIN"
+
+  php:
+    build:
+      context: ./containers/php
+      dockerfile: ./Dockerfile
+      args:
+        USER_ID: "$USER_ID"
+        GROUP_ID: "$GROUP_ID"
+        XDEBUG_MODE: "$XDEBUG_MODE"
+
+  supervisor:
+    build:
+      context: ./containers/supervisor
+      dockerfile: ./Dockerfile
+      args:
+        USER_ID: "$USER_ID"
+        GROUP_ID: "$GROUP_ID"
+
+  mysql:
+    build:
+        context: ./containers/mysql
+        dockerfile: ./Dockerfile

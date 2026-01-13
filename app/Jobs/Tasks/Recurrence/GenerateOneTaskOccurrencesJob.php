@@ -20,8 +20,6 @@ class GenerateOneTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        logger()->debug('Start job exec ' . self::class);
-
         $from = now()->startOfDay();
         $to = now()->addWeek()->endOfDay();
 
@@ -35,8 +33,6 @@ class GenerateOneTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
                 $this->generateForRule($rule, $from, $to);
             }
         }
-
-        logger()->debug('Job executed. ' . self::class);
     }
 
     protected function generateForRule($rule, $from, $to): void

@@ -22,8 +22,6 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        logger()->debug('Start job exec ' . self::class);
-
         $tuser = TelegramUser::query()
             ->select(['id', 'telegram_id', 'timezone'])
             ->where('telegram_id', $this->userId)
@@ -32,8 +30,6 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
 
         $this->recalculateTaskPriority($tuser);
         $this->notify($tuser);
-
-        logger()->debug('Job executed. ' . self::class);
     }
 
     private function recalculateTaskPriority(TelegramUser $user): void
@@ -81,8 +77,6 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
         if (empty($response)) {
             return;
         }
-
-        logger()->debug('Sending ' . $user->telegram_id);
 
         message()
             ->text("У вас в плане на сегодня: \n" . $response)

@@ -28,8 +28,6 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        logger()->debug('Start job exec ' . self::class);
-
         /** @var Model $notifiable */
         $notifiable = $this->model;
 
@@ -40,7 +38,6 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
                     ->first();
 
                 if (empty($task)) {
-                    logger()->debug('Job executed. Task not found ' . $this->id . self::class);
                     return;
                 }
 
@@ -76,11 +73,9 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
                     ->first();
 
                 if (empty($timer)) {
-                    logger()->debug('Job executed. Timer not found ' . $this->id . self::class);
                     return;
                 }
 
-                logger()->debug('send message' . $this->id . ' ' . $timer->telegram_user_id . ' ' . $this->message);
                 message()
                     ->text($this->message)
                     ->userId($timer->telegram_user_id)
@@ -90,8 +85,6 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
             default:
                 throw new Exception('Job exec failed ' . self::class);
         }
-
-        logger()->debug('Job executed. ' . self::class);
     }
 
     public function uniqueId(): string

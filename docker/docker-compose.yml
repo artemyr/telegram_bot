@@ -3,13 +3,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    image:
-      artemyr/telegram_bot/nginx
-    build:
-      context: ./containers/nginx
-      dockerfile: ./Dockerfile
-      args:
-        DOMAIN: "$DOMAIN"
+    image: artemyr/telegram_bot_nginx
     container_name: ${PROJECT_PREFIX}_webserver
     platform: linux/amd64
     depends_on:
@@ -28,15 +22,7 @@ services:
 
   php:
     platform: linux/amd64
-    image:
-      artemyr/telegram_bot/php
-    build:
-      context: ./containers/php
-      dockerfile: ./Dockerfile
-      args:
-        USER_ID: "$USER_ID"
-        GROUP_ID: "$GROUP_ID"
-        XDEBUG_MODE: "$XDEBUG_MODE"
+    image: artemyr/telegram_bot_php
     container_name: ${PROJECT_PREFIX}_php
     volumes:
       - ./../:/var/www/html
@@ -57,17 +43,11 @@ services:
 
   supervisor:
     container_name: ${PROJECT_PREFIX}_supervisor
-    image:
-      artemyr/telegram_bot/supervisor
-    build:
-      context: ./containers/supervisor
-      dockerfile: ./Dockerfile
-      args:
-        USER_ID: "$USER_ID"
-        GROUP_ID: "$GROUP_ID"
+    image: artemyr/telegram_bot_supervisor
     volumes:
       - ./../:/var/www/html
       - ./logs/supervisor:/var/log/supervisor
+    restart: unless-stopped
     depends_on:
       - php
       - mysql
@@ -76,16 +56,13 @@ services:
     image: redis:7-alpine
     command: redis-server --requirepass ${REDIS_PASSWORD}
     container_name: ${PROJECT_PREFIX}_redis
+    restart: unless-stopped
 
   mysql:
     ports:
       - "33060:3306"
     platform: linux/amd64
-    image:
-      artemyr/telegram_bot/mysql
-    build:
-        context: ./containers/mysql
-        dockerfile: ./Dockerfile
+    image: artemyr/telegram_bot_mysql
     container_name: ${PROJECT_PREFIX}_mysql
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}

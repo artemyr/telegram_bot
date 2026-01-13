@@ -29,7 +29,6 @@ class TaskAddState extends BotState
                 "Можно вводить сразу несколько задач, каждая на новой строке",
             ])
             ->inlineKeyboard(keyboard()->back())
-            ->tryEditLast()
             ->send();
     }
 
@@ -78,7 +77,6 @@ class TaskAddState extends BotState
                 message()
                     ->text($response)
                     ->send();
-                tuserstate()->changeBlockEditBotMessage(true);
             }
 
             return;

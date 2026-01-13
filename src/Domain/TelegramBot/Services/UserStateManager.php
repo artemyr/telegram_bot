@@ -2,9 +2,11 @@
 
 namespace Domain\TelegramBot\Services;
 
+use App\Events\ChangeUserStateEvent;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Dto\UserStateDto;
+use Domain\TelegramBot\Enum\LastMessageType;
 use Domain\TelegramBot\Exceptions\UserStateManagerException;
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\UserStateStore;
@@ -20,7 +22,7 @@ class UserStateManager implements UserStateContract
     public function get(): ?UserStateDto
     {
         if (self::$fake) {
-            return new UserStateDto(1, new MenuBotState(troute('home')), false, false);
+            return new UserStateDto(1, new MenuBotState(troute('home')), false, LastMessageType::USER_MESSAGE);
         }
 
         if (empty(bot()->userId())) {
@@ -44,21 +46,19 @@ class UserStateManager implements UserStateContract
         $this->checkUser($user);
 
         UserStateStore::set($user->userId, $user);
-
-        logger()->debug('Write user state: ' . json_encode($user));
     }
 
     public function make(
         int $userId,
         BotState $state,
         bool $keyboard = false,
-        bool $blockEditBotMessage = true,
+        LastMessageType $lastMessageType = LastMessageType::USER_MESSAGE,
     ): UserStateDto {
         return new UserStateDto(
             $userId,
             $state,
             $keyboard,
-            $blockEditBotMessage,
+            $lastMessageType,
         );
     }
 
@@ -77,13 +77,13 @@ class UserStateManager implements UserStateContract
     /**
      * @throws UserStateManagerException
      */
-    public function changeBlockEditBotMessage(bool $state): void
+    public function changeLastMessageType(LastMessageType $type): void
     {
         if (self::$fake) {
             return;
         }
 
-        $this->changeParam('blockEditBotMessage', $state);
+        $this->changeParam('lastMessageType', $type);
     }
 
     /**
@@ -132,8 +132,6 @@ class UserStateManager implements UserStateContract
         if (is_object($value) || is_array($value)) {
             $value = json_encode($value);
         }
-
-        logger()->debug("User " . bot()->userId() . " change param $param from $from to $value");
     }
 
     /**

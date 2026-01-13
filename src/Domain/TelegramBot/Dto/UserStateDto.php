@@ -3,6 +3,7 @@
 namespace Domain\TelegramBot\Dto;
 
 use Domain\TelegramBot\BotState;
+use Domain\TelegramBot\Enum\LastMessageType;
 
 readonly class UserStateDto
 {
@@ -10,7 +11,7 @@ readonly class UserStateDto
         public int $userId,
         public BotState $state,
         public bool $keyboard,
-        public bool $blockEditBotMessage,
+        public LastMessageType $lastMessageType,
     ) {
     }
 
@@ -20,7 +21,7 @@ readonly class UserStateDto
             'userId' => $this->userId,
             'state' => $this->state,
             'keyboard' => $this->keyboard,
-            'blockEditBotMessage' => $this->blockEditBotMessage,
+            'lastMessageType' => $this->lastMessageType,
         ];
     }
 
@@ -30,7 +31,7 @@ readonly class UserStateDto
             $values['userId'],
             $values['state'],
             $values['keyboard'],
-            $values['blockEditBotMessage'],
+            $values['lastMessageType'],
         );
     }
 

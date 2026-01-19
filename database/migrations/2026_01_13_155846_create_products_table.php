@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('title');
-            $table->boolean('exists');
+            $table->boolean('exist');
             $table->unsignedInteger('expire_days')->nullable();
             $table->timestamp('expire')->nullable();
             $table->timestamp('buy_at')->nullable();

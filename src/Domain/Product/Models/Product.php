@@ -8,7 +8,7 @@ class Product extends Model
 {
     protected $fillable = [
         'title',
-        'exists',
+        'exist',
         'expire_days',
         'expire',
         'buy_at',
@@ -18,6 +18,6 @@ class Product extends Model
     protected $casts = [
         'buy_at' => 'datetime',
         'expire' => 'datetime',
-        'exists' => 'boolean',
+        'exist' => 'boolean',
     ];
 }

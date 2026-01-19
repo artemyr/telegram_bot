@@ -6,6 +6,7 @@ use App\Menu\MenuContract;
 use App\Menu\MenuItem;
 use Domain\Calendar\States\CalendarAddState;
 use Domain\Calendar\States\CalendarListState;
+use Domain\Product\States\ProductListState;
 use Domain\Settings\States\TimezoneState;
 use Domain\Tasks\States\TaskAddState;
 use Domain\Tasks\States\TaskListState;
@@ -33,7 +34,7 @@ class ViewServiceProvider extends ServiceProvider
                     ->add(MenuItem::make(troute('tasks.recurrence.list'), '✅ Список повторяющихся задач', TaskRecurringListState::class))
                     ->add(MenuItem::make(troute('tasks.recurrence.add'), '➕ Добавить повторяющуюся задачу', TaskRecurringAddState::class))
                 )
-                ->add(MenuItem::make(troute('food'), '🍗 Еда'))
+                ->add(MenuItem::make(troute('food'), '🍗 Еда', ProductListState::class))
                 ->add(
                     MenuItem::make(troute('settings'), '⚙️ Настройки')
                         ->add(MenuItem::make(troute('notifications.recreate'), 'Пересоздать мои напоминания по задачам', fn() => Artisan::call('bot:user:notifications:recreate')))

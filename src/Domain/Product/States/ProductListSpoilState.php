@@ -48,7 +48,7 @@ class ProductListSpoilState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                $newState = new MenuBotState(troute('home'));
+                $newState = new MenuBotState(troute('food'));
                 tuserstate()->changeState($newState);
                 return;
             }

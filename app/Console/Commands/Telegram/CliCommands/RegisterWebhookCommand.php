@@ -7,8 +7,8 @@ use Illuminate\Console\Command;
 
 class RegisterWebhookCommand extends Command
 {
-    protected $signature = 't:hook:set';
-    protected $description = 'Зарегистрировать вебхук для бота';
+    protected $signature = 't:hook:set {bot_name? : Bot name}';
+    protected $description = 'Зарегистрировать вебхуки для ботов';
 
     /**
      * @throws PrintableException
@@ -19,10 +19,33 @@ class RegisterWebhookCommand extends Command
             $this->fail("Can't use it on local");
         }
 
-        $this->call('nutgram:hook:set', [
-            'url' => config('app.url') . "/api/webhook",
-            '--ip' => config('telegram_bot.serverip')
-        ]);
+        $choice = $this->argument('bot_name');
+
+        if (empty($choice)) {
+            $choice = $this->choice('What bot need to register hook?', [
+                'schedule',
+                'travel',
+                'all',
+            ], 'schedule');
+        }
+
+        switch ($choice) {
+            case 'schedule':
+                $this->info('schedule');
+                schedule_bot()->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
+                break;
+            case 'travel':
+                $this->info('travel');
+                travel_bot()->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                break;
+            case 'all':
+                $this->info('travel and schedule');
+                schedule_bot()->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
+                travel_bot()->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                break;
+            default:
+                $this->fail("Unknown bot name");
+        }
 
         return self::SUCCESS;
     }

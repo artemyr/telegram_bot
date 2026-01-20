@@ -23,17 +23,17 @@ class RemoveWebhookCommand extends Command
     public function handle()
     {
         if (app()->isLocal()) {
-            bot()->sendMessage('Запрещено!');
+            schedule_bot()->sendMessage('Запрещено!');
             $this->fail("Can't use it on local");
         }
 
         if (!Gate::allows('remove_telegram_hook')) {
-            bot()->sendMessage('Запрещено!');
+            schedule_bot()->sendMessage('Запрещено!');
             $this->fail("Forbidden");
         }
 
-        bot()->sendMessage('Отключаю!');
-        bot()->deleteWebhook();
+        schedule_bot()->sendMessage('Отключаю!');
+        schedule_bot()->deleteWebhook();
         return self::SUCCESS;
     }
 }

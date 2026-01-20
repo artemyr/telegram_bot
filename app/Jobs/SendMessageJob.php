@@ -20,7 +20,7 @@ class SendMessageJob implements ShouldQueue
 
     public function handle(): void
     {
-        bot()->sendMessage(
+        schedule_bot()->sendMessage(
             text: $this->message,
             chat_id: $this->userId,
             reply_markup: $this->keyboard,

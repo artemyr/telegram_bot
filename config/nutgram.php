@@ -22,4 +22,9 @@ return [
 
     // Set log channel
     'log_channel' => env('TELEGRAM_LOG_CHANNEL', 'null'),
+
+    'bots' => [
+        'schedule' => env('TELEGRAM_SCHEDULE_BOT_TOKEN', ''),
+        'travel' => env('TELEGRAM_TRAVEL_BOT_TOKEN', ''),
+    ]
 ];

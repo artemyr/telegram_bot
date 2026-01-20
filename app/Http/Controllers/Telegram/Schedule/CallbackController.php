@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Telegram;
+namespace App\Http\Controllers\Telegram\Schedule;
+
+use App\Http\Controllers\Telegram\AbstractTelegramController;
 
 class CallbackController extends AbstractTelegramController
 {

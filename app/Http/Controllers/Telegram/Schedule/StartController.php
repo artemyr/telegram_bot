@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Telegram;
+namespace App\Http\Controllers\Telegram\Schedule;
 
+use App\Http\Controllers\Telegram\AbstractTelegramController;
 use Domain\TelegramBot\MenuBotState;
 
 class StartController extends AbstractTelegramController
@@ -9,12 +10,9 @@ class StartController extends AbstractTelegramController
     public function __invoke()
     {
         $this->try(function () {
+            logger()->debug('schedule start command invoke');
+
             $userDto = tuser();
-
-            if (config('telegram_bot.debug', false)) {
-                message()->text("Состояние пользователя: \n```\n$userDto\n```")->send();
-            }
-
             $state = $userDto->state ?? new MenuBotState();
             $state->render();
         });

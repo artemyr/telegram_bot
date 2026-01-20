@@ -27,12 +27,12 @@ class CalendarAddState extends BotState
 
     public function handle(): void
     {
-        if (!bot()->isCallbackQuery()) {
+        if (!schedule_bot()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
             return;
         }
 
-        $text = bot()->callbackQuery()->data;
+        $text = schedule_bot()->callbackQuery()->data;
 
         if ($text === KeyboardEnum::BACK->value) {
             keyboard()->remove();

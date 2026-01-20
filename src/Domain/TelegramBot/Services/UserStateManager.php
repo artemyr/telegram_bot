@@ -25,11 +25,11 @@ class UserStateManager implements UserStateContract
             return new UserStateDto(1, new MenuBotState(troute('home')), false, LastMessageType::USER_MESSAGE);
         }
 
-        if (empty(bot()->userId())) {
+        if (empty(schedule_bot()->userId())) {
             return null;
         }
 
-        $userDto = UserStateStore::get(bot()->userId());
+        $userDto = UserStateStore::get(schedule_bot()->userId());
 
         if ($userDto) {
             $this->checkUser($userDto);

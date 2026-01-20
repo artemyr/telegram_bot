@@ -34,7 +34,11 @@ class ViewServiceProvider extends ServiceProvider
                     ->add(MenuItem::make(troute('tasks.recurrence.list'), '✅ Список повторяющихся задач', TaskRecurringListState::class))
                     ->add(MenuItem::make(troute('tasks.recurrence.add'), '➕ Добавить повторяющуюся задачу', TaskRecurringAddState::class))
                 )
-                ->add(MenuItem::make(troute('food'), '🍗 Еда', ProductListState::class))
+                ->add(MenuItem::make(troute('food'), '🍗 Еда')
+                    ->add(MenuItem::make(troute('food.to_buy'), 'Список что надо купить', ProductListState::class))
+                    ->add(MenuItem::make(troute('food.bought'), 'Отметить что купил', ProductListState::class))
+                    ->add(MenuItem::make(troute('food.spoil'), 'Отметить что закончилось', ProductListState::class))
+                )
                 ->add(
                     MenuItem::make(troute('settings'), '⚙️ Настройки')
                         ->add(MenuItem::make(troute('notifications.recreate'), 'Пересоздать мои напоминания по задачам', fn() => Artisan::call('bot:user:notifications:recreate')))

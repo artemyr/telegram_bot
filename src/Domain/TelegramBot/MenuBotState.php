@@ -9,6 +9,8 @@ class MenuBotState extends BotState
 {
     public function render(): void
     {
+        logger()->debug('menu render');
+
         keyboard()->remove();
 
         $menu = menu()->getCurrentCategoryItem();
@@ -32,16 +34,18 @@ class MenuBotState extends BotState
 
     public function handle(): void
     {
+        logger()->debug('menu handle');
+
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
 
-        if (!bot()->isCallbackQuery()) {
+        if (!schedule_bot()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
             tuserstate()->changeState($currentMenuItem->state());
             return;
         }
 
-        $text = bot()->callbackQuery()->data;
+        $text = schedule_bot()->callbackQuery()->data;
 
         if (!empty($text)) {
             if ($text === KeyboardEnum::BACK->value) {

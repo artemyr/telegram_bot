@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\App\Http\Controllers\Telegram;
 
-use App\Http\Controllers\Telegram\StartController;
+use App\Http\Controllers\Telegram\Schedule\StartController;
 use Tests\TestCase;
 
 class StartControllerTest extends TestCase

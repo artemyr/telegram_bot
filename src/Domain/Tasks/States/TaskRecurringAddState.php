@@ -63,8 +63,8 @@ class TaskRecurringAddState extends BotState
 
     public function handle(): void
     {
-        if (bot()->isCallbackQuery()) {
-            $query = bot()->callbackQuery()->data;
+        if (schedule_bot()->isCallbackQuery()) {
+            $query = schedule_bot()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
@@ -74,16 +74,16 @@ class TaskRecurringAddState extends BotState
             }
         } else {
             if ($this->stage === self::TITLE_STAGE) {
-                $title = bot()->message()->getText();
+                $title = schedule_bot()->message()->getText();
                 $newState = new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
                 tuserstate()->changeState($newState);
                 return;
             }
 
             if ($this->stage === self::DATE_STAGE) {
-                $repeat = bot()->message()->getText();
+                $repeat = schedule_bot()->message()->getText();
 
-                $result = $this->taskRepository->save(bot()->userId(), $this->title, $repeat);
+                $result = $this->taskRepository->save(schedule_bot()->userId(), $this->title, $repeat);
 
                 if ($result->state === RepositoryResult::SUCCESS_SAVED) {
                     message("Задача \"$this->title\" создана");

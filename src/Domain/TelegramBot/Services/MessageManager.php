@@ -28,7 +28,7 @@ class MessageManager implements MessageContract
     {
         $this->driver = config('telegram_bot.messages.driver', 'runtime');
 
-        $userId = bot()->userId();
+        $userId = schedule_bot()->userId();
         if (!empty($userId)) {
             $this->userId = $userId;
         }
@@ -145,7 +145,7 @@ class MessageManager implements MessageContract
         }
 
         if ($this->driver === 'runtime') {
-            bot()->editMessageText(
+            schedule_bot()->editMessageText(
                 text: $this->text,
                 chat_id: $this->userId,
                 reply_markup: $this->keyboard,
@@ -173,7 +173,7 @@ class MessageManager implements MessageContract
         }
 
         if ($this->driver === 'runtime') {
-            bot()->sendMessage(
+            schedule_bot()->sendMessage(
                 text: $this->text,
                 chat_id: $this->userId,
                 reply_markup: $this->keyboard,

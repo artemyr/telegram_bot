@@ -1,6 +1,8 @@
 <?php
 
 use App\Menu\MenuContract;
+use App\Telegram\Contracts\ScheduleBotContract;
+use App\Telegram\Contracts\TravelBotContract;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
@@ -44,10 +46,17 @@ if (!function_exists('try')) {
     }
 }
 
-if (!function_exists('bot')) {
-    function bot(): Nutgram
+if (!function_exists('travel_bot')) {
+    function travel_bot(): Nutgram
     {
-        return app(Nutgram::class);
+        return app(TravelBotContract::class);
+    }
+}
+
+if (!function_exists('schedule_bot')) {
+    function schedule_bot(): Nutgram
+    {
+        return app(ScheduleBotContract::class);
     }
 }
 

@@ -10,8 +10,3 @@
 | handlers are loaded by the NutgramServiceProvider. Enjoy!
 |
 */
-
-use App\Telegram\Factory\BotFactory;
-
-$menu = new BotFactory();
-$menu();

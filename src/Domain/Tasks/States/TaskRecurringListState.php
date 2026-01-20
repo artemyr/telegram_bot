@@ -22,7 +22,7 @@ class TaskRecurringListState extends BotState
 
     public function render(): void
     {
-        $tasks = $this->taskRepository->findByUserId(bot()->userId());
+        $tasks = $this->taskRepository->findByUserId(schedule_bot()->userId());
         $table = (new RecurrenceTaskPresentation($tasks, tusertimezone()))->getTable();
 
         message()
@@ -41,8 +41,8 @@ class TaskRecurringListState extends BotState
      */
     public function handle(): void
     {
-        if (bot()->isCallbackQuery()) {
-            $query = bot()->callbackQuery()->data;
+        if (schedule_bot()->isCallbackQuery()) {
+            $query = schedule_bot()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
@@ -51,7 +51,7 @@ class TaskRecurringListState extends BotState
                 return;
             }
         } else {
-            $text = bot()->message()?->getText();
+            $text = schedule_bot()->message()?->getText();
 
             if (filter_var($text, FILTER_VALIDATE_INT)) {
                 $userDto = tuser();

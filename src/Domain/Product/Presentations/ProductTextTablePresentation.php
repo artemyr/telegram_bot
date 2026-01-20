@@ -8,7 +8,7 @@ use Domain\TelegramBot\Dto\Table\RowDto;
 use Domain\TelegramBot\Dto\Table\TableDto;
 use Illuminate\Support\Collection;
 
-class ProductPresentation
+class ProductTextTablePresentation
 {
     public function __construct(
         protected Collection $products,

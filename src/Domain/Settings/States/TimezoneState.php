@@ -31,17 +31,17 @@ class TimezoneState extends BotState
 
     public function handle(): void
     {
-        if (bot()->message()->getText() === KeyboardEnum::BACK->label()) {
+        if (schedule_bot()->message()->getText() === KeyboardEnum::BACK->label()) {
             $newState = new MenuBotState(troute('settings'));
             tuserstate()->changeState($newState);
             return;
         }
 
         foreach (TimezoneEnum::cases() as $case) {
-            if (bot()->message()->getText() === $case->value) {
+            if (schedule_bot()->message()->getText() === $case->value) {
                 message("Вы отметили: " . $case->value);
                 TelegramUser::query()
-                    ->where('telegram_id', bot()->userId())
+                    ->where('telegram_id', schedule_bot()->userId())
                     ->update([
                         'timezone' => $case->value,
                     ]);

@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('telegram_user_id')
+                ->constrained('telegram_users','telegram_id')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
             $table->string('title');
             $table->boolean('exist');
             $table->unsignedInteger('expire_days')->nullable();

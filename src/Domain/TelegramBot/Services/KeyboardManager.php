@@ -48,7 +48,32 @@ class KeyboardManager implements KeyboardContract
         ];
     }
 
-    public function markup(array $buttons):  ReplyKeyboardMarkup
+    public function prev(): array
+    {
+        return [
+            KeyboardEnum::PREV->value => KeyboardEnum::PREV->label()
+        ];
+    }
+
+    public function next(): array
+    {
+        return [
+            KeyboardEnum::NEXT->value => KeyboardEnum::NEXT->label()
+        ];
+    }
+
+    public function pagination(): array
+    {
+        return [
+            KeyboardEnum::BACK->value => KeyboardEnum::BACK->label(),
+            [
+                KeyboardEnum::PREV->value => KeyboardEnum::PREV->label(),
+                KeyboardEnum::NEXT->value => KeyboardEnum::NEXT->label(),
+            ]
+        ];
+    }
+
+    public function markup(array $buttons): ReplyKeyboardMarkup
     {
         $keyboard = ReplyKeyboardMarkup::make();
 

@@ -6,7 +6,8 @@ use App\Menu\MenuContract;
 use App\Menu\MenuItem;
 use Domain\Calendar\States\CalendarAddState;
 use Domain\Calendar\States\CalendarListState;
-use Domain\Product\States\ProductListState;
+use Domain\Product\States\ProductListSpoilState;
+use Domain\Product\States\ProductListToBuyState;
 use Domain\Settings\States\TimezoneState;
 use Domain\Tasks\States\TaskAddState;
 use Domain\Tasks\States\TaskListState;
@@ -35,9 +36,8 @@ class ViewServiceProvider extends ServiceProvider
                     ->add(MenuItem::make(troute('tasks.recurrence.add'), '➕ Добавить повторяющуюся задачу', TaskRecurringAddState::class))
                 )
                 ->add(MenuItem::make(troute('food'), '🍗 Еда')
-                    ->add(MenuItem::make(troute('food.to_buy'), 'Список что надо купить', ProductListState::class))
-                    ->add(MenuItem::make(troute('food.bought'), 'Отметить что купил', ProductListState::class))
-                    ->add(MenuItem::make(troute('food.spoil'), 'Отметить что закончилось', ProductListState::class))
+                    ->add(MenuItem::make(troute('food.to_buy'), 'Список что надо купить', ProductListToBuyState::class))
+                    ->add(MenuItem::make(troute('food.spoil'), 'Отметить что закончилось', ProductListSpoilState::class))
                 )
                 ->add(
                     MenuItem::make(troute('settings'), '⚙️ Настройки')

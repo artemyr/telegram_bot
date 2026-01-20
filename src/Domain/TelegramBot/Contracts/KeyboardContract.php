@@ -9,5 +9,8 @@ interface KeyboardContract
     public function remove(): void;
     public function removeForce(): void;
     public function back(): array;
+    public function prev(): array;
+    public function next(): array;
+    public function pagination(): array;
     public function markup(array $buttons): ReplyKeyboardMarkup;
 }

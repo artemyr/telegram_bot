@@ -18,7 +18,6 @@ Route::get('/tasks/recurrence/list')->name('tasks.recurrence.list');
 
 Route::get('/food')->name('food');
 Route::get('/food/to_buy')->name('food.to_buy');
-Route::get('/food/bought')->name('food.bought');
 Route::get('/food/spoil')->name('food.spoil');
 
 Route::get('/settings')->name('settings');

@@ -9,8 +9,6 @@ class MenuBotState extends BotState
 {
     public function render(): void
     {
-        logger()->debug('menu render');
-
         keyboard()->remove();
 
         $menu = menu()->getCurrentCategoryItem();
@@ -34,8 +32,6 @@ class MenuBotState extends BotState
 
     public function handle(): void
     {
-        logger()->debug('menu handle');
-
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
 

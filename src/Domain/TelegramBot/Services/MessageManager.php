@@ -65,13 +65,28 @@ class MessageManager implements MessageContract
     public function inlineKeyboard(array $keyboard): MessageContract
     {
         $this->keyboard = InlineKeyboardMarkup::make();
-        foreach ($keyboard as $data => $button) {
-            $this->keyboard->addRow(
-                InlineKeyboardButton::make(
-                    $button,
-                    callback_data: $data,
-                )
-            );
+        foreach ($keyboard as $data => $line) {
+
+            if (is_string($line)) {
+                $this->keyboard->addRow(
+                    InlineKeyboardButton::make(
+                        $line,
+                        callback_data: $data,
+                    )
+                );
+            } elseif (is_array($line)) {
+
+                $cols = [];
+
+                foreach ($line as $callback => $label) {
+                    $cols[] = InlineKeyboardButton::make(
+                        $label,
+                        callback_data: $callback,
+                    );
+                }
+
+                $this->keyboard->addRow(...$cols);
+            }
         }
 
         return $this;

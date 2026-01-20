@@ -2,7 +2,6 @@
 
 namespace Domain\TelegramBot\Services;
 
-use App\Events\ChangeUserStateEvent;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Dto\UserStateDto;

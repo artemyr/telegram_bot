@@ -12,10 +12,12 @@ class WorkController extends Controller
         $res = [
             'start' => false,
             'end' => false,
+            'test' => false,
         ];
 
         $start = Cache::get('start_day');
         $end = Cache::get('end_day');
+        $test = Cache::get('work_test');
 
         if ($start === true && $end === true) {
             $start = false;
@@ -52,6 +54,22 @@ class WorkController extends Controller
                 ->send();
 
             Cache::set('end_day', false);
+        }
+
+        if ($test === true) {
+            $res['test'] = true;
+
+            $user = TelegramUser::query()
+                ->select(['telegram_id'])
+                ->where('id', 1)
+                ->first();
+
+            message()
+                ->userId($user->telegram_id)
+                ->text('Тест')
+                ->send();
+
+            Cache::set('work_test', false);
         }
 
         return response()->json($res);

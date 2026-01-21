@@ -44,6 +44,7 @@ class ViewServiceProvider extends ServiceProvider
                     MenuItem::make(troute('settings'), '⚙️ Настройки')
                         ->add(MenuItem::make(troute('work.start'), 'Начать день', fn() => Cache::set('start_day', true)))
                         ->add(MenuItem::make(troute('work.end'), 'Закончить день', fn() => Cache::set('end_day', true)))
+                        ->add(MenuItem::make(troute('work.test'), 'Тест', fn() => Cache::set('work_test', true)))
                         ->add(MenuItem::make(troute('notifications.recreate'), 'Пересоздать мои напоминания по задачам', fn() => Artisan::call('bot:user:notifications:recreate')))
                         ->add(MenuItem::make(troute('timezone'), '🕒 Часовой пояс', TimezoneState::class))
                         ->add(MenuItem::make(troute('webhook_off'), 'Отключить webhook', fn() => Artisan::call('bot:t:hook:remove')))

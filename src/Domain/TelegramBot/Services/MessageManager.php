@@ -205,6 +205,12 @@ class MessageManager implements MessageContract
             text: $text
         );
     }
+    public function alert(string $text): void
+    {
+        schedule_bot()->answerCallbackQuery(
+            show_alert: $text
+        );
+    }
 
     private function flush(): void
     {

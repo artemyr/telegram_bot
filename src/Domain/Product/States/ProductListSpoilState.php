@@ -72,13 +72,13 @@ class ProductListSpoilState extends BotState
             if ($product) {
                 $product->exist = false;
                 $product->save();
-                message("Продукт \"{$product->title}\" закончился");
+                message()->hint("Продукт \"{$product->title}\" закончился");
             } else {
-                message("Продукт не наден");
+                message()->alert("Продукт не наден");
             }
             return;
         } else {
-            message("Используйте кнопки");
+            message()->alert("Используйте кнопки");
         }
     }
 }

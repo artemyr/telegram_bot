@@ -75,11 +75,11 @@ class ProductListToBuyState extends BotState
                 $product->save();
                 message()->hint("Продукт \"{$product->title}\" куплен");
             } else {
-                message()->hint("Продукт не наден");
+                message()->alert("Продукт не наден");
             }
             return;
         } else {
-            message()->hint("Используйте кнопки");
+            message()->alert("Используйте кнопки");
         }
     }
 }

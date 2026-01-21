@@ -17,7 +17,12 @@ class WorkController extends Controller
         $start = Cache::get('start_day');
         $end = Cache::get('end_day');
 
-        if ($start === true && empty($end)) {
+        if ($start === true && $end === true) {
+            $start = false;
+            Cache::set('start_day', false);
+        }
+
+        if ($start === true) {
             $res['start'] = true;
 
             $user = TelegramUser::query()

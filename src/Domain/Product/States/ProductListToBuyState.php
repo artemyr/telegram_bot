@@ -60,6 +60,12 @@ class ProductListToBuyState extends BotState
             }
 
             if ($query === KeyboardEnum::PREV->value) {
+
+                if ($this->pagen === 1) {
+                    message()->alert("Начало списка");
+                    return;
+                }
+
                 $newState = new self(troute('food.spoil'), $this->pagen - 1);
                 tuserstate()->changeState($newState);
                 return;
@@ -79,7 +85,7 @@ class ProductListToBuyState extends BotState
             }
             return;
         } else {
-            message()->alert("Используйте кнопки");
+            message("Используйте кнопки");
         }
     }
 }

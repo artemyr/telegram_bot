@@ -73,13 +73,13 @@ class ProductListToBuyState extends BotState
                 $product->exist = true;
                 $product->buy_at = now();
                 $product->save();
-                message("Продукт \"{$product->title}\" куплен");
+                message()->hint("Продукт \"{$product->title}\" куплен");
             } else {
-                message("Продукт не наден");
+                message()->hint("Продукт не наден");
             }
             return;
         } else {
-            message("Используйте кнопки");
+            message()->hint("Используйте кнопки");
         }
     }
 }

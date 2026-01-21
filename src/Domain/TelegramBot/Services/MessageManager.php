@@ -199,6 +199,13 @@ class MessageManager implements MessageContract
         throw MessageManagerException::driverNotSupported();
     }
 
+    public function hint(string $text): void
+    {
+        schedule_bot()->answerCallbackQuery(
+            text: $text
+        );
+    }
+
     private function flush(): void
     {
         $this->text = '';

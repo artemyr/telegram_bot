@@ -9,36 +9,40 @@ use Domain\TelegramBot\MenuBotState;
 
 class ProductListToBuyState extends BotState
 {
-    protected ?int $pagen;
+    protected int $pagen;
+    protected bool $block;
 
-    public function __construct(?string $path = null, int $pagen = 1)
+    public function __construct(?string $path = null, int $pagen = 1, bool $block = false)
     {
         parent::__construct($path);
         $this->pagen = $pagen;
+        $this->block = $block;
     }
 
     public function render(): void
     {
-        $products = Product::query()
-            ->select('id','telegram_user_id','exist','title')
-            ->where('telegram_user_id', schedule_bot()->userId())
-            ->where('exist', false)
-            ->paginate(10,null, null, $this->pagen);
+        if (!$this->block) {
+            $products = Product::query()
+                ->select('id', 'telegram_user_id', 'exist', 'title')
+                ->where('telegram_user_id', schedule_bot()->userId())
+                ->where('exist', false)
+                ->paginate(10, null, null, $this->pagen);
 
-        $keyboard = keyboard()->pagination();
+            $keyboard = keyboard()->pagination();
 
-        foreach ($products as $product) {
-            $keyboard[$product->id] = $product->title;
+            foreach ($products as $product) {
+                $keyboard[$product->id] = $product->title;
+            }
+
+            message()
+                ->text([
+                    "Раздел: Продукты",
+                    "Напишите, чтобы отменить продукт купленным",
+                    "Список продуктов к покупке:",
+                ])
+                ->inlineKeyboard($keyboard)
+                ->send();
         }
-
-        message()
-            ->text([
-                "Раздел: Продукты",
-                "Напишите, чтобы отменить продукт купленным",
-                "Список продуктов к покупке:",
-            ])
-            ->inlineKeyboard($keyboard)
-            ->send();
     }
 
     public function handle(): void
@@ -60,9 +64,10 @@ class ProductListToBuyState extends BotState
             }
 
             if ($query === KeyboardEnum::PREV->value) {
-
                 if ($this->pagen === 1) {
-                    message()->alert("Начало списка");
+                    message()->hint("Начало списка");
+                    $newState = new self(troute('food.spoil'), $this->pagen, true);
+                    tuserstate()->changeState($newState);
                     return;
                 }
 
@@ -81,7 +86,7 @@ class ProductListToBuyState extends BotState
                 $product->save();
                 message()->hint("Продукт \"{$product->title}\" куплен");
             } else {
-                message()->alert("Продукт не наден");
+                message()->hint("Продукт не наден");
             }
             return;
         } else {

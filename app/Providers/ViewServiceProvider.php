@@ -37,8 +37,8 @@ class ViewServiceProvider extends ServiceProvider
                     ->add(MenuItem::make(troute('tasks.recurrence.add'), '➕ Добавить повторяющуюся задачу', TaskRecurringAddState::class))
                 )
                 ->add(MenuItem::make(troute('food'), '🍗 Еда')
-                    ->add(MenuItem::make(troute('food.to_buy'), 'Список что надо купить', ProductListToBuyState::class))
-                    ->add(MenuItem::make(troute('food.spoil'), 'Отметить что закончилось', ProductListSpoilState::class))
+                    ->add(MenuItem::make(troute('food.to_buy'), '➕ Покупаю', ProductListToBuyState::class))
+                    ->add(MenuItem::make(troute('food.spoil'), '🤢 Закончилось', ProductListSpoilState::class))
                 )
                 ->add(
                     MenuItem::make(troute('settings'), '⚙️ Настройки')

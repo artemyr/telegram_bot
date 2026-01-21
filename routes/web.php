@@ -21,7 +21,8 @@ Route::get('/food/to_buy')->name('food.to_buy');
 Route::get('/food/spoil')->name('food.spoil');
 
 Route::get('/settings')->name('settings');
+Route::get('/settings/work/start')->name('work.start');
+Route::get('/settings/work/end')->name('work.end');
 Route::get('/settings/notifications/recreate')->name('notifications.recreate');
 Route::get('/settings/timezone')->name('timezone');
-Route::get('/settings/webhook/on')->name('webhook_on');
 Route::get('/settings/webhook/off')->name('webhook_off');

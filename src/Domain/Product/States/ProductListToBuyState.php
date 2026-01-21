@@ -58,21 +58,21 @@ class ProductListToBuyState extends BotState
             }
 
             if ($query === KeyboardEnum::NEXT->value) {
-                $newState = new self(troute('food.spoil'), $this->pagen + 1);
-                tuserstate()->changeState($newState);
+                $this->pagen++;
+                $this->save();
                 return;
             }
 
             if ($query === KeyboardEnum::PREV->value) {
                 if ($this->pagen === 1) {
                     message()->hint("Начало списка");
-                    $newState = new self(troute('food.spoil'), $this->pagen, true);
-                    tuserstate()->changeState($newState);
+                    $this->block = true;
+                    $this->save();
                     return;
                 }
 
-                $newState = new self(troute('food.spoil'), $this->pagen - 1);
-                tuserstate()->changeState($newState);
+                $this->pagen--;
+                $this->save();
                 return;
             }
 
@@ -85,12 +85,24 @@ class ProductListToBuyState extends BotState
                 $product->buy_at = now();
                 $product->save();
                 message()->hint("Продукт \"{$product->title}\" куплен");
+                $this->block = false;
+                $this->save();
             } else {
                 message()->hint("Продукт не наден");
+                $this->block = true;
+                $this->save();
             }
             return;
         } else {
             message("Используйте кнопки");
+            $this->block = true;
+            $this->save();
         }
+    }
+
+    protected function save(): void
+    {
+        $newState = new self($this->path, $this->pagen, $this->block);
+        tuserstate()->changeState($newState);
     }
 }

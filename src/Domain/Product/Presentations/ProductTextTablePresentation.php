@@ -35,13 +35,16 @@ class ProductTextTablePresentation
 
             /** @var Carbon $date */
             $date = $product->buy_at;
-            if (!empty($date)) {
+
+            if (!$product->exist) {
+                $row->addCol(new ColDto("🚫", 'color'));
+            }
+
+            if (!empty($date) && $product->exist) {
                 $date->setTimezone($this->timezone);
                 $row->addCol(new ColDto("($date)", 'buy_at'));
 
-                if (!$product->exist) {
-                    $row->addCol(new ColDto("🚫", 'color'));
-                } elseif (!empty($product->expire_days)) {
+                if (!empty($product->expire_days)) {
                     $row->addCol(new ColDto($this->calculateColor($product), 'color'));
                 }
             }

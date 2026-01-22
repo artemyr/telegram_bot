@@ -39,8 +39,10 @@ class ProductTextTablePresentation
                 $date->setTimezone($this->timezone);
                 $row->addCol(new ColDto("($date)", 'buy_at'));
 
-                if (!empty($product->expire_days)) {
-                    $row->addCol(new ColDto($this->calculateColor($product), 'expire_days'));
+                if (!$product->exist) {
+                    $row->addCol(new ColDto("🚫", 'color'));
+                } elseif (!empty($product->expire_days)) {
+                    $row->addCol(new ColDto($this->calculateColor($product), 'color'));
                 }
             }
 

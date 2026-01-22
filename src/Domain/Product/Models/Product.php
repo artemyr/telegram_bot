@@ -13,14 +13,12 @@ class Product extends Model
         'title',
         'exist',
         'expire_days',
-        'expire',
         'buy_at',
         'store',
     ];
 
     protected $casts = [
         'buy_at' => 'datetime',
-        'expire' => 'datetime',
         'exist' => 'boolean',
     ];
 

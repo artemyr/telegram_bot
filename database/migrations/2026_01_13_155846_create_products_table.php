@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('title');
             $table->boolean('exist')->default(false);
             $table->unsignedInteger('expire_days')->nullable();
-            $table->timestamp('expire')->nullable();
             $table->timestamp('buy_at')->nullable();
 
             $table->enum('store', [

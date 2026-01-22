@@ -23,6 +23,18 @@ abstract class BotState
 
     protected function transition(BotState $state): BotState
     {
+        tuserstate()->changeState($state);
         return $state;
+    }
+
+    protected function exit(): void
+    {
+        tuserstate()->changeState(new MenuBotState('home'));
+    }
+
+    protected function save(): void
+    {
+        $newState = new static($this->path);
+        tuserstate()->changeState($newState);
     }
 }

@@ -37,7 +37,7 @@ class ProductListToBuyState extends BotState
             message()
                 ->text([
                     "Раздел: Продукты",
-                    "Напишите, чтобы отменить продукт купленным",
+                    "Нажмите, чтобы отменить продукт купленным",
                     "Список продуктов к покупке:",
                 ])
                 ->inlineKeyboard($keyboard)
@@ -52,8 +52,7 @@ class ProductListToBuyState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                $newState = new MenuBotState(troute('food'));
-                tuserstate()->changeState($newState);
+                $this->transition(new MenuBotState(troute('food')));
                 return;
             }
 
@@ -94,9 +93,7 @@ class ProductListToBuyState extends BotState
             }
             return;
         } else {
-            message("Используйте кнопки");
-            $this->block = true;
-            $this->save();
+            $this->exit();
         }
     }
 

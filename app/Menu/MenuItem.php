@@ -10,7 +10,6 @@ use Support\Traits\Makeable;
 
 class MenuItem implements Countable, IteratorAggregate, MenuContract
 {
-    use Makeable;
     use MenuTrait;
 
     /** @var MenuItem[] */
@@ -18,14 +17,18 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
     protected static string $defaultState;
 
     public function __construct(
-        protected string              $link,
-        protected string              $label,
+        protected string $link,
+        protected string $label,
         protected string|Closure|null $state = null,
-    )
-    {
+    ) {
         if ($state === null) {
             $this->state = static::$defaultState;
         }
+    }
+
+    public static function make(string $link, string $label, string|Closure|null $state = null): self
+    {
+        return new self($link, $label, $state);
     }
 
     public function isCallback(): bool
@@ -75,7 +78,6 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
         }
 
         foreach ($item->items as $el) {
-
             /** @var $el MenuItem */
             if ($el->isActive()) {
                 return $el;

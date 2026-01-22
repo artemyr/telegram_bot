@@ -81,8 +81,6 @@ class MenuBotState extends BotState
             return;
         }
 
-        $newState = $currentMenuItem->state();
-
-        tuserstate()->changeState($newState);
+        $this->transition($currentMenuItem->state());
     }
 }

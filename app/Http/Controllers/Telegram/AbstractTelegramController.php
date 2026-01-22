@@ -17,9 +17,7 @@ abstract class AbstractTelegramController extends Controller
         $userDto = tuser();
         $next = $userDto->state;
 
-        if ($next) {
-            $next->render();
-        }
+        $next?->render();
     }
 
     protected function try(callable $call): void

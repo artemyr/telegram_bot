@@ -46,6 +46,8 @@ class ProductTextTablePresentation
 
                 if (!empty($product->expire_days)) {
                     $row->addCol(new ColDto($this->calculateColor($product), 'color'));
+                } else {
+                    $row->addCol(new ColDto("❓", 'color'));
                 }
             }
 

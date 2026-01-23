@@ -11,7 +11,7 @@ class MainTelegramController extends Controller
     public function handle(string $bot): void
     {
         if (method_exists($this, $bot)) {
-            $r = $this->{$bot};
+            $this->{$bot}();
         }
     }
 

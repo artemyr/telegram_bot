@@ -95,7 +95,7 @@ if (!function_exists('travel_user')) {
 if (!function_exists('tuser')) {
     function tuser(): UserStateContract
     {
-        return app(BotInstanceContract::class);
+        return app(UserInstanceContract::class);
     }
 }
 

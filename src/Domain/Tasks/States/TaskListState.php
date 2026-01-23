@@ -54,7 +54,7 @@ class TaskListState extends BotState
             $text = bot()->message()?->getText();
 
             if (filter_var($text, FILTER_VALIDATE_INT)) {
-                $userDto = tuser();
+                $userDto = tuser()->get();
 
                 $tasks = $this->taskRepository->findByUserId($userDto->userId);
                 $table = (new TaskPresentation($tasks))->getTable();

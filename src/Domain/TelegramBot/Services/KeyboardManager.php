@@ -20,7 +20,7 @@ class KeyboardManager implements KeyboardContract
 
     public function remove(): void
     {
-        $userDto = tuser();
+        $userDto = tuser()->get();
 
         if (!$userDto) {
             $this->removeForce();

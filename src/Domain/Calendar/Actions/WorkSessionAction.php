@@ -13,7 +13,7 @@ class WorkSessionAction
 
     public function __invoke(): void
     {
-        $userDto = tuser();
+        $userDto = tuser()->get();
 
         $timer = Timer::query()
             ->where('telegram_user_id', $userDto->userId)

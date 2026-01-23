@@ -9,12 +9,12 @@ trait TelegramStateTrait
     protected function handleState(): void
     {
         try_to(function () {
-            $userDto = tuser();
+            $userDto = tuser()->get();
 
             $current = $userDto->state;
             $current->handle();
 
-            $userDto = tuser();
+            $userDto = tuser()->get();
             $next = $userDto->state;
 
             $next?->render();

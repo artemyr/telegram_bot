@@ -54,7 +54,7 @@ class TaskRecurringListState extends BotState
             $text = bot()->message()?->getText();
 
             if (filter_var($text, FILTER_VALIDATE_INT)) {
-                $userDto = tuser();
+                $userDto = tuser()->get();
 
                 $tasks = $this->taskRepository->findByUserId($userDto->userId);
                 $table = (new RecurrenceTaskPresentation($tasks, tusertimezone()))->getTable();

@@ -36,7 +36,7 @@ class AuthMiddleware
         }
 
         // на этот момент пользователь уже должен быть и в базе и в кеше
-        $userDto = tuser();
+        $userDto = tuser()->get();
         if (!$userDto) {
             throw new RuntimeException('User init error');
         }
@@ -113,7 +113,7 @@ class AuthMiddleware
 
     private function existsUserHandler(TelegramUser $tuser): void
     {
-        $userDto = tuser();
+        $userDto = tuser()->get();
 
         // если есть в кеше
         if ($userDto) {

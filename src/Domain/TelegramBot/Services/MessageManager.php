@@ -112,7 +112,7 @@ class MessageManager implements MessageContract
             throw new MessageManagerException('Provide user id for send message');
         }
 
-        $userDto = tuser();
+        $userDto = tuser()->get();
 
         if (!empty($userDto) && $userDto->lastMessageType === LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE) {
             try {

@@ -3,7 +3,7 @@
 namespace App\Telegram\Factory;
 
 
-use SergiX44\Nutgram\Nutgram;
+use App\Http\Controllers\Telegram\Travel\StartController;
 use Support\Traits\Runable;
 
 class TravelBotFactory
@@ -13,8 +13,9 @@ class TravelBotFactory
     public function handle(): void
     {
         $bot = travel_bot();
+        travel_user();
 
-        $bot->onCommand('start', );
+        $bot->onCommand('start', StartController::class);
 
         $bot->run();
     }

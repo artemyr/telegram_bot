@@ -27,17 +27,17 @@ class CalendarAddState extends BotState
 
     public function handle(): void
     {
-        if (!schedule_bot()->isCallbackQuery()) {
+        if (!bot()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
             return;
         }
 
-        $text = schedule_bot()->callbackQuery()->data;
+        $text = bot()->callbackQuery()->data;
 
         if ($text === KeyboardEnum::BACK->value) {
             keyboard()->remove();
             $newState = new MenuBotState(troute('calendar'));
-            tuserstate()->changeState($newState);
+            tuser()->changeState($newState);
             return;
         }
 

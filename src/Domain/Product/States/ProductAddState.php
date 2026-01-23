@@ -50,19 +50,19 @@ class ProductAddState extends BotState
 
     public function handle(): void
     {
-        if (schedule_bot()->isCallbackQuery()) {
-            $query = schedule_bot()->callbackQuery()->data;
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 $this->transition(new MenuBotState(troute('food')));
                 return;
             }
         } else {
-            $query = schedule_bot()->message()?->getText();
+            $query = bot()->message()?->getText();
 
             if ($this->stage === self::TITLE_STAGE) {
                 $product = Product::query()->create([
-                    'telegram_user_id' => schedule_bot()->userId(),
+                    'telegram_user_id' => bot()->userId(),
                     'title' => $query,
                 ]);
                 $this->productId = $product->id;
@@ -89,6 +89,6 @@ class ProductAddState extends BotState
     protected function save(): void
     {
         $newState = new self($this->path, $this->stage, $this->productId);
-        tuserstate()->changeState($newState);
+        tuser()->changeState($newState);
     }
 }

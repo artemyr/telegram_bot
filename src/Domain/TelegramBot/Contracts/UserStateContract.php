@@ -8,6 +8,8 @@ use Domain\TelegramBot\Enum\LastMessageType;
 
 interface UserStateContract
 {
+    public function setBotName(string $name): void;
+    public function getBotName(): string;
     public function get(): ?UserStateDto;
     public function write(UserStateDto $user): void;
     public function make(

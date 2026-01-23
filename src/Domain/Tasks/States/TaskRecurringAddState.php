@@ -63,32 +63,32 @@ class TaskRecurringAddState extends BotState
 
     public function handle(): void
     {
-        if (schedule_bot()->isCallbackQuery()) {
-            $query = schedule_bot()->callbackQuery()->data;
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
                 $newState = new MenuBotState(troute('tasks'));
-                tuserstate()->changeState($newState);
+                tuser()->changeState($newState);
                 return;
             }
         } else {
             if ($this->stage === self::TITLE_STAGE) {
-                $title = schedule_bot()->message()->getText();
+                $title = bot()->message()->getText();
                 $newState = new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
-                tuserstate()->changeState($newState);
+                tuser()->changeState($newState);
                 return;
             }
 
             if ($this->stage === self::DATE_STAGE) {
-                $repeat = schedule_bot()->message()->getText();
+                $repeat = bot()->message()->getText();
 
-                $result = $this->taskRepository->save(schedule_bot()->userId(), $this->title, $repeat);
+                $result = $this->taskRepository->save(bot()->userId(), $this->title, $repeat);
 
                 if ($result->state === RepositoryResult::SUCCESS_SAVED) {
                     message("Задача \"$this->title\" создана");
                     $newState = new MenuBotState(troute('tasks'));
-                    tuserstate()->changeState($newState);
+                    tuser()->changeState($newState);
                     return;
                 }
 

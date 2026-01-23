@@ -49,10 +49,10 @@ class CheckUserMiddleware
     protected function handleTimezones(): bool
     {
         foreach (TimezoneEnum::cases() as $case) {
-            if (schedule_bot()->message()->getText() === $case->value) {
+            if (bot()->message()->getText() === $case->value) {
                 message("Вы отметили: " . $case->value);
                 TelegramUser::query()
-                    ->where('telegram_id', schedule_bot()->userId())
+                    ->where('telegram_id', bot()->userId())
                     ->update([
                         'timezone' => $case->value,
                     ]);

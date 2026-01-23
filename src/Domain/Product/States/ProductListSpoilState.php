@@ -24,7 +24,7 @@ class ProductListSpoilState extends BotState
         if (!$this->block) {
             $products = Product::query()
                 ->select('id', 'telegram_user_id', 'exist', 'title')
-                ->where('telegram_user_id', schedule_bot()->userId())
+                ->where('telegram_user_id', bot()->userId())
                 ->where('exist', true)
                 ->paginate(10, null, null, $this->pagen);
 
@@ -47,8 +47,8 @@ class ProductListSpoilState extends BotState
 
     public function handle(): void
     {
-        if (schedule_bot()->isCallbackQuery()) {
-            $query = schedule_bot()->callbackQuery()->data;
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
@@ -99,6 +99,6 @@ class ProductListSpoilState extends BotState
     protected function save(): void
     {
         $newState = new self($this->path, $this->pagen, $this->block);
-        tuserstate()->changeState($newState);
+        tuser()->changeState($newState);
     }
 }

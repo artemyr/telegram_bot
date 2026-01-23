@@ -28,7 +28,7 @@ class MessageManager implements MessageContract
     {
         $this->driver = config('telegram_bot.messages.driver', 'runtime');
 
-        $userId = schedule_bot()->userId();
+        $userId = bot()->userId();
         if (!empty($userId)) {
             $this->userId = $userId;
         }
@@ -126,15 +126,15 @@ class MessageManager implements MessageContract
         }
 
         if ($this->replyKeyboard) {
-            tuserstate()->changeKeyboard(true);
+            tuser()->changeKeyboard(true);
         }
 
         if ($this->keyboard instanceof InlineKeyboardMarkup) {
-            tuserstate()->changeLastMessageType(LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE);
+            tuser()->changeLastMessageType(LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE);
         } elseif ($this->keyboard instanceof ReplyKeyboardMarkup) {
-            tuserstate()->changeLastMessageType(LastMessageType::REPLY_KEYBOARD_BOT_MESSAGE);
+            tuser()->changeLastMessageType(LastMessageType::REPLY_KEYBOARD_BOT_MESSAGE);
         } else {
-            tuserstate()->changeLastMessageType(LastMessageType::TEXT_BOT_MESSAGE);
+            tuser()->changeLastMessageType(LastMessageType::TEXT_BOT_MESSAGE);
         }
 
         $this->flush();
@@ -160,7 +160,7 @@ class MessageManager implements MessageContract
         }
 
         if ($this->driver === 'runtime') {
-            schedule_bot()->editMessageText(
+            bot()->editMessageText(
                 text: $this->text,
                 chat_id: $this->userId,
                 reply_markup: $this->keyboard,
@@ -188,7 +188,7 @@ class MessageManager implements MessageContract
         }
 
         if ($this->driver === 'runtime') {
-            schedule_bot()->sendMessage(
+            bot()->sendMessage(
                 text: $this->text,
                 chat_id: $this->userId,
                 reply_markup: $this->keyboard,
@@ -201,7 +201,7 @@ class MessageManager implements MessageContract
 
     public function hint(string $text): void
     {
-        schedule_bot()->answerCallbackQuery(
+        bot()->answerCallbackQuery(
             text: $text
         );
     }

@@ -1,12 +1,13 @@
 <?php
 
 use App\Menu\MenuContract;
-use App\Telegram\Contracts\ScheduleBotContract;
-use App\Telegram\Contracts\TravelBotContract;
+use App\Telegram\Contracts\BotInstanceContract;
+use App\Telegram\Contracts\UserInstanceContract;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
-use Domain\TelegramBot\Dto\UserStateDto;
+use Domain\TelegramBot\Models\TelegramUser;
+use Nutgram\Laravel\RunningMode\LaravelWebhook;
 use SergiX44\Nutgram\Nutgram;
 use Support\Contracts\HumanDateParserContract;
 
@@ -49,29 +50,60 @@ if (!function_exists('try')) {
 if (!function_exists('travel_bot')) {
     function travel_bot(): Nutgram
     {
-        return app(TravelBotContract::class);
+        $bot = new Nutgram(config('nutgram.bots.travel'));
+        $bot->setRunningMode(LaravelWebhook::class);
+        return app()->instance(BotInstanceContract::class, $bot);
     }
 }
 
 if (!function_exists('schedule_bot')) {
     function schedule_bot(): Nutgram
     {
-        return app(ScheduleBotContract::class);
+        $bot = new Nutgram(config('nutgram.bots.schedule'));
+        $bot->setRunningMode(LaravelWebhook::class);
+        return app()->instance(BotInstanceContract::class, $bot);
+    }
+}
+
+if (!function_exists('bot')) {
+    function bot(): Nutgram
+    {
+        return app(BotInstanceContract::class);
+    }
+}
+
+if (!function_exists('schedule_user')) {
+    function schedule_user(): UserStateContract
+    {
+        /** @var UserStateContract $userState */
+        $userState = app(UserStateContract::class);
+        $userState->setBotName('schedule');
+        return app()->instance(UserInstanceContract::class, $userState);
+    }
+}
+
+if (!function_exists('travel_user')) {
+    function travel_user(): UserStateContract
+    {
+        /** @var UserStateContract $userState */
+        $userState = app(UserStateContract::class);
+        $userState->setBotName('travel');
+        return app()->instance(UserInstanceContract::class, $userState);
     }
 }
 
 if (!function_exists('tuser')) {
-    function tuser(): ?UserStateDto
+    function tuser(): UserStateContract
     {
-        return tuserstate()->get();
+        return app(BotInstanceContract::class);
     }
 }
 
 if (!function_exists('tusertimezone')) {
     function tusertimezone(): string
     {
-        $tuser = \Domain\TelegramBot\Models\TelegramUser::query()
-            ->where('telegram_id', tuser()->userId)
+        $tuser = TelegramUser::query()
+            ->where('telegram_id', tuser()->get()->userId)
             ->first();
 
         if ($tuser) {
@@ -97,13 +129,6 @@ if (!function_exists('keyboard')) {
     function keyboard(): KeyboardContract
     {
         return app(KeyboardContract::class);
-    }
-}
-
-if (!function_exists('tuserstate')) {
-    function tuserstate(): UserStateContract
-    {
-        return app(UserStateContract::class);
     }
 }
 

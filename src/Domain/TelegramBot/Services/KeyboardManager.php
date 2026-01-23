@@ -38,7 +38,7 @@ class KeyboardManager implements KeyboardContract
             reply_markup: ReplyKeyboardRemove::make(true),
         )?->delete();
 
-        tuserstate()->changeKeyboard(false);
+        tuser()->changeKeyboard(false);
     }
 
     public function back(): array

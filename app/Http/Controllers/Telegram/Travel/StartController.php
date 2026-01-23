@@ -17,7 +17,7 @@ class StartController extends Command
 
     public function handle(Nutgram $bot)
     {
-        tuserstate()->changeLastMessageType(LastMessageType::USER_MESSAGE);
+        tuser()->changeLastMessageType(LastMessageType::USER_MESSAGE);
 
         try_to(function () {
             $userDto = tuser();

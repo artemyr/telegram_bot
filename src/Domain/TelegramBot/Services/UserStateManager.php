@@ -13,7 +13,18 @@ use ReflectionClass;
 
 class UserStateManager implements UserStateContract
 {
+    protected string $botName;
     protected static bool $fake = false;
+
+    public function setBotName(string $name): void
+    {
+        $this->botName = $name;
+    }
+
+    public function getBotName(): string
+    {
+        return $this->getBotName();
+    }
 
     /**
      * @throws UserStateManagerException
@@ -24,11 +35,11 @@ class UserStateManager implements UserStateContract
             return new UserStateDto(1, new MenuBotState(troute('home')), false, LastMessageType::USER_MESSAGE);
         }
 
-        if (empty(schedule_bot()->userId())) {
+        if (empty(bot()->userId())) {
             return null;
         }
 
-        $userDto = UserStateStore::get(schedule_bot()->userId());
+        $userDto = UserStateStore::get($this->getBotName(), bot()->userId());
 
         if ($userDto) {
             $this->checkUser($userDto);
@@ -44,7 +55,7 @@ class UserStateManager implements UserStateContract
     {
         $this->checkUser($user);
 
-        UserStateStore::set($user->userId, $user);
+        UserStateStore::set($this->getBotName(), $user->userId, $user);
     }
 
     public function make(
@@ -146,7 +157,7 @@ class UserStateManager implements UserStateContract
         $a = $r->getProperties();
         foreach ($a as $property) {
             if (!$property->isInitialized($user)) {
-                UserStateStore::forget($user->userId);
+                UserStateStore::forget($this->getBotName(), $user->userId);
                 throw new UserStateManagerException('User dto crashed');
             }
         }

@@ -37,24 +37,24 @@ class TaskAddState extends BotState
      */
     public function handle(): void
     {
-        if (schedule_bot()->isCallbackQuery()) {
-            $query = schedule_bot()->callbackQuery()->data;
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
                 $newState = new MenuBotState(troute('tasks'));
-                tuserstate()->changeState($newState);
+                tuser()->changeState($newState);
                 return;
             }
         } else {
-            $tasks = schedule_bot()->message()?->getText();
+            $tasks = bot()->message()?->getText();
 
             $arTasks = explode("\n", $tasks);
 
             $response = [];
 
             foreach ($arTasks as $task) {
-                $result = $this->taskRepository->save(schedule_bot()->userId(), $task);
+                $result = $this->taskRepository->save(bot()->userId(), $task);
 
                 if ($result->state === RepositoryResult::EXISTS) {
                     $response[] = "Задача \"$task\" уже существует";

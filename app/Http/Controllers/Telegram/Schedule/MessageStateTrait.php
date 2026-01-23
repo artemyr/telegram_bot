@@ -12,7 +12,7 @@ class MessageStateTrait extends Controller
 
     public function __invoke()
     {
-        tuserstate()->changeLastMessageType(LastMessageType::USER_MESSAGE);
+        tuser()->changeLastMessageType(LastMessageType::USER_MESSAGE);
         $this->handleState();
     }
 }

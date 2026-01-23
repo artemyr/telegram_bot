@@ -22,7 +22,7 @@ class TaskListState extends BotState
 
     public function render(): void
     {
-        $tasks = $this->taskRepository->findByUserId(schedule_bot()->userId());
+        $tasks = $this->taskRepository->findByUserId(bot()->userId());
         $table = (new TaskPresentation($tasks, tusertimezone()))->getTable();
 
         message()
@@ -41,17 +41,17 @@ class TaskListState extends BotState
      */
     public function handle(): void
     {
-        if (schedule_bot()->isCallbackQuery()) {
-            $query = schedule_bot()->callbackQuery()->data;
+        if (bot()->isCallbackQuery()) {
+            $query = bot()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
                 $newState = new MenuBotState(troute('tasks'));
-                tuserstate()->changeState($newState);
+                tuser()->changeState($newState);
                 return;
             }
         } else {
-            $text = schedule_bot()->message()?->getText();
+            $text = bot()->message()?->getText();
 
             if (filter_var($text, FILTER_VALIDATE_INT)) {
                 $userDto = tuser();

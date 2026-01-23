@@ -35,20 +35,20 @@ class MenuBotState extends BotState
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
 
-        if (!schedule_bot()->isCallbackQuery()) {
+        if (!bot()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
-            tuserstate()->changeState($currentMenuItem->state());
+            tuser()->changeState($currentMenuItem->state());
             return;
         }
 
-        $text = schedule_bot()->callbackQuery()->data;
+        $text = bot()->callbackQuery()->data;
 
         if (!empty($text)) {
             if ($text === KeyboardEnum::BACK->value) {
                 $found = true;
                 if ($currentMenuItem->getParent()) {
                     $newState = new MenuBotState($currentMenuItem->getParent()->link());
-                    tuserstate()->changeState($newState);
+                    tuser()->changeState($newState);
 
                     $currentMenuItem = $currentMenuItem->getParent();
                 } else {
@@ -66,7 +66,7 @@ class MenuBotState extends BotState
                             $currentMenuItem = $item->getParent();
                         } else {
                             $newState = new MenuBotState($item->link());
-                            tuserstate()->changeState($newState);
+                            tuser()->changeState($newState);
 
                             $currentMenuItem = $item;
                         }

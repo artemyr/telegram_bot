@@ -2,7 +2,7 @@
 
 namespace App\Telegram\Contracts;
 
-interface TravelBotContract
+interface BotInstanceContract
 {
 
 }

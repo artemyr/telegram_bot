@@ -66,7 +66,7 @@ class AuthMiddleware
             )
         );
 
-        schedule_bot()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
+        bot()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
     }
 
     private function incorrectPassword(): void
@@ -85,7 +85,7 @@ class AuthMiddleware
             )
         );
 
-        schedule_bot()->sendMessage("Пароль не верный!");
+        bot()->sendMessage("Пароль не верный!");
     }
 
     private function newUserHandler(): bool
@@ -107,7 +107,7 @@ class AuthMiddleware
         // создаем в кеше
         $this->createCacheUser($tuser);
 
-        schedule_bot()->sendMessage("Вы зарегистрированы!");
+        bot()->sendMessage("Вы зарегистрированы!");
         return true;
     }
 
@@ -125,18 +125,18 @@ class AuthMiddleware
         if (!$userDto) {
             $this->createCacheUser($tuser);
             keyboard()->removeForce();
-            schedule_bot()->sendMessage("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
+            bot()->sendMessage("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
         }
     }
 
     private function createCacheUser(TelegramUser $tuser): void
     {
-        $userDto = tuserstate()->make(
+        $userDto = tuser()->make(
             $tuser->telegram_id,
             new MenuBotState(troute('home')),
         );
 
-        tuserstate()->write($userDto);
+        tuser()->write($userDto);
     }
 
     private function createDatabaseUser(): TelegramUser

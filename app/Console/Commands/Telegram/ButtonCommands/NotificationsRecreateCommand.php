@@ -12,14 +12,14 @@ class NotificationsRecreateCommand extends Command
 
     public function handle()
     {
-        $tuserId = schedule_bot()->userId();
+        $tuserId = bot('schedule')->userId();
 
         if (empty($tuserId)) {
-            schedule_bot()->sendMessage('Запрещено!');
+            bot()->sendMessage('Запрещено!');
             $this->fail('Не удалось определить пользователя');
         }
 
-        dispatch(new GenerateUserTaskOccurrencesJob(schedule_bot()->userId()));
+        dispatch(new GenerateUserTaskOccurrencesJob(bot()->userId()));
         return self::SUCCESS;
     }
 }

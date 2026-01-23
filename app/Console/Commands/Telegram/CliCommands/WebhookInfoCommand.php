@@ -17,10 +17,10 @@ class WebhookInfoCommand extends Command
             $this->fail("Can't use it on local");
         }
 
-        $botInfo = schedule_bot()->getWebhookInfo();
+        $botInfo = bot('schedule')->getWebhookInfo();
         $this->showInfo('schedule', $botInfo);
 
-        $botInfo = travel_bot()->getWebhookInfo();
+        $botInfo = bot('travel')->getWebhookInfo();
         $this->showInfo('travel', $botInfo);
 
         return self::SUCCESS;

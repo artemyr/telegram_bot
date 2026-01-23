@@ -47,28 +47,21 @@ if (!function_exists('try')) {
     }
 }
 
-if (!function_exists('travel_bot')) {
-    function travel_bot(): Nutgram
-    {
-        $bot = new Nutgram(config('nutgram.bots.travel'));
-        $bot->setRunningMode(LaravelWebhook::class);
-        return app()->instance(BotInstanceContract::class, $bot);
-    }
-}
-
-if (!function_exists('schedule_bot')) {
-    function schedule_bot(): Nutgram
-    {
-        $bot = new Nutgram(config('nutgram.bots.schedule'));
-        $bot->setRunningMode(LaravelWebhook::class);
-        return app()->instance(BotInstanceContract::class, $bot);
-    }
-}
-
 if (!function_exists('bot')) {
-    function bot(): Nutgram
+    function bot(?string $botName = null): Nutgram
     {
-        return app(BotInstanceContract::class);
+        if (empty($botName)) {
+            return app(BotInstanceContract::class);
+        }
+
+        if ($botName === 'test') {
+            $bot = app(Nutgram::class);
+            return app()->instance(BotInstanceContract::class, $bot);
+        }
+
+        $bot = new Nutgram(config("nutgram.bots.$botName"));
+        $bot->setRunningMode(LaravelWebhook::class);
+        return app()->instance(BotInstanceContract::class, $bot);
     }
 }
 

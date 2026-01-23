@@ -4,6 +4,8 @@ namespace App\Telegram\Factory;
 
 
 use App\Http\Controllers\Telegram\Travel\StartController;
+use App\Telegram\Middleware\AuthMiddleware;
+use App\Telegram\Middleware\CheckUserMiddleware;
 use Support\Traits\Runable;
 
 class TravelBotFactory
@@ -12,8 +14,11 @@ class TravelBotFactory
 
     public function handle(): void
     {
-        $bot = travel_bot();
+        $bot = bot();
         travel_user();
+
+        $bot->middleware(AuthMiddleware::class);
+        $bot->middleware(CheckUserMiddleware::class);
 
         $bot->onCommand('start', StartController::class);
 

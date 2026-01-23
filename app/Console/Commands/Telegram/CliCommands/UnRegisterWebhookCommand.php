@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands\Telegram\CliCommands;
 
-use Domain\TelegramBot\Exceptions\PrintableException;
 use Illuminate\Console\Command;
 
 class UnRegisterWebhookCommand extends Command
@@ -16,8 +15,8 @@ class UnRegisterWebhookCommand extends Command
             $this->fail("Can't use it on local");
         }
 
-        schedule_bot()->deleteWebhook();
-        travel_bot()->deleteWebhook();
+        bot('schedule')->deleteWebhook();
+        bot('travel')->deleteWebhook();
 
         $this->info('removed');
 

@@ -6,7 +6,6 @@ use Closure;
 use Countable;
 use Domain\TelegramBot\BotState;
 use IteratorAggregate;
-use Support\Traits\Makeable;
 
 class MenuItem implements Countable, IteratorAggregate, MenuContract
 {
@@ -63,7 +62,7 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
 
     public function isActive(): bool
     {
-        return tuser()->state->getPath() === $this->link();
+        return tuser()->get()->state->getPath() === $this->link();
     }
 
     public function getCurrentCategoryItem(): self

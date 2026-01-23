@@ -2,15 +2,18 @@
 
 namespace App\Telegram\Factory;
 
-use App\Http\Controllers\Telegram\Schedule\CallbackController;
-use App\Http\Controllers\Telegram\Schedule\MessageController;
+use App\Http\Controllers\Telegram\Schedule\CallbackStateTrait;
+use App\Http\Controllers\Telegram\Schedule\MessageStateTrait;
 use App\Http\Controllers\Telegram\Schedule\StartController;
 use App\Telegram\Middleware\AuthMiddleware;
 use App\Telegram\Middleware\CheckUserMiddleware;
+use Support\Traits\Runable;
 
 class ScheduleBotFactory
 {
-    public function __invoke(): void
+    use Runable;
+
+    public function handle(): void
     {
         $bot = schedule_bot();
 
@@ -19,9 +22,9 @@ class ScheduleBotFactory
 
         $bot->onCommand('start', StartController::class);
 
-        $bot->onMessage(MessageController::class);
+        $bot->onMessage(MessageStateTrait::class);
 
-        $bot->onCallbackQuery(CallbackController::class);
+        $bot->onCallbackQuery(CallbackStateTrait::class);
 
         $bot->run();
     }

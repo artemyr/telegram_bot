@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Http\Controllers\Telegram\Schedule;
+
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Telegram\TelegramStateTrait;
+
+class CallbackStateTrait extends Controller
+{
+    use TelegramStateTrait;
+
+    public function __invoke()
+    {
+        $this->handleState();
+    }
+}

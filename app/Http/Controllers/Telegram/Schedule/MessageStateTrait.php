@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Telegram\Schedule;
 
-use App\Http\Controllers\Telegram\AbstractTelegramController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Telegram\TelegramStateTrait;
 use Domain\TelegramBot\Enum\LastMessageType;
 
-class MessageController extends AbstractTelegramController
+class MessageStateTrait extends Controller
 {
+    use TelegramStateTrait;
+
     public function __invoke()
     {
         tuserstate()->changeLastMessageType(LastMessageType::USER_MESSAGE);
-
-        $this->try(function () {
-            $this->handleState();
-        });
+        $this->handleState();
     }
 }

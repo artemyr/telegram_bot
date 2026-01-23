@@ -27,6 +27,7 @@ class ProductListState extends BotState
                 "🟡 - менее 30 процентов",
                 "🔴 - истек",
                 "🚫 - нет",
+                "❓ - не указан срок",
                 (string)(new ProductTextTablePresentation($this->getProducts(), tusertimezone()))
             ])
             ->inlineKeyboard(keyboard()->back())

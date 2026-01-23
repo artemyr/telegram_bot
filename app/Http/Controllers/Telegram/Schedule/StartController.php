@@ -2,17 +2,29 @@
 
 namespace App\Http\Controllers\Telegram\Schedule;
 
-use App\Http\Controllers\Telegram\AbstractTelegramController;
+use App\Http\Controllers\Telegram\TelegramStateTrait;
+use Domain\TelegramBot\Enum\LastMessageType;
 use Domain\TelegramBot\MenuBotState;
+use SergiX44\Nutgram\Handlers\Type\Command;
+use SergiX44\Nutgram\Nutgram;
 
-class StartController extends AbstractTelegramController
+class StartController extends Command
 {
-    public function __invoke()
+    use TelegramStateTrait;
+
+    protected string $command = 'start';
+    protected ?string $description = 'Let\'s start a telegram bot';
+
+    public function handle(Nutgram $bot)
     {
-        $this->try(function () {
+        tuserstate()->changeLastMessageType(LastMessageType::USER_MESSAGE);
+
+        try_to(function () {
             $userDto = tuser();
             $state = $userDto->state ?? new MenuBotState();
             $state->render();
+        }, function ($e) {
+            $this->handleException($e);
         });
     }
 }

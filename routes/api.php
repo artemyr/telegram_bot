@@ -9,7 +9,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/webhook/schedule', [MainTelegramController::class, 'schedule']);
-Route::post('/webhook/travel', [MainTelegramController::class, 'travel']);
+Route::post('/webhook/{bot}', [MainTelegramController::class, 'handle']);
 
 Route::get('/config', [WorkController::class, 'config']);

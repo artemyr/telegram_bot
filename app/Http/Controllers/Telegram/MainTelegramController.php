@@ -8,15 +8,20 @@ use App\Telegram\Factory\TravelBotFactory;
 
 class MainTelegramController extends Controller
 {
-    public function schedule(): void
+    public function handle(string $bot): void
     {
-        $bot = new ScheduleBotFactory();
-        $bot();
+        if (method_exists($this, $bot)) {
+            $r = $this->{$bot};
+        }
     }
 
-    public function travel(): void
+    protected function schedule(): void
     {
-        $bot = new TravelBotFactory();
-        $bot();
+        ScheduleBotFactory::run();
+    }
+
+    protected function travel(): void
+    {
+        TravelBotFactory::run();
     }
 }

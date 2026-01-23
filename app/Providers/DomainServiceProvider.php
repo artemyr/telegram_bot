@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Domain\Calendar\Providers\CalendarServiceProvider;
+use Domain\Schedule\Calendar\Providers\CalendarServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class DomainServiceProvider extends ServiceProvider

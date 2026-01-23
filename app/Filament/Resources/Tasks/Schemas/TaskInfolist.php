@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Tasks\Schemas;
 
-use Domain\Tasks\Models\Task;
+use Domain\Schedule\Tasks\Models\Task;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;

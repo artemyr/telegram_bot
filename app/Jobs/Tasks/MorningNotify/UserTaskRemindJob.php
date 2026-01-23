@@ -2,8 +2,8 @@
 
 namespace App\Jobs\Tasks\MorningNotify;
 
-use Domain\Tasks\Models\Task;
-use Domain\Tasks\Presentations\TaskPresentation;
+use Domain\Schedule\Tasks\Models\Task;
+use Domain\Schedule\Tasks\Presentations\TaskPresentation;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;

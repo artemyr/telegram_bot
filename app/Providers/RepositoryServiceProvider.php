@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Domain\Tasks\Contracts\RecurrenceTaskRepositoryContract;
-use Domain\Tasks\Contracts\TaskRepositoryContract;
-use Domain\Tasks\Repository\RecurrenceTaskRepository;
-use Domain\Tasks\Repository\TaskRepository;
+use Domain\Schedule\Tasks\Contracts\RecurrenceTaskRepositoryContract;
+use Domain\Schedule\Tasks\Contracts\TaskRepositoryContract;
+use Domain\Schedule\Tasks\Repository\RecurrenceTaskRepository;
+use Domain\Schedule\Tasks\Repository\TaskRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider

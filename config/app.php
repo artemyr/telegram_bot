@@ -124,7 +124,7 @@ return [
     ],
 
     'prunable_models' => [
-        \Domain\Calendar\Models\Timer::class,
-        \Domain\Tasks\Models\Task::class,
+        \Domain\Schedule\Calendar\Models\Timer::class,
+        \Domain\Schedule\Tasks\Models\Task::class,
     ]
 ];

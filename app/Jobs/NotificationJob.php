@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use Domain\Calendar\Models\Timer;
-use Domain\Tasks\Models\Task;
+use Domain\Schedule\Calendar\Models\Timer;
+use Domain\Schedule\Tasks\Models\Task;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;

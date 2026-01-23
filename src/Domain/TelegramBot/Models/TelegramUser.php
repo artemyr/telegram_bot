@@ -3,8 +3,8 @@
 namespace Domain\TelegramBot\Models;
 
 use App\Models\User;
-use Domain\Calendar\Models\Timer;
-use Domain\Tasks\Models\Task;
+use Domain\Schedule\Calendar\Models\Timer;
+use Domain\Schedule\Tasks\Models\Task;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

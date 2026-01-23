@@ -2,8 +2,8 @@
 
 namespace App\Jobs\Tasks\Recurrence;
 
-use Domain\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
-use Domain\Tasks\Models\Task;
+use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
+use Domain\Schedule\Tasks\Models\Task;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;

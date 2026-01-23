@@ -2,7 +2,7 @@
 
 namespace App\Telegram\Middleware;
 
-use Domain\Settings\Enums\TimezoneEnum;
+use Domain\Schedule\Settings\Enums\TimezoneEnum;
 use Domain\TelegramBot\Models\TelegramUser;
 use SergiX44\Nutgram\Nutgram;
 

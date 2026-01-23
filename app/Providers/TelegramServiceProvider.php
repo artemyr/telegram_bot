@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
-use Domain\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
-use Domain\Tasks\Services\RecurrenceTaskNotificationCreator;
+use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
+use Domain\Schedule\Tasks\Services\RecurrenceTaskNotificationCreator;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\UserStateContract;

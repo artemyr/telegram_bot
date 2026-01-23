@@ -2,7 +2,7 @@
 
 namespace Services\HumanDateParser;
 
-use Domain\Tasks\Enum\TaskRepeatTypesEnum;
+use Domain\Schedule\Tasks\Enum\TaskRepeatTypesEnum;
 use Illuminate\Pipeline\Pipeline;
 use Services\HumanDateParser\Collection\RecurrenceCollection;
 use Services\HumanDateParser\Exceptions\ParserError;

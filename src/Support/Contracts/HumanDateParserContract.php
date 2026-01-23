@@ -2,7 +2,7 @@
 
 namespace Support\Contracts;
 
-use Domain\Tasks\Enum\TaskRepeatTypesEnum;
+use Domain\Schedule\Tasks\Enum\TaskRepeatTypesEnum;
 use Services\HumanDateParser\Collection\RecurrenceCollection;
 
 interface HumanDateParserContract

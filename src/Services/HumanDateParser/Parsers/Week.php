@@ -3,7 +3,7 @@
 namespace Services\HumanDateParser\Parsers;
 
 use Carbon\Carbon;
-use Domain\Tasks\Enum\TaskRepeatTypesEnum;
+use Domain\Schedule\Tasks\Enum\TaskRepeatTypesEnum;
 use Illuminate\Support\Collection;
 use Support\Contracts\HumanDateParserContract;
 

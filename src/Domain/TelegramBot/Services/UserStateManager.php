@@ -23,7 +23,7 @@ class UserStateManager implements UserStateContract
 
     public function getBotName(): string
     {
-        return $this->getBotName();
+        return $this->botName;
     }
 
     /**

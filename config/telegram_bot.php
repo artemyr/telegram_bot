@@ -10,5 +10,9 @@ return [
         // jobs/runtime
         'driver' => env('TELEGRAM_MESSAGES_DRIVER', 'jobs'),
     ],
-    'serverip' => env('SERVER_IP')
+    'serverip' => env('SERVER_IP'),
+    'menu' => [
+        'schedule' => \Domain\Schedule\Menu\MenuFactory::class,
+        'travel' => \Domain\Travel\Menu\MenuFactory::class,
+    ]
 ];

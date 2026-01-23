@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Telegram\Schedule;
+namespace App\Http\Controllers\Telegram\Travel;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Telegram\TelegramStateTrait;
 use Domain\TelegramBot\Enum\LastMessageType;
 
-class MessageStateTrait extends Controller
+class MessageStateController extends Controller
 {
     use TelegramStateTrait;
 

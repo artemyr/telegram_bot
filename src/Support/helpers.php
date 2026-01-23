@@ -12,9 +12,19 @@ use SergiX44\Nutgram\Nutgram;
 use Support\Contracts\HumanDateParserContract;
 
 if (!function_exists('menu')) {
-    function menu(): MenuContract
+    function menu(?string $botName = null): ?MenuContract
     {
-        return app(MenuContract::class);
+        if (empty($botName)) {
+            return app(MenuContract::class);
+        }
+
+        $factory = config("telegram_bot.menu.$botName");
+
+        if (empty($factory)) {
+            return null;
+        }
+
+        return app()->instance(MenuContract::class, $factory::create());
     }
 }
 

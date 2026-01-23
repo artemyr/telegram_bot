@@ -67,7 +67,13 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
 
     public function getCurrentCategoryItem(): self
     {
-        return $this->recurseSearch($this);
+        $item =  $this->recurseSearch($this);
+
+        if (empty($item)) {
+            $item = menu();
+        }
+
+        return $item;
     }
 
     protected function recurseSearch($item): ?self

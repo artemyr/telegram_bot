@@ -7,9 +7,11 @@ use Domain\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
 use Domain\Tasks\Services\RecurrenceTaskNotificationCreator;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
+use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\Services\KeyboardManager;
 use Domain\TelegramBot\Services\MessageManager;
+use Domain\TelegramBot\Services\UserStateManager;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +21,7 @@ class TelegramServiceProvider extends ServiceProvider
     {
         $this->app->singleton(KeyboardContract::class, KeyboardManager::class);
         $this->app->singleton(MessageContract::class, MessageManager::class);
+        $this->app->singleton(UserStateContract::class, UserStateManager::class);
         $this->app->singleton(RecurrenceTaskNotificationCreatorContract::class, RecurrenceTaskNotificationCreator::class);
     }
 

@@ -50,7 +50,6 @@ services:
     image: artemyr/telegram_bot_supervisor
     volumes:
       - ./../:/var/www/html
-      - ./logs/supervisor:/var/log/supervisor
     restart: unless-stopped
     depends_on:
       - php

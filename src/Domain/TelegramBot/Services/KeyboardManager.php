@@ -4,20 +4,12 @@ namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Enum\KeyboardEnum;
-use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardRemove;
 
 class KeyboardManager implements KeyboardContract
 {
-    protected Nutgram $bot;
-
-    public function __construct()
-    {
-        $this->bot = app(Nutgram::class);
-    }
-
     public function remove(): void
     {
         $userDto = tuser()->get();
@@ -33,7 +25,7 @@ class KeyboardManager implements KeyboardContract
 
     public function removeForce(): void
     {
-        $this->bot->sendMessage(
+        bot()->sendMessage(
             text: 'Removing keyboard...',
             reply_markup: ReplyKeyboardRemove::make(true),
         )?->delete();

@@ -54,9 +54,11 @@ services:
 
   redis:
     image: redis:7-alpine
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
     container_name: ${PROJECT_PREFIX}_redis
     restart: unless-stopped
+    volumes:
+      - redis-data:/data
 
   mysql:
     ports:

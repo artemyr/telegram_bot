@@ -7,6 +7,7 @@ services:
     container_name: ${PROJECT_PREFIX}_webserver
     platform: linux/amd64
     depends_on:
+      - php
       - mysql
     volumes:
       - ./containers/nginx/conf/ssl:/etc/nginx/ssl
@@ -40,6 +41,9 @@ services:
       PHP_IDE_CONFIG: serverName=Docker
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - mysql
+      - redis
 
   supervisor:
     container_name: ${PROJECT_PREFIX}_supervisor
@@ -51,6 +55,7 @@ services:
     depends_on:
       - php
       - mysql
+      - redis
 
   redis:
     image: redis:7-alpine

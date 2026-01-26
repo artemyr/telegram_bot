@@ -22,7 +22,7 @@ class RemoveWebhookCommand extends Command
      */
     public function handle()
     {
-        $bot = bot('schedule');
+        $bot = bot();
 
         if (app()->isLocal()) {
             $bot->sendMessage('Запрещено!');

@@ -29,6 +29,7 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
     public function handle(): void
     {
         bot('schedule'); // TODO переделать
+        schedule_user(); // TODO переделать
 
         /** @var Model $notifiable */
         $notifiable = $this->model;

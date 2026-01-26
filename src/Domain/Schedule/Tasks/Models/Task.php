@@ -68,7 +68,7 @@ class Task extends Model
     public function title(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => mb_ucfirst($value),
+            get: fn($value) => \mb_ucfirst($value),
             set: fn($value) => trim(mb_strtolower($value)),
         );
     }

@@ -19,6 +19,10 @@ class WorkController extends Controller
         $end = Cache::get('end_day');
         $test = Cache::get('work_test');
 
+        Cache::set('start_day', false);
+        Cache::set('end_day', false);
+        Cache::set('work_test', false);
+
         if ($start === true && $end === true) {
             $start = false;
             Cache::set('start_day', false);
@@ -36,8 +40,6 @@ class WorkController extends Controller
                 ->userId($user->telegram_id)
                 ->text('Рабочий день начат')
                 ->send();
-
-            Cache::set('start_day', false);
         }
 
         if ($end === true) {
@@ -53,7 +55,6 @@ class WorkController extends Controller
                 ->text('Рабочий день закончен')
                 ->send();
 
-            Cache::set('end_day', false);
         }
 
         if ($test === true) {
@@ -68,8 +69,6 @@ class WorkController extends Controller
                 ->userId($user->telegram_id)
                 ->text('Тест')
                 ->send();
-
-            Cache::set('work_test', false);
         }
 
         return response()->json($res);

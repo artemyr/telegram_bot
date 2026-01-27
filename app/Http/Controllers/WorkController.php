@@ -10,6 +10,7 @@ class WorkController extends Controller
     public function config()
     {
         bot('schedule');
+        schedule_user();
 
         $res = [
             'start' => false,

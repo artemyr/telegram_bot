@@ -54,10 +54,22 @@ class MessageManager implements MessageContract
     public function replyKeyboard(array $keyboard): MessageContract
     {
         $this->keyboard = ReplyKeyboardMarkup::make();
-        foreach ($keyboard as $button) {
-            $this->keyboard->addRow(
-                KeyboardButton::make($button)
-            );
+        foreach ($keyboard as $line) {
+
+            if (is_string($line)) {
+                $this->keyboard->addRow(
+                    KeyboardButton::make($line)
+                );
+            } elseif (is_array($line)) {
+
+                $cols = [];
+
+                foreach ($line as $label) {
+                    $cols[] = KeyboardButton::make($label);
+                }
+
+                $this->keyboard->addRow(...$cols);
+            }
         }
         $this->replyKeyboard = true;
         return $this;

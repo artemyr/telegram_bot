@@ -17,24 +17,8 @@ abstract class BotState
 
     abstract public function render(): void;
 
-    public function handle(): void
+    public function handle(): BotState
     {
-    }
-
-    protected function transition(BotState $state): BotState
-    {
-        tuser()->changeState($state);
-        return $state;
-    }
-
-    protected function exit(): void
-    {
-        tuser()->changeState(new MenuBotState('home'));
-    }
-
-    protected function save(): void
-    {
-        $newState = new static($this->path);
-        tuser()->changeState($newState);
+        return $this;
     }
 }

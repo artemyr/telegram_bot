@@ -9,7 +9,11 @@ class UserStateStore
 {
     public static function get(string $botName, int $userId): ?UserStateDto
     {
-        return Cache::get("tg_state:$botName:$userId");
+        try {
+            return Cache::get("tg_state:$botName:$userId");
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public static function set(string $botName, int $userId, UserStateDto $user): void

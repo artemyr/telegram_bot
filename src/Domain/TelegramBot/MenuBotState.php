@@ -30,15 +30,14 @@ class MenuBotState extends BotState
             ->send();
     }
 
-    public function handle(): void
+    public function handle(): BotState
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
 
         if (!nutgram()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
-            tuser()->changeState($currentMenuItem->state());
-            return;
+            return $currentMenuItem->state();
         }
 
         $text = nutgram()->callbackQuery()->data;
@@ -52,8 +51,7 @@ class MenuBotState extends BotState
 
                     $currentMenuItem = $currentMenuItem->getParent();
                 } else {
-                    $this->exit();
-                    return;
+                    return new MenuBotState(troute('home'));
                 }
             } else {
                 foreach ($currentMenuItem->all() as $item) {
@@ -79,9 +77,9 @@ class MenuBotState extends BotState
 
         if (!$found) {
             message('Выберите значение из списка');
-            return;
+            return $this;
         }
 
-        $this->transition($currentMenuItem->state());
+        return $currentMenuItem->state();
     }
 }

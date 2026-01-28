@@ -12,7 +12,9 @@ trait TelegramStateTrait
             $userDto = tuser()->get();
 
             $current = $userDto->state;
-            $current->handle();
+            $new = $current->handle();
+
+            tuser()->changeState($new);
 
             $userDto = tuser()->get();
             $next = $userDto->state;

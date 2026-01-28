@@ -48,7 +48,7 @@ class ProductAddState extends BotState
         }
     }
 
-    public function handle(): void
+    public function handle(): BotState
     {
         if (nutgram()->isCallbackQuery()) {
             $query = nutgram()->callbackQuery()->data;
@@ -84,11 +84,5 @@ class ProductAddState extends BotState
                 return;
             }
         }
-    }
-
-    protected function save(): void
-    {
-        $newState = new self($this->path, $this->stage, $this->productId);
-        tuser()->changeState($newState);
     }
 }

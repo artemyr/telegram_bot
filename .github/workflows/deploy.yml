@@ -25,10 +25,10 @@ jobs:
             cd docker
             make down
             make up
-            docker compose exec -T telegram_php composer install \
+            docker compose -p telegram exec -u www-data -T php composer install \
               --no-dev \
               --optimize-autoloader
-            docker compose exec -T telegram_php php artisan migrate --force
-            docker compose exec -T telegram_php php artisan config:clear
-            docker compose exec -T telegram_php php artisan config:cache
-            docker compose exec -T telegram_php php artisan route:cache
+            docker compose -p telegram exec -u www-data -T php php artisan migrate --force
+            docker compose -p telegram exec -u www-data -T php php artisan config:clear
+            docker compose -p telegram exec -u www-data -T php php artisan config:cache
+            docker compose -p telegram exec -u www-data -T thp php artisan route:cache

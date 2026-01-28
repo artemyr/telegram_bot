@@ -8,9 +8,14 @@ use Illuminate\Support\Carbon;
 
 class NotificationManager implements NotificationInstanceContract
 {
-    public function send(string $message, Carbon $date): void
+    public function send(string $message, Carbon $date = null): void
     {
         $bot = nutgram();
+
+        if (empty($date)) {
+            dispatch(new SendNotificationJob(bot()->role(), $bot->userId(), $message));
+        }
+
         dispatch(new SendNotificationJob(bot()->role(), $bot->userId(), $message))
             ->delay($date);
     }

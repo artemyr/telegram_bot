@@ -179,6 +179,7 @@ class MessageManager implements MessageContract
         if ($this->driver === 'jobs') {
             dispatch(
                 new SendMessageJob(
+                    bot()->role(),
                     $this->userId,
                     $this->text,
                     $this->keyboard

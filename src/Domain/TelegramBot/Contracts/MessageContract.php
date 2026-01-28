@@ -11,6 +11,7 @@ interface MessageContract
     public function userId(int $userId): self;
     public function send(): void;
     public function setLockEditLastMessage(): self;
+    public function removeLast(): self;
     public function hint(string $text): void;
 
     public static function fake(): void;

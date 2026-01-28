@@ -178,6 +178,12 @@ class MessageManager implements MessageContract
         return $this;
     }
 
+    public function removeLast(): MessageContract
+    {
+        nutgram()->message()?->delete();
+        return $this;
+    }
+
     /**
      * @throws MessageManagerException
      */

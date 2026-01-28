@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace Domain\TelegramBot\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;

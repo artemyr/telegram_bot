@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Telegram\Schedule\Tasks\MorningNotify;
+namespace Domain\Schedule\Jobs\Tasks\MorningNotify;
 
 use Domain\Schedule\Tasks\Models\Task;
 use Domain\Schedule\Tasks\Presentations\TaskPresentation;

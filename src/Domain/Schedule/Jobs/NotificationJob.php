@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Telegram\Schedule;
+namespace Domain\Schedule\Jobs;
 
 use Domain\Schedule\Calendar\Models\Timer;
 use Domain\Schedule\Tasks\Models\Task;

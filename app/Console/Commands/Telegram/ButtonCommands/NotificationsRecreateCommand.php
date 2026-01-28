@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Telegram\ButtonCommands;
 
-use App\Jobs\Telegram\Schedule\Tasks\Recurrence\GenerateUserTaskOccurrencesJob;
+use Domain\Schedule\Jobs\Tasks\Recurrence\GenerateUserTaskOccurrencesJob;
 use Illuminate\Console\Command;
 
 class NotificationsRecreateCommand extends Command

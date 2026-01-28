@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Telegram\Schedule\Tasks\Recurrence;
+namespace Domain\Schedule\Jobs\Tasks\Recurrence;
 
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
 use Domain\Schedule\Tasks\Models\Task;

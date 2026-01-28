@@ -2,8 +2,8 @@
 
 namespace Domain\TelegramBot\Services;
 
-use App\Jobs\SendNotificationJob;
 use App\Telegram\Contracts\NotificationInstanceContract;
+use Domain\TelegramBot\Jobs\SendNotificationJob;
 use Illuminate\Support\Carbon;
 
 class NotificationManager implements NotificationInstanceContract

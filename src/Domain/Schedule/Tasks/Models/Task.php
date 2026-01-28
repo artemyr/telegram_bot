@@ -2,7 +2,7 @@
 
 namespace Domain\Schedule\Tasks\Models;
 
-use App\Jobs\Telegram\Schedule\NotificationJob;
+use Domain\Schedule\Jobs\NotificationJob;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;

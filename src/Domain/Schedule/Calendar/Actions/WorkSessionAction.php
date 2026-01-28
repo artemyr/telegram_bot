@@ -2,8 +2,8 @@
 
 namespace Domain\Schedule\Calendar\Actions;
 
-use App\Jobs\Telegram\Schedule\NotificationJob;
 use Domain\Schedule\Calendar\Models\Timer;
+use Domain\Schedule\Jobs\NotificationJob;
 use Illuminate\Support\Carbon;
 
 class WorkSessionAction

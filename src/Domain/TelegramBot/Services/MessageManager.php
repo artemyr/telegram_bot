@@ -2,10 +2,10 @@
 
 namespace Domain\TelegramBot\Services;
 
-use App\Jobs\SendMessageJob;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Enum\LastMessageType;
 use Domain\TelegramBot\Exceptions\MessageManagerException;
+use Domain\TelegramBot\Jobs\SendMessageJob;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;

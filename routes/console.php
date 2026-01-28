@@ -1,5 +1,7 @@
 <?php
 
+use Domain\Schedule\Jobs\Tasks\MorningNotify\GlobalTaskRemindJob;
+use Domain\Schedule\Jobs\Tasks\Recurrence\GenerateTaskOccurrencesJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -8,11 +10,11 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::job(new \App\Jobs\Telegram\Schedule\Tasks\MorningNotify\GlobalTaskRemindJob())
+Schedule::job(new GlobalTaskRemindJob())
     ->daily()
     ->withoutOverlapping();
 
-Schedule::job(new \App\Jobs\Telegram\Schedule\Tasks\Recurrence\GenerateTaskOccurrencesJob())
+Schedule::job(new GenerateTaskOccurrencesJob())
     ->weekly()
     ->withoutOverlapping();
 

@@ -2,7 +2,7 @@
 
 namespace Domain\Schedule\Tasks\Repository;
 
-use App\Jobs\Telegram\Schedule\Tasks\Recurrence\GenerateOneTaskOccurrencesJob;
+use Domain\Schedule\Jobs\Tasks\Recurrence\GenerateOneTaskOccurrencesJob;
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskRepositoryContract;
 use Domain\Schedule\Tasks\Models\Task;
 use Domain\Schedule\Tasks\Models\TaskRecurrence;

@@ -6,6 +6,7 @@ use Closure;
 use Countable;
 use Domain\TelegramBot\BotState;
 use IteratorAggregate;
+use RuntimeException;
 
 class MenuItem implements Countable, IteratorAggregate, MenuContract
 {
@@ -20,6 +21,10 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
         protected string $label,
         protected string|Closure|null $state = null,
     ) {
+        if (empty($this->link) && empty($this->label)) {
+            throw new RuntimeException('Provide label or link');
+        }
+
         if ($state === null) {
             $this->state = static::$defaultState;
         }
@@ -42,11 +47,19 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
 
     public function link(): string
     {
+        if (empty($this->link)) {
+            return $this->label;
+        }
+
         return $this->link;
     }
 
     public function label(): string
     {
+        if (empty($this->label)) {
+            return $this->link;
+        }
+
         return $this->label;
     }
 

@@ -50,6 +50,17 @@ class WhereState extends AbstractState
                 ->replyKeyboard($keyboard)
                 ->send();
         }
+
+        if ($this->stage === self::STAGE_OTHER) {
+            $keyboard[] = KeyboardEnum::BACK->label();
+
+            message()
+                ->text([
+                    "Введите название курорта",
+                ])
+                ->replyKeyboard($keyboard)
+                ->send();
+        }
     }
 
     public function handle(): BotState
@@ -60,14 +71,16 @@ class WhereState extends AbstractState
             return new MenuBotState('home');
         }
 
-        if (!$this->validate($query, self::$where)) {
-            message('Выберите из списка');
-            return $this;
-        }
+        if ($this->stage === self::STAGE_MAIN) {
+            if (!$this->validate($query, self::$where)) {
+                message('Выберите из списка');
+                return $this;
+            }
 
-        if ($query === 'Другое (?)') {
-            $this->stage = self::STAGE_OTHER;
-            return $this;
+            if ($query === 'Другое (?)') {
+                $this->stage = self::STAGE_OTHER;
+                return $this;
+            }
         }
 
         return new WhenState();

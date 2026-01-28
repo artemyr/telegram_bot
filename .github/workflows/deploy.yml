@@ -21,7 +21,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.APP_DIR }}
-            git pull origin main
+            git pull origin master
 #            composer install --no-dev --optimize-autoloader
 #            php artisan migrate --force
 #            php artisan config:clear

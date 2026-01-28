@@ -181,6 +181,7 @@ class MessageManager implements MessageContract
     public function removeLast(): MessageContract
     {
         nutgram()->message()?->delete();
+        $this->setLockEditLastMessage();
         return $this;
     }
 

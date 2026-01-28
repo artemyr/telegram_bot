@@ -62,13 +62,13 @@ if (!function_exists('try')) {
 }
 
 if (!function_exists('nutgram')) {
-    function nutgram(?string $botName = null): Nutgram
+    function nutgram(?string $botName = null, bool $polling = false): Nutgram
     {
         if (empty($botName)) {
             return app(BotInstanceContract::class);
         }
 
-        if ($botName === 'test') {
+        if ($polling) {
             $bot = app(Nutgram::class);
             return app()->instance(BotInstanceContract::class, $bot);
         }
@@ -87,9 +87,9 @@ if (!function_exists('bot')) {
 }
 
 if (!function_exists('init_bot')) {
-    function init_bot(string $botName): Nutgram
+    function init_bot(string $botName, bool $polling = false): Nutgram
     {
-        $bot = nutgram($botName);
+        $bot = nutgram($botName, $polling);
         app()->instance(BotContract::class, new BotManager($bot));
         tuser($botName);
         menu($botName);

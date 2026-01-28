@@ -17,13 +17,13 @@ class MainTelegramController extends Controller
 
     protected function schedule(): void
     {
-        nutgram('schedule');
+        init_bot('schedule');
         ScheduleBotFactory::run();
     }
 
     protected function travel(): void
     {
-        nutgram('travel');
+        init_bot('travel');
         TravelBotFactory::run();
     }
 }

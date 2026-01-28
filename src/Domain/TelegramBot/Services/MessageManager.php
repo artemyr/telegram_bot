@@ -23,6 +23,7 @@ class MessageManager implements MessageContract
     protected bool $replyKeyboard = false;
     protected int $userId;
     protected int $delay = 0;
+    protected bool $lockEditLastMessage = false;
 
     public function __construct()
     {
@@ -114,7 +115,7 @@ class MessageManager implements MessageContract
 
         $userDto = tuser()->get();
 
-        if (!empty($userDto) && $userDto->lastMessageType === LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE) {
+        if (!$this->lockEditLastMessage && !empty($userDto) && $userDto->lastMessageType === LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE) {
             try {
                 $this->editLastMessage();
             } catch (Throwable $e) {
@@ -171,6 +172,12 @@ class MessageManager implements MessageContract
         throw MessageManagerException::driverNotSupported();
     }
 
+    public function setLockEditLastMessage(bool $lockEditLastMessage = true): MessageContract
+    {
+        $this->lockEditLastMessage = $lockEditLastMessage;
+        return $this;
+    }
+
     /**
      * @throws MessageManagerException
      */
@@ -213,5 +220,6 @@ class MessageManager implements MessageContract
         $this->keyboard = null;
         $this->replyKeyboard = false;
         $this->delay = 0;
+        $this->lockEditLastMessage = false;
     }
 }

@@ -26,7 +26,9 @@ class TimezoneState extends BotState
             "Раздел: Настройки",
             "Ваш часовой пояс: $timezone",
             "Выберите часовой пояс:"
-        ])->replyKeyboard($keyboard)->send();
+        ])->replyKeyboard($keyboard)
+            ->setLockEditLastMessage()
+            ->send();
     }
 
     public function handle(): void

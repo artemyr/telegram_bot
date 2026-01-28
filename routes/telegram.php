@@ -22,11 +22,11 @@ use App\Telegram\Factory\TravelBotFactory;
  */
 
 if (app()->isLocal()) {
-//    init_bot('schedule', true);
-//    ScheduleBotFactory::run();
+    init_bot('schedule', true);
+    ScheduleBotFactory::run();
 
-    init_bot('travel', true);
-    TravelBotFactory::run();
+//    init_bot('travel', true);
+//    TravelBotFactory::run();
 }
 
 

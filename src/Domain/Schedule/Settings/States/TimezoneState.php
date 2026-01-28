@@ -34,7 +34,7 @@ class TimezoneState extends BotState
     public function handle(): BotState
     {
         if (nutgram()->message()->getText() === KeyboardEnum::BACK->label()) {
-            return new MenuBotState(troute('settings'));
+            return new MenuBotState(troute('schedule.settings'));
         }
 
         foreach (TimezoneEnum::cases() as $case) {

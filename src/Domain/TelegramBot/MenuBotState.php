@@ -33,7 +33,6 @@ class MenuBotState extends BotState
     public function handle(): BotState
     {
         $currentMenuItem = menu()->getCurrentCategoryItem();
-        $found = false;
 
         if (!nutgram()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
@@ -44,12 +43,8 @@ class MenuBotState extends BotState
 
         if (!empty($text)) {
             if ($text === KeyboardEnum::BACK->value) {
-                $found = true;
                 if ($currentMenuItem->getParent()) {
-                    $newState = new MenuBotState($currentMenuItem->getParent()->link());
-                    tuser()->changeState($newState);
-
-                    $currentMenuItem = $currentMenuItem->getParent();
+                    return new MenuBotState($currentMenuItem->getParent()->link());
                 } else {
                     return new MenuBotState(troute('home'));
                 }
@@ -62,24 +57,15 @@ class MenuBotState extends BotState
                             message("Выполнение \"{$item->label()}\"");
                             $call = $item->getCallback();
                             $call();
-                            $currentMenuItem = $item->getParent();
                         } else {
-                            $newState = new MenuBotState($item->link());
-                            tuser()->changeState($newState);
-
-                            $currentMenuItem = $item;
+                            return $item->state();
                         }
-                        $found = true;
                     }
                 }
             }
         }
 
-        if (!$found) {
-            message('Выберите значение из списка');
-            return $this;
-        }
-
-        return $currentMenuItem->state();
+        message('Выберите значение из списка');
+        return $this;
     }
 }

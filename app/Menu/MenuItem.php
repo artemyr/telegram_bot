@@ -5,6 +5,7 @@ namespace App\Menu;
 use Closure;
 use Countable;
 use Domain\TelegramBot\BotState;
+use Illuminate\Support\Str;
 use IteratorAggregate;
 use RuntimeException;
 
@@ -48,7 +49,7 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
     public function link(): string
     {
         if (empty($this->link)) {
-            return $this->label;
+            return Str::slug($this->label, '_');
         }
 
         return $this->link;

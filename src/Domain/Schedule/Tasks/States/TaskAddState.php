@@ -35,16 +35,14 @@ class TaskAddState extends BotState
     /**
      * @throws PrintableException
      */
-    public function handle(): void
+    public function handle(): BotState
     {
         if (nutgram()->isCallbackQuery()) {
             $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                $newState = new MenuBotState(troute('tasks'));
-                tuser()->changeState($newState);
-                return;
+                return new MenuBotState(troute('tasks'));
             }
         } else {
             $tasks = nutgram()->message()?->getText();
@@ -78,8 +76,7 @@ class TaskAddState extends BotState
                     ->text($response)
                     ->send();
             }
-
-            return;
         }
+        return $this;
     }
 }

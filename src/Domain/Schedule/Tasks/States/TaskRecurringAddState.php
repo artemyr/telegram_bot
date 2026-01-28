@@ -61,23 +61,19 @@ class TaskRecurringAddState extends BotState
             ->send();
     }
 
-    public function handle(): void
+    public function handle(): BotState
     {
         if (nutgram()->isCallbackQuery()) {
             $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                $newState = new MenuBotState(troute('tasks'));
-                tuser()->changeState($newState);
-                return;
+                return new MenuBotState(troute('tasks'));
             }
         } else {
             if ($this->stage === self::TITLE_STAGE) {
                 $title = nutgram()->message()->getText();
-                $newState = new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
-                tuser()->changeState($newState);
-                return;
+                return new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
             }
 
             if ($this->stage === self::DATE_STAGE) {
@@ -87,18 +83,18 @@ class TaskRecurringAddState extends BotState
 
                 if ($result->state === RepositoryResult::SUCCESS_SAVED) {
                     message("Задача \"$this->title\" создана");
-                    $newState = new MenuBotState(troute('tasks'));
-                    tuser()->changeState($newState);
-                    return;
+                    return new MenuBotState(troute('tasks'));
                 }
 
                 if ($result->state === RepositoryResult::ERROR) {
                     message("Ошибка создания задачи \"$this->title\"");
-                    return;
+                    return $this;
                 }
             }
 
             throw new RuntimeException('Unknown stage');
         }
+
+        return $this;
     }
 }

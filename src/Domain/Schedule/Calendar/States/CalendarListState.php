@@ -31,16 +31,14 @@ class CalendarListState extends BotState
     /**
      * @throws PrintableException
      */
-    public function handle(): void
+    public function handle(): BotState
     {
         if (nutgram()->isCallbackQuery()) {
             $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                $newState = new MenuBotState(troute('calendar'));
-                tuser()->changeState($newState);
-                return;
+                return new MenuBotState(troute('calendar'));
             }
         } else {
             $query = nutgram()->message()?->getText();
@@ -67,7 +65,7 @@ class CalendarListState extends BotState
                 } else {
                     message("Таймер не найден");
                 }
-                return;
+                return $this;
             }
         }
     }

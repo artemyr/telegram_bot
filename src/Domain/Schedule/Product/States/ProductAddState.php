@@ -54,8 +54,7 @@ class ProductAddState extends BotState
             $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
-                $this->transition(new MenuBotState(troute('food')));
-                return;
+                return new MenuBotState(troute('food'));
             }
         } else {
             $query = nutgram()->message()?->getText();
@@ -66,9 +65,8 @@ class ProductAddState extends BotState
                     'title' => $query,
                 ]);
                 $this->productId = $product->id;
-                $this->stage = self::DAYS_STAGE;
-                $this->save();
-                return;
+                $this->stage = self::DAYS_STAGE;;
+                return $this;
             }
 
             if ($this->stage === self::DAYS_STAGE) {
@@ -80,8 +78,7 @@ class ProductAddState extends BotState
                 $product->save();
 
                 $this->stage = self::TITLE_STAGE;
-                $this->save();
-                return;
+                return $this;
             }
         }
     }

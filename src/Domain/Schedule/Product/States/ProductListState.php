@@ -37,15 +37,14 @@ class ProductListState extends BotState
     /**
      * @throws PrintableException
      */
-    public function handle(): void
+    public function handle(): BotState
     {
         if (nutgram()->isCallbackQuery()) {
             $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                $this->transition(new MenuBotState(troute('food')));
-                return;
+                return new MenuBotState(troute('food'));
             }
         } else {
             $text = nutgram()->message()?->getText();
@@ -65,6 +64,8 @@ class ProductListState extends BotState
                 $product?->delete();
             }
         }
+
+        return $this;
     }
 
     private function getProducts(): Collection

@@ -45,34 +45,30 @@ class ProductListToBuyState extends BotState
         }
     }
 
-    public function handle(): void
+    public function handle(): BotState
     {
         if (nutgram()->isCallbackQuery()) {
             $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                $this->transition(new MenuBotState(troute('food')));
-                return;
+                return new MenuBotState(troute('food'));
             }
 
             if ($query === KeyboardEnum::NEXT->value) {
                 $this->pagen++;
-                $this->save();
-                return;
+                return $this;
             }
 
             if ($query === KeyboardEnum::PREV->value) {
                 if ($this->pagen === 1) {
                     message()->hint("Начало списка");
                     $this->block = true;
-                    $this->save();
-                    return;
+                    return $this;
                 }
 
                 $this->pagen--;
-                $this->save();
-                return;
+                return $this;
             }
 
             $product = Product::query()
@@ -85,21 +81,13 @@ class ProductListToBuyState extends BotState
                 $product->save();
                 message()->hint("Продукт \"{$product->title}\" куплен");
                 $this->block = false;
-                $this->save();
             } else {
                 message()->hint("Продукт не наден");
                 $this->block = true;
-                $this->save();
             }
-            return;
+            return $this;
         } else {
-            $this->exit();
+            return $this;
         }
-    }
-
-    protected function save(): void
-    {
-        $newState = new self($this->path, $this->pagen, $this->block);
-        tuser()->changeState($newState);
     }
 }

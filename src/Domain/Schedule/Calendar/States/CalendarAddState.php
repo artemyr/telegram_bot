@@ -25,20 +25,18 @@ class CalendarAddState extends BotState
             ->send();
     }
 
-    public function handle(): void
+    public function handle(): BotState
     {
         if (!nutgram()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
-            return;
+            return $this;
         }
 
         $text = nutgram()->callbackQuery()->data;
 
         if ($text === KeyboardEnum::BACK->value) {
             keyboard()->remove();
-            $newState = new MenuBotState(troute('calendar'));
-            tuser()->changeState($newState);
-            return;
+            return new MenuBotState(troute('calendar'));
         }
 
         foreach (CalendarAddEnum::cases() as $case) {
@@ -48,5 +46,7 @@ class CalendarAddState extends BotState
                 $action();
             }
         }
+
+        return $this;
     }
 }

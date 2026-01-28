@@ -1,9 +1,8 @@
 <?php
 
-namespace Tests\Feature\App\Http\Controllers\Telegram;
+namespace Tests\Feature\App\Http\Controllers\Telegram\Schedule;
 
 use App\Http\Controllers\Telegram\Schedule\StartController;
-use Tests\TestCase;
 
 class StartControllerTest extends TestCase
 {

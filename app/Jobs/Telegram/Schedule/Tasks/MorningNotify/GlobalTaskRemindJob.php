@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Tasks\MorningNotify;
+namespace App\Jobs\Telegram\Schedule\Tasks\MorningNotify;
 
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Contracts\Queue\ShouldBeUnique;

@@ -2,7 +2,7 @@
 
 namespace Domain\Schedule\Tasks\Models;
 
-use App\Jobs\NotificationJob;
+use App\Jobs\Telegram\Schedule\NotificationJob;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+
 use function Domain\Tasks\Models\mb_ucfirst;
 
 class Task extends Model

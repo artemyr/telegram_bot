@@ -14,7 +14,7 @@ class CalendarListState extends BotState
     public function render(): void
     {
         $timers = Timer::query()
-            ->where('telegram_user_id', bot()->userId())
+            ->where('telegram_user_id', nutgram()->userId())
             ->get();
 
         message()
@@ -33,8 +33,8 @@ class CalendarListState extends BotState
      */
     public function handle(): void
     {
-        if (bot()->isCallbackQuery()) {
-            $query = bot()->callbackQuery()->data;
+        if (nutgram()->isCallbackQuery()) {
+            $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
@@ -43,11 +43,11 @@ class CalendarListState extends BotState
                 return;
             }
         } else {
-            $query = bot()->message()?->getText();
+            $query = nutgram()->message()?->getText();
 
             if (filter_var($query, FILTER_VALIDATE_INT)) {
                 $timers = Timer::query()
-                    ->where('telegram_user_id', bot()->userId())
+                    ->where('telegram_user_id', nutgram()->userId())
                     ->get();
                 $table = (new TimerPresentation($timers))->getTable();
 

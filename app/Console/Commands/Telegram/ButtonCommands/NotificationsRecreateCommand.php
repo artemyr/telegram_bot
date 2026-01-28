@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Telegram\ButtonCommands;
 
-use App\Jobs\Tasks\Recurrence\GenerateUserTaskOccurrencesJob;
+use App\Jobs\Telegram\Schedule\Tasks\Recurrence\GenerateUserTaskOccurrencesJob;
 use Illuminate\Console\Command;
 
 class NotificationsRecreateCommand extends Command
@@ -12,7 +12,7 @@ class NotificationsRecreateCommand extends Command
 
     public function handle()
     {
-        $bot = bot();
+        $bot = nutgram();
 
         if (empty($bot->userId())) {
             $bot->sendMessage('Запрещено!');

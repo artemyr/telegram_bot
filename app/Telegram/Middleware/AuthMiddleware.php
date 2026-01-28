@@ -66,7 +66,7 @@ class AuthMiddleware
             )
         );
 
-        bot()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
+        nutgram()->sendMessage("Я вас еще не знаю\nВведите пароль для регистрации");
     }
 
     private function incorrectPassword(): void
@@ -85,7 +85,7 @@ class AuthMiddleware
             )
         );
 
-        bot()->sendMessage("Пароль не верный!");
+        nutgram()->sendMessage("Пароль не верный!");
     }
 
     private function newUserHandler(): bool
@@ -107,7 +107,7 @@ class AuthMiddleware
         // создаем в кеше
         $this->createCacheUser($tuser);
 
-        bot()->sendMessage("Вы зарегистрированы!");
+        nutgram()->sendMessage("Вы зарегистрированы!");
         return true;
     }
 
@@ -125,7 +125,7 @@ class AuthMiddleware
         if (!$userDto) {
             $this->createCacheUser($tuser);
             keyboard()->removeForce();
-            bot()->sendMessage("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
+            nutgram()->sendMessage("Вы долго не заходили ко мне. Ваше состояние потеряно. Начните сначала");
         }
     }
 

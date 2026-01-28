@@ -15,9 +15,7 @@ class ScheduleBotFactory
 
     public function handle(): void
     {
-        $bot = bot();
-        schedule_user();
-        menu('schedule');
+        $bot = init_bot('schedule');
 
         $bot->middleware(AuthMiddleware::class);
         $bot->middleware(CheckUserMiddleware::class);

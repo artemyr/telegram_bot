@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Jobs\Tasks\Recurrence;
 
-use App\Jobs\NotificationJob;
-use App\Jobs\Tasks\Recurrence\GenerateTaskOccurrencesJob;
+use App\Jobs\Telegram\Schedule\NotificationJob;
+use App\Jobs\Telegram\Schedule\Tasks\Recurrence\GenerateTaskOccurrencesJob;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 

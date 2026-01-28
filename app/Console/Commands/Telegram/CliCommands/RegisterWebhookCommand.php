@@ -32,16 +32,16 @@ class RegisterWebhookCommand extends Command
         switch ($choice) {
             case 'schedule':
                 $this->info('schedule');
-                bot('schedule')->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
+                nutgram('schedule')->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
                 break;
             case 'travel':
                 $this->info('travel');
-                bot('travel')->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                nutgram('travel')->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
                 break;
             case 'all':
                 $this->info('travel and schedule');
-                bot('schedule')->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
-                bot('travel')->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                nutgram('schedule')->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
+                nutgram('travel')->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
                 break;
             default:
                 $this->fail("Unknown bot name");

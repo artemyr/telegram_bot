@@ -50,19 +50,19 @@ class ProductAddState extends BotState
 
     public function handle(): void
     {
-        if (bot()->isCallbackQuery()) {
-            $query = bot()->callbackQuery()->data;
+        if (nutgram()->isCallbackQuery()) {
+            $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 $this->transition(new MenuBotState(troute('food')));
                 return;
             }
         } else {
-            $query = bot()->message()?->getText();
+            $query = nutgram()->message()?->getText();
 
             if ($this->stage === self::TITLE_STAGE) {
                 $product = Product::query()->create([
-                    'telegram_user_id' => bot()->userId(),
+                    'telegram_user_id' => nutgram()->userId(),
                     'title' => $query,
                 ]);
                 $this->productId = $product->id;

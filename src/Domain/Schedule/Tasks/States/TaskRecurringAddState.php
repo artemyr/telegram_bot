@@ -63,8 +63,8 @@ class TaskRecurringAddState extends BotState
 
     public function handle(): void
     {
-        if (bot()->isCallbackQuery()) {
-            $query = bot()->callbackQuery()->data;
+        if (nutgram()->isCallbackQuery()) {
+            $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
@@ -74,16 +74,16 @@ class TaskRecurringAddState extends BotState
             }
         } else {
             if ($this->stage === self::TITLE_STAGE) {
-                $title = bot()->message()->getText();
+                $title = nutgram()->message()->getText();
                 $newState = new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
                 tuser()->changeState($newState);
                 return;
             }
 
             if ($this->stage === self::DATE_STAGE) {
-                $repeat = bot()->message()->getText();
+                $repeat = nutgram()->message()->getText();
 
-                $result = $this->taskRepository->save(bot()->userId(), $this->title, $repeat);
+                $result = $this->taskRepository->save(nutgram()->userId(), $this->title, $repeat);
 
                 if ($result->state === RepositoryResult::SUCCESS_SAVED) {
                     message("Задача \"$this->title\" создана");

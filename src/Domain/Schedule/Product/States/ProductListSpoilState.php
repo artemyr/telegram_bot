@@ -24,7 +24,7 @@ class ProductListSpoilState extends BotState
         if (!$this->block) {
             $products = Product::query()
                 ->select('id', 'telegram_user_id', 'exist', 'title')
-                ->where('telegram_user_id', bot()->userId())
+                ->where('telegram_user_id', nutgram()->userId())
                 ->where('exist', true)
                 ->paginate(10, null, null, $this->pagen);
 
@@ -47,8 +47,8 @@ class ProductListSpoilState extends BotState
 
     public function handle(): void
     {
-        if (bot()->isCallbackQuery()) {
-            $query = bot()->callbackQuery()->data;
+        if (nutgram()->isCallbackQuery()) {
+            $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();

@@ -9,8 +9,7 @@ class WorkController extends Controller
 {
     public function config()
     {
-        bot('schedule');
-        schedule_user();
+        init_bot('schedule');
 
         $res = [
             'start' => false,

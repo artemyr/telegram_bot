@@ -28,7 +28,7 @@ class MessageManager implements MessageContract
     {
         $this->driver = config('telegram_bot.messages.driver', 'runtime');
 
-        $userId = bot()->userId();
+        $userId = nutgram()->userId();
         if (!empty($userId)) {
             $this->userId = $userId;
         }
@@ -160,7 +160,7 @@ class MessageManager implements MessageContract
         }
 
         if ($this->driver === 'runtime') {
-            bot()->editMessageText(
+            nutgram()->editMessageText(
                 text: $this->text,
                 chat_id: $this->userId,
                 reply_markup: $this->keyboard,
@@ -188,7 +188,7 @@ class MessageManager implements MessageContract
         }
 
         if ($this->driver === 'runtime') {
-            bot()->sendMessage(
+            nutgram()->sendMessage(
                 text: $this->text,
                 chat_id: $this->userId,
                 reply_markup: $this->keyboard,
@@ -201,7 +201,7 @@ class MessageManager implements MessageContract
 
     public function hint(string $text): void
     {
-        bot()->answerCallbackQuery(
+        nutgram()->answerCallbackQuery(
             text: $text
         );
     }

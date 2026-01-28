@@ -2,7 +2,7 @@
 
 namespace Domain\Schedule\Tasks\Services;
 
-use App\Jobs\NotificationJob;
+use App\Jobs\Telegram\Schedule\NotificationJob;
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
 use Domain\Schedule\Tasks\Models\Task;
 use Domain\Schedule\Tasks\Models\TaskRecurrence;

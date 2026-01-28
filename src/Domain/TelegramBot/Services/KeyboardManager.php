@@ -25,7 +25,7 @@ class KeyboardManager implements KeyboardContract
 
     public function removeForce(): void
     {
-        bot()->sendMessage(
+        nutgram()->sendMessage(
             text: 'Removing keyboard...',
             reply_markup: ReplyKeyboardRemove::make(true),
         )?->delete();

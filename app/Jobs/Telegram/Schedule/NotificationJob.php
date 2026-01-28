@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Telegram\Schedule;
 
 use Domain\Schedule\Calendar\Models\Timer;
 use Domain\Schedule\Tasks\Models\Task;
@@ -28,8 +28,7 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        bot('schedule'); // TODO переделать
-        schedule_user(); // TODO переделать
+        init_bot('schedule');
 
         /** @var Model $notifiable */
         $notifiable = $this->model;

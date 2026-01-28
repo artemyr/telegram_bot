@@ -39,8 +39,8 @@ class ProductListState extends BotState
      */
     public function handle(): void
     {
-        if (bot()->isCallbackQuery()) {
-            $query = bot()->callbackQuery()->data;
+        if (nutgram()->isCallbackQuery()) {
+            $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
@@ -48,7 +48,7 @@ class ProductListState extends BotState
                 return;
             }
         } else {
-            $text = bot()->message()?->getText();
+            $text = nutgram()->message()?->getText();
 
             if (filter_var($text, FILTER_VALIDATE_INT)) {
                 $products = $this->getProducts();
@@ -80,7 +80,7 @@ class ProductListState extends BotState
                 'store',
             )
             ->orderBy('buy_at')
-            ->where('telegram_user_id', bot()->userId())
+            ->where('telegram_user_id', nutgram()->userId())
             ->get();
     }
 }

@@ -1,12 +1,16 @@
 <?php
 
 use App\Menu\MenuContract;
+use App\Telegram\Contracts\BotContract;
 use App\Telegram\Contracts\BotInstanceContract;
+use App\Telegram\Contracts\NotificationInstanceContract;
 use App\Telegram\Contracts\UserInstanceContract;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Models\TelegramUser;
+use Domain\TelegramBot\Services\BotManager;
+use Illuminate\Support\Carbon;
 use Nutgram\Laravel\RunningMode\LaravelWebhook;
 use SergiX44\Nutgram\Nutgram;
 use Support\Contracts\HumanDateParserContract;
@@ -57,8 +61,8 @@ if (!function_exists('try')) {
     }
 }
 
-if (!function_exists('bot')) {
-    function bot(?string $botName = null): Nutgram
+if (!function_exists('nutgram')) {
+    function nutgram(?string $botName = null): Nutgram
     {
         if (empty($botName)) {
             return app(BotInstanceContract::class);
@@ -69,36 +73,52 @@ if (!function_exists('bot')) {
             return app()->instance(BotInstanceContract::class, $bot);
         }
 
-        $bot = new Nutgram(config("nutgram.bots.$botName"));
+        $bot = new Nutgram(config("nutgram.bots.$botName.token"));
         $bot->setRunningMode(LaravelWebhook::class);
         return app()->instance(BotInstanceContract::class, $bot);
     }
 }
 
-if (!function_exists('schedule_user')) {
-    function schedule_user(): UserStateContract
+if (!function_exists('bot')) {
+    function bot(): BotContract
     {
-        /** @var UserStateContract $userState */
-        $userState = app(UserStateContract::class);
-        $userState->setBotName('schedule');
-        return app()->instance(UserInstanceContract::class, $userState);
+        return app(BotContract::class);
     }
 }
 
-if (!function_exists('travel_user')) {
-    function travel_user(): UserStateContract
+if (!function_exists('init_bot')) {
+    function init_bot(string $botName): Nutgram
     {
-        /** @var UserStateContract $userState */
-        $userState = app(UserStateContract::class);
-        $userState->setBotName('travel');
-        return app()->instance(UserInstanceContract::class, $userState);
+        $bot = nutgram($botName);
+        app()->instance(BotContract::class, new BotManager($bot));
+        tuser($botName);
+        menu($botName);
+        return $bot;
+    }
+}
+
+if (!function_exists('notify'))
+{
+    function notify(string $message, Carbon $date): NotificationInstanceContract
+    {
+        /** @var NotificationInstanceContract $notify */
+        $notify = app(NotificationInstanceContract::class);
+        $notify->send($message, $date);
+        return $notify;
     }
 }
 
 if (!function_exists('tuser')) {
-    function tuser(): UserStateContract
+    function tuser(?string $botName = null): UserStateContract
     {
-        return app(UserInstanceContract::class);
+        if (empty($botName)) {
+            return app(UserInstanceContract::class);
+        }
+
+        /** @var UserStateContract $userState */
+        $userState = app(UserStateContract::class);
+        $userState->setBotName($botName);
+        return app()->instance(UserInstanceContract::class, $userState);
     }
 }
 

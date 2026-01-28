@@ -2,7 +2,7 @@
 
 namespace Domain\Schedule\Calendar\Actions;
 
-use App\Jobs\NotificationJob;
+use App\Jobs\Telegram\Schedule\NotificationJob;
 use Domain\Schedule\Calendar\Models\Timer;
 use Illuminate\Support\Carbon;
 

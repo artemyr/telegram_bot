@@ -16,9 +16,7 @@ class TravelBotFactory
 
     public function handle(): void
     {
-        $bot = bot();
-        travel_user();
-        menu('travel');
+        $bot = init_bot('travel');
 
         $bot->middleware(AuthMiddleware::class);
         $bot->middleware(CheckUserMiddleware::class);

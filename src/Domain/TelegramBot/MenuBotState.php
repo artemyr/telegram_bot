@@ -35,13 +35,13 @@ class MenuBotState extends BotState
         $currentMenuItem = menu()->getCurrentCategoryItem();
         $found = false;
 
-        if (!bot()->isCallbackQuery()) {
+        if (!nutgram()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
             tuser()->changeState($currentMenuItem->state());
             return;
         }
 
-        $text = bot()->callbackQuery()->data;
+        $text = nutgram()->callbackQuery()->data;
 
         if (!empty($text)) {
             if ($text === KeyboardEnum::BACK->value) {

@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 class UnRegisterWebhookCommand extends Command
 {
-    protected $signature = 't:hook:remove';
+    protected $signature = 't:hook:remove {bot_name? : Bot name}';
     protected $description = 'Удалить вебхуки для ботов';
 
     public function handle()
@@ -15,8 +15,33 @@ class UnRegisterWebhookCommand extends Command
             $this->fail("Can't use it on local");
         }
 
-        bot('schedule')->deleteWebhook();
-        bot('travel')->deleteWebhook();
+        $choice = $this->argument('bot_name');
+
+        if (empty($choice)) {
+            $choice = $this->choice('What bot need to UNregister hook?', [
+                'schedule',
+                'travel',
+                'all',
+            ], 'schedule');
+        }
+
+        switch ($choice) {
+            case 'schedule':
+                $this->info('schedule');
+                nutgram('schedule')->deleteWebhook();
+                break;
+            case 'travel':
+                $this->info('travel');
+                nutgram('travel')->deleteWebhook();
+                break;
+            case 'all':
+                $this->info('travel and schedule');
+                nutgram('schedule')->deleteWebhook();
+                nutgram('travel')->deleteWebhook();
+                break;
+            default:
+                $this->fail("Unknown bot name");
+        }
 
         $this->info('removed');
 

@@ -22,7 +22,7 @@ use App\Telegram\Factory\TravelBotFactory;
  */
 
 if (app()->isLocal()) {
-    bot('test');
+    nutgram('test');
 //    ScheduleBotFactory::run();
     TravelBotFactory::run();
 }

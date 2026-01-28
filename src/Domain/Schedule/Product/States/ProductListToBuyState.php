@@ -52,7 +52,7 @@ class ProductListToBuyState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                return new MenuBotState(troute('food'));
+                return new MenuBotState(troute('schedule.food'));
             }
 
             if ($query === KeyboardEnum::NEXT->value) {

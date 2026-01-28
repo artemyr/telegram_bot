@@ -46,7 +46,7 @@ class TaskRecurringListState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                return new MenuBotState(troute('tasks'));
+                return new MenuBotState(troute('schedule.tasks'));
             }
         } else {
             $text = nutgram()->message()?->getText();

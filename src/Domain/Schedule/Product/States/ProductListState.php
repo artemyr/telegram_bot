@@ -44,7 +44,7 @@ class ProductListState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                return new MenuBotState(troute('food'));
+                return new MenuBotState(troute('schedule.food'));
             }
         } else {
             $text = nutgram()->message()?->getText();

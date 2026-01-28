@@ -42,7 +42,7 @@ class TaskAddState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                return new MenuBotState(troute('tasks'));
+                return new MenuBotState(troute('schedule.tasks'));
             }
         } else {
             $tasks = nutgram()->message()?->getText();

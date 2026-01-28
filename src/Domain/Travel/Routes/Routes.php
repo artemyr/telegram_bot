@@ -12,9 +12,9 @@ class Routes
 
     public function handle()
     {
-        Route::get('/travel/find')->name('travel_find');
-        Route::get('/travel/create')->name('travel_create');
-        Route::get('/travel/profile')->name('travel_profile');
-        Route::get('/travel/how_work')->name('travel_how_work');
+        Route::get('/travel/find')->name('travel.find');
+        Route::get('/travel/create')->name('travel.create');
+        Route::get('/travel/profile')->name('travel.profile');
+        Route::get('/travel/how_work')->name('travel.how_work');
     }
 }

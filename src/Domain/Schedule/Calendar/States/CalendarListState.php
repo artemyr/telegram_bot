@@ -38,7 +38,7 @@ class CalendarListState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                return new MenuBotState(troute('calendar'));
+                return new MenuBotState(troute('schedule.calendar'));
             }
         } else {
             $query = nutgram()->message()?->getText();

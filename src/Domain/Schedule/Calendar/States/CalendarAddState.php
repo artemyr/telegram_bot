@@ -36,7 +36,7 @@ class CalendarAddState extends BotState
 
         if ($text === KeyboardEnum::BACK->value) {
             keyboard()->remove();
-            return new MenuBotState(troute('calendar'));
+            return new MenuBotState(troute('schedule.calendar'));
         }
 
         foreach (CalendarAddEnum::cases() as $case) {

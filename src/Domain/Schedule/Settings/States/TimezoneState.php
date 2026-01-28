@@ -31,12 +31,10 @@ class TimezoneState extends BotState
             ->send();
     }
 
-    public function handle(): void
+    public function handle(): BotState
     {
         if (nutgram()->message()->getText() === KeyboardEnum::BACK->label()) {
-            $newState = new MenuBotState(troute('settings'));
-            tuser()->changeState($newState);
-            return;
+            return new MenuBotState(troute('settings'));
         }
 
         foreach (TimezoneEnum::cases() as $case) {
@@ -50,7 +48,6 @@ class TimezoneState extends BotState
             }
         }
 
-        $newState = new TimezoneState();
-        tuser()->changeState($newState);
+        return $this;
     }
 }

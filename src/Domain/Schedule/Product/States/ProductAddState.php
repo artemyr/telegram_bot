@@ -54,7 +54,7 @@ class ProductAddState extends BotState
             $query = nutgram()->callbackQuery()->data;
 
             if ($query === KeyboardEnum::BACK->value) {
-                return new MenuBotState(troute('food'));
+                return new MenuBotState(troute('schedule.food'));
             }
         } else {
             $query = nutgram()->message()?->getText();

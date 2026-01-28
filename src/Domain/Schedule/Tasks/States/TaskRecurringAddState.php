@@ -68,7 +68,7 @@ class TaskRecurringAddState extends BotState
 
             if ($query === KeyboardEnum::BACK->value) {
                 keyboard()->remove();
-                return new MenuBotState(troute('tasks'));
+                return new MenuBotState(troute('schedule.tasks'));
             }
         } else {
             if ($this->stage === self::TITLE_STAGE) {
@@ -83,7 +83,7 @@ class TaskRecurringAddState extends BotState
 
                 if ($result->state === RepositoryResult::SUCCESS_SAVED) {
                     message("Задача \"$this->title\" создана");
-                    return new MenuBotState(troute('tasks'));
+                    return new MenuBotState(troute('schedule.tasks'));
                 }
 
                 if ($result->state === RepositoryResult::ERROR) {

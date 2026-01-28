@@ -25,7 +25,7 @@ jobs:
             cd docker
             make down
             make up
-            docker compose exec -T app composer install \
+            docker compose exec -T telegram_php composer install \
               --no-dev \
               --optimize-autoloader
             docker compose exec -T telegram_php php artisan migrate --force

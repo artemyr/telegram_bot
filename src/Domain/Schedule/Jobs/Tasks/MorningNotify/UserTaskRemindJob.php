@@ -22,6 +22,8 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
+        init_bot('schedule');
+
         $tuser = TelegramUser::query()
             ->select(['id', 'telegram_id', 'timezone'])
             ->where('telegram_id', $this->userId)

@@ -16,15 +16,12 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
 
     public function __construct(
         protected int $userId
-    )
-    {
+    ) {
     }
 
     public function handle(): void
     {
         init_bot('schedule');
-
-        logger()->debug("start remind $this->userId");
 
         $tuser = TelegramUser::query()
             ->select(['id', 'telegram_id', 'timezone'])
@@ -32,11 +29,9 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
             ->with('tasks')
             ->first();
 
-        if (empty($tuser)) {
+        if (empty($tuser) || empty($tuser->tasks->isEmpty())) {
             return;
         }
-
-        logger()->debug("$tuser->id");
 
         $this->recalculateTaskPriority($tuser);
         $this->notify($tuser);
@@ -88,8 +83,6 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        logger()->debug("$user->telegram_id");
-
         message()
             ->text("У вас в плане на сегодня: \n" . $response)
             ->userId($user->telegram_id)
@@ -98,6 +91,6 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
 
     public function uniqueId(): string
     {
-        return self::class .'_'. $this->userId;
+        return self::class . '_' . $this->userId;
     }
 }

@@ -12,3 +12,4 @@ Route::get('/user', function (Request $request) {
 Route::post('/webhook/{bot}', [MainTelegramController::class, 'handle']);
 
 Route::get('/config', [WorkController::class, 'config']);
+Route::get('/config/result/{action}', [WorkController::class, 'result']);

@@ -7,10 +7,13 @@ use Illuminate\Support\Facades\Cache;
 
 class WorkController extends Controller
 {
-    public function config()
+    public function __construct()
     {
         init_bot('schedule');
+    }
 
+    public function config()
+    {
         $res = [
             'start' => false,
             'end' => false,
@@ -32,47 +35,75 @@ class WorkController extends Controller
 
         if ($start === true) {
             $res['start'] = true;
-
-            $user = TelegramUser::query()
-                ->select(['telegram_id'])
-                ->where('id', 1)
-                ->first();
-
-            message()
-                ->userId($user->telegram_id)
-                ->text('Рабочий день начат')
-                ->send();
         }
 
         if ($end === true) {
             $res['end'] = true;
-
-            $user = TelegramUser::query()
-                ->select(['telegram_id'])
-                ->where('id', 1)
-                ->first();
-
-            message()
-                ->userId($user->telegram_id)
-                ->text('Рабочий день закончен')
-                ->send();
-
         }
 
         if ($test === true) {
             $res['test'] = true;
-
-            $user = TelegramUser::query()
-                ->select(['telegram_id'])
-                ->where('id', 1)
-                ->first();
-
-            message()
-                ->userId($user->telegram_id)
-                ->text('Тест')
-                ->send();
         }
 
         return response()->json($res);
+    }
+
+    public function result($action)
+    {
+        match ($action) {
+            'start' => $this->start(),
+            'end' => $this->end(),
+            'test' => $this->test(),
+            default => false,
+        };
+    }
+
+    protected function start()
+    {
+        $user = $this->getUser();
+
+        if (empty($user)) {
+            return;
+        }
+
+        message()
+            ->userId($user->telegram_id)
+            ->text('Рабочий день начат')
+            ->send();
+    }
+
+    protected function end()
+    {
+        $user = $this->getUser();
+
+        if (empty($user)) {
+            return;
+        }
+        message()
+            ->userId($user->telegram_id)
+            ->text('Рабочий день закончен')
+            ->send();
+    }
+
+    protected function test()
+    {
+        $user = $this->getUser();
+
+        if (empty($user)) {
+            return;
+        }
+
+        message()
+            ->userId($user->telegram_id)
+            ->text('Тест')
+            ->send();
+    }
+
+    protected function getUser(): ?TelegramUser
+    {
+        return TelegramUser::query()
+            ->select(['telegram_id'])
+            ->where('id', 1)
+            ->first();
     }
 }

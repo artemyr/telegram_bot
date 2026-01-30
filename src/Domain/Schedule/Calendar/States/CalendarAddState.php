@@ -42,7 +42,7 @@ class CalendarAddState extends BotState
         foreach (CalendarAddEnum::cases() as $case) {
             if ($text === $case->value) {
                 message("Вы отметили: " . $case->label());
-                $action = new ($case->action());
+                $action = new ($case->action()(nutgram()->userId()));
                 $action();
             }
         }

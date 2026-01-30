@@ -11,12 +11,14 @@ class StartWorkAction
     public const TITLE = 'Рабочий таймер';
     public const CODE = 'start_work';
 
+    public function __construct(protected int $tUserId)
+    {
+    }
+
     public function __invoke(): void
     {
-        $userDto = tuser()->get();
-
         $timer = Timer::query()
-            ->where('telegram_user_id', $userDto->userId)
+            ->where('telegram_user_id', $this->tUserId)
             ->where('code', self::CODE)
             ->first();
 
@@ -26,7 +28,7 @@ class StartWorkAction
         }
 
         $timer = Timer::query()
-            ->where('telegram_user_id', $userDto->userId)
+            ->where('telegram_user_id', $this->tUserId)
             ->where('code', self::CODE)
             ->withTrashed()
             ->first();
@@ -44,7 +46,7 @@ class StartWorkAction
             ]);
         } else {
             $timer = Timer::create([
-                'telegram_user_id' => $userDto->userId,
+                'telegram_user_id' => $this->tUserId,
                 'code' => self::CODE,
                 'class' => self::class,
                 'startDate' => $startDate,

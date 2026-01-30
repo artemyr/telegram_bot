@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Domain\Schedule\Calendar\Actions\StartWorkAction;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Facades\Cache;
 
@@ -67,10 +68,7 @@ class WorkController extends Controller
             return;
         }
 
-        message()
-            ->userId($user->telegram_id)
-            ->text('Рабочий день начат')
-            ->send();
+        (new StartWorkAction($user->telegram_id))();
     }
 
     protected function end()

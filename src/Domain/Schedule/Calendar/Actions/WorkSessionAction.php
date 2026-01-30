@@ -60,7 +60,7 @@ class WorkSessionAction
         dispatch(new NotificationJob(Timer::class, $timer->id, 'Можно начинать работать'))
             ->delay($startDate->addMinutes(10));
 
-        $time = Carbon::make($startDate)->setTimezone(tusertimezone());
+        $time = Carbon::make($startDate)->setTimezone(tusertimezone($this->tUserId));
         message("В $time отдых. Я напомню");
     }
 }

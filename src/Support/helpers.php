@@ -123,10 +123,14 @@ if (!function_exists('tuser')) {
 }
 
 if (!function_exists('tusertimezone')) {
-    function tusertimezone(): string
+    function tusertimezone(?int $tuserId = null): string
     {
+        if (empty($tuserId)) {
+            $tuserId = \nutgram()->userId();
+        }
+
         $tuser = TelegramUser::query()
-            ->where('telegram_id', tuser()->get()->userId)
+            ->where('telegram_id', $tuserId)
             ->first();
 
         if ($tuser) {

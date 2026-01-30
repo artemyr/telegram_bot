@@ -23,11 +23,11 @@ jobs:
             cd ${{ secrets.APP_DIR }}
             git pull origin master
             cd docker
-            docker compose -p telegram down
-            docker compose -p telegram up -d
+            docker compose -p telegram down > /dev/null 2>&1
+            docker compose -p telegram up -d > /dev/null 2>&1
             docker compose -p telegram exec -u www-data -T php composer install \
               --no-dev \
-              --optimize-autoloader
+              --optimize-autoloader > /dev/null 2>&1
             docker compose -p telegram exec -u www-data -T php php artisan migrate --force
             docker compose -p telegram exec -u www-data -T php php artisan config:clear
             docker compose -p telegram exec -u www-data -T php php artisan config:cache

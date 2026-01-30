@@ -54,6 +54,7 @@ class WorkController extends Controller
             'start' => $this->start(),
             'end' => $this->end(),
             'test' => $this->test(),
+            'error' => $this->error(),
             default => false,
         };
     }
@@ -96,6 +97,20 @@ class WorkController extends Controller
         message()
             ->userId($user->telegram_id)
             ->text('Тест')
+            ->send();
+    }
+
+    protected function error()
+    {
+        $user = $this->getUser();
+
+        if (empty($user)) {
+            return;
+        }
+
+        message()
+            ->userId($user->telegram_id)
+            ->text('Ошибка')
             ->send();
     }
 

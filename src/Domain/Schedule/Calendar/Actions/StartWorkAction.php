@@ -60,7 +60,7 @@ class StartWorkAction
         dispatch(new NotificationJob(Timer::class, $timer->id, 'Пора завершать рабочий день!'))
             ->delay($startDate);
 
-        $time = Carbon::make($startDate)->setTimezone(tusertimezone());
+        $time = Carbon::make($startDate)->setTimezone(tusertimezone($this->tUserId));
         message()
             ->text("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time")
             ->userId($this->tUserId)

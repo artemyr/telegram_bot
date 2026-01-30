@@ -137,7 +137,7 @@ if (!function_exists('tusertimezone')) {
             return $tuser->timezone;
         }
 
-        return app('app.timezone');
+        return config('app.timezone');
     }
 }
 

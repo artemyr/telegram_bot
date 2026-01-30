@@ -23,7 +23,10 @@ class StartWorkAction
             ->first();
 
         if ($timer && $timer->active) {
-            message("Вы уже запустили рабочий день!");
+            message()
+                ->text("Вы уже запустили рабочий день!")
+                ->userId($this->tUserId)
+                ->send();
             return;
         }
 
@@ -58,6 +61,9 @@ class StartWorkAction
             ->delay($startDate);
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone());
-        message("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time");
+        message()
+            ->text("Вы начали рабочий день. Напомню вам когда его нужно будет завершить. В $time")
+            ->userId($this->tUserId)
+            ->send();
     }
 }

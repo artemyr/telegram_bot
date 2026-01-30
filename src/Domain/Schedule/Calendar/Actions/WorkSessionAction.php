@@ -23,7 +23,10 @@ class WorkSessionAction
             ->first();
 
         if ($timer && $timer->active) {
-            message("Вы уже запустили таймер!");
+            message()
+                ->text("Вы уже запустили таймер!")
+                ->userId($this->tUserId)
+                ->send();
             return;
         }
 
@@ -61,6 +64,9 @@ class WorkSessionAction
             ->delay($startDate->addMinutes(10));
 
         $time = Carbon::make($startDate)->setTimezone(tusertimezone($this->tUserId));
-        message("В $time отдых. Я напомню");
+        message()
+            ->text("В $time отдых. Я напомню")
+            ->userId($this->tUserId)
+            ->send();
     }
 }

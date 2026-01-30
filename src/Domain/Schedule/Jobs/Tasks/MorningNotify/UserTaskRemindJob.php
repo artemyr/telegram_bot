@@ -24,11 +24,19 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
     {
         init_bot('schedule');
 
+        logger()->debug("start remind $this->userId");
+
         $tuser = TelegramUser::query()
             ->select(['id', 'telegram_id', 'timezone'])
             ->where('telegram_id', $this->userId)
             ->with('tasks')
             ->first();
+
+        if (empty($tuser)) {
+            return;
+        }
+
+        logger()->debug("$tuser->id");
 
         $this->recalculateTaskPriority($tuser);
         $this->notify($tuser);
@@ -79,6 +87,8 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
         if (empty($response)) {
             return;
         }
+
+        logger()->debug("$user->telegram_id");
 
         message()
             ->text("У вас в плане на сегодня: \n" . $response)

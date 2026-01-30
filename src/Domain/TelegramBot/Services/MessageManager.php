@@ -215,11 +215,16 @@ class MessageManager implements MessageContract
         }
 
         if ($this->driver === 'runtime') {
-            nutgram()->sendMessage(
-                text: $this->text,
-                chat_id: $this->userId,
-                reply_markup: $this->keyboard,
-            );
+            try {
+                nutgram()->sendMessage(
+                    text: $this->text,
+                    chat_id: $this->userId,
+                    reply_markup: $this->keyboard,
+                );
+            } catch (Throwable $e) {
+                logger()->error("Failed send message to tuser $this->userId");
+                throw $e;
+            }
             return;
         }
 

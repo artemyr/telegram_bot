@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Domain\Schedule\Calendar\Actions\StartWorkAction;
 use Domain\TelegramBot\Models\TelegramUser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class WorkController extends Controller
@@ -99,7 +98,7 @@ class WorkController extends Controller
             ->send();
     }
 
-    protected function error(Request $request)
+    protected function error()
     {
         $user = $this->getUser();
 
@@ -109,7 +108,7 @@ class WorkController extends Controller
 
         message()
             ->userId($user->telegram_id)
-            ->text('Ошибка: ' . $request->get('text'))
+            ->text('Ошибка: ' . request()->get('text'))
             ->send();
     }
 

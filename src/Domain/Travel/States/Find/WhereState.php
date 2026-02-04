@@ -5,6 +5,7 @@ namespace Domain\Travel\States\Find;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
+use Domain\Travel\Models\TravelClaim;
 use Domain\Travel\Models\TravelResort;
 use Illuminate\Support\Collection;
 
@@ -84,6 +85,22 @@ class WhereState extends AbstractState
             }
         }
 
-        return new WhenState();
+        $resort = TravelResort::query()
+            ->select('id')
+            ->where('title', $query)
+            ->first();
+
+        if ($resort) {
+            $claim = TravelClaim::query()->firstOrCreate([
+                'telegram_user_id' => nutgram()->userId(),
+            ]);
+
+            $claim->travel_resort_id = $resort->id;
+            $claim->save();
+
+            return new WhenState();
+        }
+
+        return $this;
     }
 }

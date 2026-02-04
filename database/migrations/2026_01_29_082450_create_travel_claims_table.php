@@ -34,7 +34,9 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained();
 
-            $table->dateTime('date')
+            $table->timestamp('date_from')
+                ->nullable();
+            $table->timestamp('date_to')
                 ->nullable();
 
             $table->timestamps();

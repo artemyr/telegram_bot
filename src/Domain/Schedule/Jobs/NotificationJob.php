@@ -35,9 +35,6 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
 
         switch ($notifiable) {
             case Task::class:
-
-                logger()->debug('send task notification ' . $this->id);
-
                 $task = $notifiable::query()
                     ->where('id', $this->id)
                     ->first();
@@ -94,9 +91,6 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
 
     public function uniqueId(): string
     {
-        logger()->debug('unique: ' . self::class . $this->model . $this->id . $this->message . $this->salt);
-        $hash = md5(self::class . $this->model . $this->id . $this->message . $this->salt);
-        logger()->debug('unique hash: ' . $hash);
-        return $hash;
+        return md5(self::class . $this->model . $this->id . $this->message . $this->salt);
     }
 }

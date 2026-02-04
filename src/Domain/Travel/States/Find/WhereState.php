@@ -5,23 +5,15 @@ namespace Domain\Travel\States\Find;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
+use Domain\Travel\Models\TravelResort;
+use Illuminate\Support\Collection;
 
 class WhereState extends AbstractState
 {
     public const STAGE_MAIN = 'stage_main';
     public const STAGE_OTHER = 'stage_other';
 
-    protected static array $where = [
-        [
-            "Роза хутор",
-            "Красная поляна"
-        ],
-        [
-            "Газпром",
-            "Шерегеш"
-        ],
-        "Другое (?)",
-    ];
+    protected static array $where = [];
 
     protected string $stage;
 
@@ -32,6 +24,15 @@ class WhereState extends AbstractState
         if (empty($stage)) {
             $this->stage = self::STAGE_MAIN;
         }
+
+        TravelResort::query()
+            ->chunk(2, function (Collection $items) {
+                self::$where[] = [
+                    $items->first()->title,
+                    $items->last()->title,
+                ];
+            });
+        self::$where[] = "Другое (?)";
     }
 
     public function render(): void

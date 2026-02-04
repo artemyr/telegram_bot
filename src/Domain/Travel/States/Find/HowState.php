@@ -5,14 +5,20 @@ namespace Domain\Travel\States\Find;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
+use Domain\Travel\Models\TravelFormat;
 
 class HowState extends AbstractState
 {
-    protected static array $how = [
-        "🎿 Кататься вместе",
-        "🚗 Трансфер",
-        "🍻 После каталки",
-    ];
+    protected static array $how = [];
+
+    public function __construct(?string $path = null)
+    {
+        parent::__construct($path);
+
+        TravelFormat::query()->get()->each(function (TravelFormat $travelFormat) {
+            self::$how[] = $travelFormat->title;
+        });
+    }
 
     public function render(): void
     {

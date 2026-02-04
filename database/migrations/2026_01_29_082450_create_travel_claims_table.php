@@ -1,6 +1,7 @@
 <?php
 
 use Domain\Travel\Models\TravelClaim;
+use Domain\Travel\Models\TravelFormat;
 use Domain\Travel\Models\TravelQuestionnaire;
 use Domain\Travel\Models\TravelResort;
 use Illuminate\Database\Migrations\Migration;
@@ -25,7 +26,7 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained();
 
-            $table->foreignIdFor(TravelClaim::class)
+            $table->foreignIdFor(TravelFormat::class)
                 ->nullable()
                 ->constrained();
 

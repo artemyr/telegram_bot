@@ -94,6 +94,9 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
 
     public function uniqueId(): string
     {
-        return md5(self::class . $this->model . $this->id . $this->message . $this->salt);
+        logger()->debug('unique: ' . self::class . $this->model . $this->id . $this->message . $this->salt);
+        $hash = md5(self::class . $this->model . $this->id . $this->message . $this->salt);
+        logger()->debug('unique hash: ' . $hash);
+        return $hash;
     }
 }

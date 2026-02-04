@@ -57,6 +57,7 @@ class MenuBotState extends BotState
                             message("Выполнение \"{$item->label()}\"");
                             $call = $item->getCallback();
                             $call();
+                            return $this;
                         } else {
                             return $item->state();
                         }

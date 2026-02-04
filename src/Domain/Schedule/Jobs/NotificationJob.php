@@ -35,6 +35,9 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
 
         switch ($notifiable) {
             case Task::class:
+
+                logger()->debug('send task notification ' . $this->id);
+
                 $task = $notifiable::query()
                     ->where('id', $this->id)
                     ->first();

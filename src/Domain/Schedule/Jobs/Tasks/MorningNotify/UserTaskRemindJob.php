@@ -29,7 +29,7 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
             ->with('tasks')
             ->first();
 
-        if (empty($tuser) || empty($tuser->tasks->isEmpty())) {
+        if (empty($tuser) || $tuser->tasks->isEmpty()) {
             return;
         }
 

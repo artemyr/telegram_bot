@@ -21,11 +21,13 @@ class TaskAddState extends BotState
 
     public function render(): void
     {
+        $date = now(tusertimezone())->addHour()->setMinute(0);
+
         message()
             ->text([
                 "Раздел: Задачи",
                 "Добавить задачу",
-                "Введите название задачи в формате \"Помыть посуду 21.12.2025 17:00\"",
+                "Введите название задачи в формате \"Помыть посуду {$date->format('d.m.Y H:i')}\"",
                 "Можно вводить сразу несколько задач, каждая на новой строке",
             ])
             ->inlineKeyboard(keyboard()->back())

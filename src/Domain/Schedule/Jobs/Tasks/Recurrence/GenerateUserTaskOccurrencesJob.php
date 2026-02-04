@@ -31,9 +31,14 @@ class GenerateUserTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
                 foreach ($tasks as $task) {
                     $recurrences = $task->taskRecurrences;
                     foreach ($recurrences as $recurrence) {
+
+                        logger()->debug('check recurrence ' . $recurrence->id);
+
                         if (!$recurrence->is_active) {
                             continue;
                         }
+
+                        logger()->debug('start generate recurrence ' . $recurrence->id);
                         $creator->generateForRule($recurrence, $from, $to);
                     }
                 }

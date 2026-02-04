@@ -11,6 +11,8 @@ class RecurrenceTaskNotificationCreator implements RecurrenceTaskNotificationCre
 {
     public function generateForRule(TaskRecurrence $rule, $from, $to): void
     {
+        logger()->debug('recurrence type ' . $rule->type);
+
         $dates = match ($rule->type) {
             'daily' => $this->dailyDates($rule, $from, $to),
             'weekly' => $this->weeklyDates($rule, $from, $to),
@@ -19,6 +21,9 @@ class RecurrenceTaskNotificationCreator implements RecurrenceTaskNotificationCre
         };
 
         foreach ($dates as $date) {
+
+            logger()->debug('recurrence dispatch ' . $date);
+
             dispatch(new NotificationJob(Task::class, $rule->task_id, null, $date))
                 ->delay($date);
         }

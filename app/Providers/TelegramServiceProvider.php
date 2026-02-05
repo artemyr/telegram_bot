@@ -22,6 +22,8 @@ use Illuminate\Support\ServiceProvider;
 
 class TelegramServiceProvider extends ServiceProvider
 {
+    protected static bool $recoverDelayedJobs = false;
+
     public function register(): void
     {
         $this->app->singleton(KeyboardContract::class, KeyboardManager::class);
@@ -58,7 +60,8 @@ class TelegramServiceProvider extends ServiceProvider
             return true;
         });
 
-        if (!Cache::has('telegram_redis_booted')) {
+        if (!self::$recoverDelayedJobs && !Cache::has('telegram_redis_booted')) {
+            self::$recoverDelayedJobs = true;
             Cache::set('telegram_redis_booted', true);
 
             logger()->error('Redis data is lost. Start to recover delayed jobs');

@@ -7,6 +7,7 @@ use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use Domain\Travel\Models\TravelClaim;
 use Domain\Travel\Models\TravelFormat;
+use Domain\Travel\Presentations\ClaimPresentation;
 
 class HowState extends AbstractState
 {
@@ -73,10 +74,7 @@ class HowState extends AbstractState
         message()
             ->text([
                 "Ваши параметры поиска:",
-                "Где: {$claim->travelResort->title}",
-                "Когда: с $claim->date_from",
-                "по $claim->date_to",
-                "Как: {$claim->travelFormat->title}",
+                ClaimPresentation::make($claim)->textMessage()
             ])
             ->send();
 

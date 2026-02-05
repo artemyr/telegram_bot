@@ -5,6 +5,7 @@ namespace Domain\Travel\States\Find;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
+use Domain\Travel\Presentations\ClaimPresentation;
 
 class StartState extends AbstractState
 {
@@ -15,26 +16,21 @@ class StartState extends AbstractState
         if ($this->claimExists()) {
             $text[] = "Вы уже ранее создавали поиск со следующими параметрами:";
             $claim = $this->getClaim();
-            $text = array_merge($text, [
-                "Где: {$claim->travelResort->title}",
-                "Когда: с $claim->date_from",
-                "по $claim->date_to",
-                "Как: {$claim->travelFormat->title}",
-            ]);
+            $text[] = ClaimPresentation::make($claim)->textMessage();
             $text[] = "Как только будут надены совпадения, они будут направлены вам";
 
             $keyboard[] = "Заполнить заного";
+            $keyboard[] = KeyboardEnum::BACK->label();
+
+            message()
+                ->text($text)
+                ->replyKeyboard($keyboard)
+                ->send();
         } else {
-            $text[] = "Необходимо заполнить форму";
-            $keyboard[] = "Продолжить";
+            $state = new WhereState();
+            $state->render();
+            tuser()->changeState($state);
         }
-
-        $keyboard[] = KeyboardEnum::BACK->label();
-
-        message()
-            ->text($text)
-            ->replyKeyboard($keyboard)
-            ->send();
     }
 
     public function handle(): BotState

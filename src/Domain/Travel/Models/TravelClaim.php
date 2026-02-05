@@ -11,12 +11,12 @@ class TravelClaim extends Model
         'telegram_user_id',
     ];
 
-    protected function travelFormat(): BelongsTo
+    public function travelFormat(): BelongsTo
     {
         return $this->belongsTo(TravelFormat::class);
     }
 
-    protected function travelResort(): BelongsTo
+    public function travelResort(): BelongsTo
     {
         return $this->belongsTo(TravelResort::class);
     }

@@ -79,16 +79,18 @@ class HowState extends AbstractState
         }
 
         $claim = TravelClaim::query()
-            ->select(['id', 'telegram_user_id','date_from','date_to'])
+            ->select(['id', 'telegram_user_id', 'date_from', 'date_to', 'travel_format_id', 'travel_resort_id'])
             ->where('telegram_user_id', nutgram()->userId())
-            ->with(['travelFormat','travelResort'])
+            ->with('travelFormat')
+            ->with('travelResort')
             ->first();
 
         message()
             ->text([
-                "Где: {$claim->format->title}",
-                "Когда: $claim->date_from $claim->date_to",
-                "Как: {$claim->resort->title}",
+                "Где: {$claim->travelResort->title}",
+                "Когда: с $claim->date_from",
+                "по $claim->date_to",
+                "Как: {$claim->travelFormat->title}",
             ])
             ->send();
 

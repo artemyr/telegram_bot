@@ -16,16 +16,6 @@ class WhenState extends AbstractState
         ],
         "Выбрать даты",
     ];
-    protected ?TravelClaim $claim;
-
-    public function __construct(?string $path = null)
-    {
-        parent::__construct($path);
-
-        $this->claim = TravelClaim::query()
-            ->where('telegram_user_id', nutgram()->userId())
-            ->first();
-    }
 
     public function render(): void
     {
@@ -42,7 +32,9 @@ class WhenState extends AbstractState
 
     public function handle(): BotState
     {
-        if (empty($this->claim)) {
+        $claim = $this->getClaim();
+
+        if (empty($claim)) {
             message('Ваша заявка потеряна. Начните заного');
             return new WhereState();
         }
@@ -70,19 +62,23 @@ class WhenState extends AbstractState
     {
         $now = now(tusertimezone());
 
-        $this->claim->date_from = $now->startOfDay();
-        $this->claim->date_to = $now->endOfDay();
+        $claim = $this->getClaim();
 
-        $this->claim->save();
+        $claim->date_from = $now->startOfDay();
+        $claim->date_to = $now->endOfDay();
+
+        $claim->save();
     }
 
     protected function tomorrow(): void
     {
         $tomorrow = now(tusertimezone())->addDay();
 
-        $this->claim->date_from = $tomorrow->startOfDay();
-        $this->claim->date_to = $tomorrow->endOfDay();
+        $claim = $this->getClaim();
 
-        $this->claim->save();
+        $claim->date_from = $tomorrow->startOfDay();
+        $claim->date_to = $tomorrow->endOfDay();
+
+        $claim->save();
     }
 }

@@ -5,7 +5,6 @@ namespace Domain\Travel\States\Find;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
-use Domain\Travel\Models\TravelClaim;
 use Domain\Travel\Models\TravelResort;
 use Illuminate\Support\Collection;
 
@@ -46,14 +45,12 @@ class WhereState extends AbstractState
     public function render(): void
     {
         if ($this->stage === self::STAGE_MAIN) {
-            message()->removeLast();
-
             $keyboard = $this->getWhere();
             $keyboard[] = KeyboardEnum::BACK->label();
 
             message()
                 ->text([
-                    "Раздел: Найти компанию",
+                    "Найти компанию",
                     "Выбор курорта",
                 ])
                 ->replyKeyboard($keyboard)
@@ -98,10 +95,7 @@ class WhereState extends AbstractState
             ->first();
 
         if ($resort) {
-            $claim = TravelClaim::query()->firstOrCreate([
-                'telegram_user_id' => nutgram()->userId(),
-            ]);
-
+            $claim = $this->createClaim();
             $claim->travel_resort_id = $resort->id;
             $claim->save();
 

@@ -11,7 +11,6 @@ use Domain\Travel\Models\TravelFormat;
 class HowState extends AbstractState
 {
     protected static array $how = [];
-    protected ?TravelClaim $claim;
 
     private function getItems(): array
     {
@@ -24,17 +23,6 @@ class HowState extends AbstractState
         }
 
         return self::$how;
-    }
-
-    private function getClaim(): ?TravelClaim
-    {
-        if (empty($this->claim)) {
-            $this->claim = TravelClaim::query()
-                ->where('telegram_user_id', nutgram()->userId())
-                ->first();
-        }
-
-        return $this->claim;
     }
 
     public function render(): void
@@ -52,7 +40,9 @@ class HowState extends AbstractState
 
     public function handle(): BotState
     {
-        if (empty($this->getClaim())) {
+        $claim = $this->getClaim();
+
+        if (empty($claim)) {
             message('Ваша заявка потеряна. Начните заного');
             return new WhereState();
         }
@@ -74,19 +64,15 @@ class HowState extends AbstractState
             ->first();
 
         if ($format) {
-            $this->getClaim()->travel_format_id = $format->id;
-            $this->getClaim()->save();
+            $claim->travel_format_id = $format->id;
+            $claim->save();
         }
 
-        $claim = TravelClaim::query()
-            ->select(['id', 'telegram_user_id', 'date_from', 'date_to', 'travel_format_id', 'travel_resort_id'])
-            ->where('telegram_user_id', nutgram()->userId())
-            ->with('travelFormat')
-            ->with('travelResort')
-            ->first();
+        $claim = $this->getClaim();
 
         message()
             ->text([
+                "Ваши параметры поиска:",
                 "Где: {$claim->travelResort->title}",
                 "Когда: с $claim->date_from",
                 "по $claim->date_to",

@@ -20,4 +20,9 @@ class TravelClaim extends Model
     {
         return $this->belongsTo(TravelResort::class);
     }
+
+    public function travelQuestionnaire(): BelongsTo
+    {
+        return $this->belongsTo(TravelQuestionnaire::class);
+    }
 }

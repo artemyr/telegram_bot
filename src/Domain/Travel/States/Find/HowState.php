@@ -5,9 +5,10 @@ namespace Domain\Travel\States\Find;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
-use Domain\Travel\Models\TravelClaim;
 use Domain\Travel\Models\TravelFormat;
 use Domain\Travel\Presentations\ClaimPresentation;
+use Domain\Travel\States\AbstractState;
+use Domain\Travel\States\Questionnaire\NameState;
 
 class HowState extends AbstractState
 {
@@ -78,6 +79,6 @@ class HowState extends AbstractState
             ])
             ->send();
 
-        return new MenuBotState(troute('home'));
+        return new NameState();
     }
 }

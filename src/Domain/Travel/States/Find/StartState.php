@@ -6,6 +6,7 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use Domain\Travel\Presentations\ClaimPresentation;
+use Domain\Travel\States\AbstractState;
 
 class StartState extends AbstractState
 {

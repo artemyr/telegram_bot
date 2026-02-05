@@ -6,6 +6,7 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use Domain\Travel\Models\TravelResort;
+use Domain\Travel\States\AbstractState;
 use Illuminate\Support\Collection;
 
 class WhereState extends AbstractState

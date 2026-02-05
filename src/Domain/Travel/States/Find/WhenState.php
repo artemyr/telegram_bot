@@ -5,7 +5,7 @@ namespace Domain\Travel\States\Find;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
-use Domain\Travel\Models\TravelClaim;
+use Domain\Travel\States\AbstractState;
 
 class WhenState extends AbstractState
 {

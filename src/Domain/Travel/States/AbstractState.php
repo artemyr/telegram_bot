@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Travel\States\Find;
+namespace Domain\Travel\States;
 
 use Domain\TelegramBot\BotState;
 use Domain\Travel\Models\TravelClaim;
@@ -17,10 +17,11 @@ abstract class AbstractState extends BotState
     protected function getClaim(): ?TravelClaim
     {
         return TravelClaim::query()
-            ->select(['id', 'telegram_user_id', 'date_from', 'date_to', 'travel_format_id', 'travel_resort_id'])
+            ->select(['id', 'telegram_user_id', 'date_from', 'date_to', 'travel_format_id', 'travel_resort_id', 'travel_questionnaire_id'])
             ->where('telegram_user_id', nutgram()->userId())
             ->with('travelFormat')
             ->with('travelResort')
+            ->with('travelQuestionnaire')
             ->first();
     }
 

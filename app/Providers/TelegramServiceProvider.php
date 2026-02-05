@@ -61,6 +61,8 @@ class TelegramServiceProvider extends ServiceProvider
         if (!Cache::has('telegram_redis_booted')) {
             Cache::set('telegram_redis_booted', true);
 
+            logger()->error('Redis data is lost. Start to recover delayed jobs');
+
             dispatch(new GenerateTaskOccurrencesJob);
             dispatch(new TimersRecoverJob());
         }

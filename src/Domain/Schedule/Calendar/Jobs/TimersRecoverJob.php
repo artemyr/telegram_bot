@@ -24,7 +24,7 @@ class TimersRecoverJob implements ShouldQueue, ShouldBeUnique
             ->chunk(10, function (Collection $timers) {
                 foreach ($timers as $timer) {
 
-                    if ($timer->startDate->getTimestemp() < now()->getTimestamp()) {
+                    if ($timer->startDate->getTimestamp() < now()->getTimestamp()) {
                         continue;
                     }
 

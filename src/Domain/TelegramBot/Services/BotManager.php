@@ -14,7 +14,8 @@ class BotManager implements BotContract
     public function __construct(Nutgram $bot)
     {
         $this->bot = $bot;
-        $this->bots = config('nutgram.bots');
+        $this->bots = config('telegram_bot.bots');
+        $this->bootstrapBot();
     }
 
     public function current(): Nutgram
@@ -40,5 +41,12 @@ class BotManager implements BotContract
         }
 
         throw new TelegramBotException('Unknown bot');
+    }
+
+    private function bootstrapBot()
+    {
+        $role = $this->role();
+        $factoryClass = config("telegram_bot.bots.$role.factory");
+        (new $factoryClass)->handle();
     }
 }

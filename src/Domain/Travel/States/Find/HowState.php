@@ -13,22 +13,33 @@ class HowState extends AbstractState
     protected static array $how = [];
     protected ?TravelClaim $claim;
 
-    public function __construct(?string $path = null)
+    private function getItems(): array
     {
-        parent::__construct($path);
+        if (empty(self::$how)) {
+            TravelFormat::query()
+                ->get()
+                ->each(function (TravelFormat $travelFormat) {
+                    self::$how[] = $travelFormat->title;
+                });
+        }
 
-        $this->claim = TravelClaim::query()
-            ->where('telegram_user_id', nutgram()->userId())
-            ->first();
+        return self::$how;
+    }
 
-        TravelFormat::query()->get()->each(function (TravelFormat $travelFormat) {
-            self::$how[] = $travelFormat->title;
-        });
+    private function getClaim(): ?TravelClaim
+    {
+        if (empty($this->claim)) {
+            $this->claim = TravelClaim::query()
+                ->where('telegram_user_id', nutgram()->userId())
+                ->first();
+        }
+
+        return $this->claim;
     }
 
     public function render(): void
     {
-        $keyboard = self::$how;
+        $keyboard = $this->getItems();
         $keyboard[] = KeyboardEnum::BACK->label();
 
         message()
@@ -41,7 +52,7 @@ class HowState extends AbstractState
 
     public function handle(): BotState
     {
-        if (empty($this->claim)) {
+        if (empty($this->getClaim())) {
             message('Ваша заявка потеряна. Начните заного');
             return new WhereState();
         }
@@ -52,7 +63,7 @@ class HowState extends AbstractState
             return new MenuBotState(troute('home'));
         }
 
-        if (!$this->validate($query, self::$how)) {
+        if (!$this->validate($query, $this->getItems())) {
             message('Выберите из списка');
             return $this;
         }
@@ -63,8 +74,8 @@ class HowState extends AbstractState
             ->first();
 
         if ($format) {
-            $this->claim->travel_format_id = $format->id;
-            $this->claim->save();
+            $this->getClaim()->travel_format_id = $format->id;
+            $this->getClaim()->save();
         }
 
         $claim = TravelClaim::query()

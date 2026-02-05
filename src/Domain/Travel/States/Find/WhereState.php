@@ -25,15 +25,22 @@ class WhereState extends AbstractState
         if (empty($stage)) {
             $this->stage = self::STAGE_MAIN;
         }
+    }
 
-        TravelResort::query()
-            ->chunk(2, function (Collection $items) {
-                self::$where[] = [
-                    $items->first()->title,
-                    $items->last()->title,
-                ];
-            });
-        self::$where[] = "Другое (?)";
+    private function getWhere(): array
+    {
+        if (empty( self::$where)) {
+            TravelResort::query()
+                ->chunk(2, function (Collection $items) {
+                    self::$where[] = [
+                        $items->first()->title,
+                        $items->last()->title,
+                    ];
+                });
+            self::$where[] = "Другое (?)";
+        }
+
+       return self::$where;
     }
 
     public function render(): void
@@ -41,7 +48,7 @@ class WhereState extends AbstractState
         if ($this->stage === self::STAGE_MAIN) {
             message()->removeLast();
 
-            $keyboard = self::$where;
+            $keyboard = $this->getWhere();
             $keyboard[] = KeyboardEnum::BACK->label();
 
             message()
@@ -74,7 +81,7 @@ class WhereState extends AbstractState
         }
 
         if ($this->stage === self::STAGE_MAIN) {
-            if (!$this->validate($query, self::$where)) {
+            if (!$this->validate($query, $this->getWhere())) {
                 message('Выберите из списка');
                 return $this;
             }

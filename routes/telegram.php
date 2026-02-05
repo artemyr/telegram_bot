@@ -11,9 +11,6 @@
 |
 */
 
-use App\Telegram\Factory\ScheduleBotFactory;
-use App\Telegram\Factory\TravelBotFactory;
-
 /**
  * для работы в long-polling режиме
  * можно дебажить только одного бота
@@ -22,12 +19,6 @@ use App\Telegram\Factory\TravelBotFactory;
  */
 
 if (app()->isLocal()) {
-//    init_bot('schedule', true);
-//    ScheduleBotFactory::run();
-
-    init_bot('travel', true);
-    TravelBotFactory::run();
+//    $bot = init_bot('schedule', true);
+    $bot = init_bot('travel', true);
 }
-
-
-

@@ -21,12 +21,10 @@ class TravelBotFactory
         $bot->middleware(AuthMiddleware::class);
         $bot->middleware(CheckUserMiddleware::class);
 
-        $bot->onCommand('start', StartController::class);
+        $bot->registerCommand(StartController::class);
 
         $bot->onMessage(MessageStateController::class);
 
         $bot->onCallbackQuery(CallbackStateController::class);
-
-        $bot->run();
     }
 }

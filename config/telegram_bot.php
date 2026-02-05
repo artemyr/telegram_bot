@@ -14,5 +14,17 @@ return [
     'menu' => [
         'schedule' => \Domain\Schedule\Menu\MenuFactory::class,
         'travel' => \Domain\Travel\Menu\MenuFactory::class,
+    ],
+    'bots' => [
+        'schedule' => [
+            'username' => 'artat_project_bot',
+            'token' => env('TELEGRAM_SCHEDULE_BOT_TOKEN', ''),
+            'factory' => \App\Telegram\Factory\ScheduleBotFactory::class
+        ],
+        'travel' => [
+            'username' => 'travel_with_new_friends_bot',
+            'token' => env('TELEGRAM_TRAVEL_BOT_TOKEN', ''),
+            'factory' => \App\Telegram\Factory\TravelBotFactory::class
+        ],
     ]
 ];

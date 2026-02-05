@@ -7,6 +7,7 @@ use Domain\TelegramBot\Enum\LastMessageType;
 use Domain\TelegramBot\MenuBotState;
 use SergiX44\Nutgram\Handlers\Type\Command;
 use SergiX44\Nutgram\Nutgram;
+use SergiX44\Nutgram\Telegram\Types\Command\BotCommandScopeAllPrivateChats;
 
 class StartController extends Command
 {
@@ -14,6 +15,17 @@ class StartController extends Command
 
     protected string $command = 'start';
     protected ?string $description = 'Let\'s start a telegram bot';
+
+    protected array $localizedDescriptions = [
+        'ru' => 'Начать общение с ботом',
+    ];
+
+    public function scopes(): array
+    {
+        return [
+            new BotCommandScopeAllPrivateChats,
+        ];
+    }
 
     public function handle(Nutgram $bot)
     {

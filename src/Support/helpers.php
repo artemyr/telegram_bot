@@ -69,11 +69,12 @@ if (!function_exists('nutgram')) {
         }
 
         if ($polling) {
+            // чтобы сработали провайдеры и подключился telegram.php - для локальной разработки
             $bot = app(Nutgram::class);
             return app()->instance(BotInstanceContract::class, $bot);
         }
 
-        $bot = new Nutgram(config("nutgram.bots.$botName.token"));
+        $bot = new Nutgram(config("telegram_bot.bots.$botName.token"));
         $bot->setRunningMode(LaravelWebhook::class);
         return app()->instance(BotInstanceContract::class, $bot);
     }

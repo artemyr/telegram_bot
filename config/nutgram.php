@@ -22,15 +22,4 @@ return [
 
     // Set log channel
     'log_channel' => env('TELEGRAM_LOG_CHANNEL', 'null'),
-
-    'bots' => [
-        'schedule' => [
-            'username' => 'artat_project_bot',
-            'token' => env('TELEGRAM_SCHEDULE_BOT_TOKEN', ''),
-        ],
-        'travel' => [
-            'username' => 'travel_with_new_friends_bot',
-            'token' => env('TELEGRAM_TRAVEL_BOT_TOKEN', ''),
-        ],
-    ]
 ];

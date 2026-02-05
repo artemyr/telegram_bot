@@ -3,7 +3,11 @@
 namespace App\Console\Commands\Telegram\CliCommands;
 
 use Domain\TelegramBot\Exceptions\PrintableException;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
+use JsonException;
+use SergiX44\Nutgram\Telegram\Exceptions\TelegramException;
+use Throwable;
 
 class RegisterWebhookCommand extends Command
 {
@@ -11,7 +15,11 @@ class RegisterWebhookCommand extends Command
     protected $description = 'Зарегистрировать вебхуки для ботов';
 
     /**
-     * @throws PrintableException
+     * @return int
+     * @throws GuzzleException
+     * @throws JsonException
+     * @throws TelegramException
+     * @throws Throwable
      */
     public function handle()
     {

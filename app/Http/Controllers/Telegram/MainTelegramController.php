@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Telegram;
 
 use App\Http\Controllers\Controller;
-use App\Telegram\Factory\ScheduleBotFactory;
-use App\Telegram\Factory\TravelBotFactory;
 
 class MainTelegramController extends Controller
 {
@@ -17,13 +15,11 @@ class MainTelegramController extends Controller
 
     protected function schedule(): void
     {
-        init_bot('schedule');
-        ScheduleBotFactory::run();
+        init_bot('schedule')->run();
     }
 
     protected function travel(): void
     {
-        init_bot('travel');
-        TravelBotFactory::run();
+        init_bot('travel')->run();
     }
 }

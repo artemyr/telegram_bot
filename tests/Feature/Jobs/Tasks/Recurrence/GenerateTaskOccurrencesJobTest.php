@@ -3,7 +3,7 @@
 namespace Tests\Feature\Jobs\Tasks\Recurrence;
 
 use Domain\Schedule\Jobs\NotificationJob;
-use Domain\Schedule\Jobs\Tasks\Recurrence\GenerateTaskOccurrencesJob;
+use Domain\Schedule\Tasks\Jobs\Recurrence\GenerateTaskOccurrencesJob;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 

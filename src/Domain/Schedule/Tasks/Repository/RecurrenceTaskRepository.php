@@ -2,8 +2,8 @@
 
 namespace Domain\Schedule\Tasks\Repository;
 
-use Domain\Schedule\Jobs\Tasks\Recurrence\GenerateOneTaskOccurrencesJob;
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskRepositoryContract;
+use Domain\Schedule\Tasks\Jobs\Recurrence\GenerateOneTaskOccurrencesJob;
 use Domain\Schedule\Tasks\Models\Task;
 use Domain\Schedule\Tasks\Models\TaskRecurrence;
 use Domain\TelegramBot\Models\TelegramUser;

@@ -1,7 +1,7 @@
 <?php
 
-use Domain\Schedule\Jobs\Tasks\MorningNotify\GlobalTaskRemindJob;
-use Domain\Schedule\Jobs\Tasks\Recurrence\GenerateTaskOccurrencesJob;
+use Domain\Schedule\Tasks\Jobs\MorningNotify\GlobalTaskRemindJob;
+use Domain\Schedule\Tasks\Jobs\Recurrence\GenerateTaskOccurrencesJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;

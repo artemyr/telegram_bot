@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Schedule\Jobs\Tasks\Recurrence;
+namespace Domain\Schedule\Tasks\Jobs\Recurrence;
 
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
 use Domain\Schedule\Tasks\Models\TaskRecurrence;

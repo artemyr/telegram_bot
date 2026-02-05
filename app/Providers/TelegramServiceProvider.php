@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Telegram\Contracts\NotificationInstanceContract;
+use Domain\Schedule\Calendar\Jobs\TimersRecoverJob;
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
+use Domain\Schedule\Tasks\Jobs\Recurrence\GenerateTaskOccurrencesJob;
 use Domain\Schedule\Tasks\Services\RecurrenceTaskNotificationCreator;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
@@ -14,6 +16,7 @@ use Domain\TelegramBot\Services\KeyboardManager;
 use Domain\TelegramBot\Services\MessageManager;
 use Domain\TelegramBot\Services\NotificationManager;
 use Domain\TelegramBot\Services\UserStateManager;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -54,5 +57,12 @@ class TelegramServiceProvider extends ServiceProvider
 
             return true;
         });
+
+        if (!Cache::has('telegram_redis_booted')) {
+            Cache::set('telegram_redis_booted', true);
+
+            dispatch(new GenerateTaskOccurrencesJob);
+            dispatch(new TimersRecoverJob());
+        }
     }
 }

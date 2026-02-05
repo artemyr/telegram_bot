@@ -19,12 +19,12 @@ class StartState extends AbstractState
             $text[] = ClaimPresentation::make($claim)->textMessage();
             $text[] = "Как только будут надены совпадения, они будут направлены вам";
 
-            $keyboard[] = "Заполнить заного";
-            $keyboard[] = KeyboardEnum::BACK->label();
+            $keyboard['refill'] = "Заполнить заного";
+            $keyboard[KeyboardEnum::BACK->value] = KeyboardEnum::PREV->label();
 
             message()
                 ->text($text)
-                ->replyKeyboard($keyboard)
+                ->inlineKeyboard($keyboard)
                 ->send();
         } else {
             $state = new WhereState();
@@ -35,18 +35,16 @@ class StartState extends AbstractState
 
     public function handle(): BotState
     {
-        $query = nutgram()->message()?->getText();
+        if (nutgram()->isCallbackQuery()) {
+            $query = nutgram()->callbackQuery()->data;
 
-        if ($query === KeyboardEnum::BACK->label()) {
-            return new MenuBotState('home');
-        }
+            if ($query === KeyboardEnum::BACK->value) {
+                return new MenuBotState('home');
+            }
 
-        if ($query === "Продолжить") {
-            return new WhereState();
-        }
-
-        if ($query === "Заполнить заного") {
-            return new WhereState();
+            if ($query === "refill") {
+                return new WhereState();
+            }
         }
 
         return $this;

@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreignIdFor(TravelStyle::class)
                 ->constrained('travel_styles','id','travel_style_id_foreign')
                 ->cascadeOnDelete();
+
+            $table->primary(['travel_questionnaire_id', 'travel_style_id']);
         });
     }
 

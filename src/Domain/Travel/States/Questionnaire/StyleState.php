@@ -6,6 +6,7 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use Domain\Travel\Models\TravelStyle;
+use Domain\Travel\Presentations\QuestionnairePresentation;
 use Domain\Travel\States\AbstractState;
 use Illuminate\Support\Collection;
 
@@ -74,6 +75,18 @@ class StyleState extends AbstractState
         $query = nutgram()->message()?->getText();
 
         if ($query === KeyboardEnum::BACK->label()) {
+            return new MenuBotState(troute('home'));
+        }
+
+        if ($query === "Далее") {
+            $questionnaire = $this->getQuestionnaire();
+
+            message()
+                ->text([
+                    "Вы заполнили анкету",
+                    QuestionnairePresentation::make($questionnaire)->textMessage(),
+                    "Теперь вам будут поступать предложения",
+                ])->send();
             return new MenuBotState(troute('home'));
         }
 

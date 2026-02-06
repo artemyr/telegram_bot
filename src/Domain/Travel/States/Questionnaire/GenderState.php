@@ -5,14 +5,17 @@ namespace Domain\Travel\States\Questionnaire;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
+use Domain\Travel\Enum\GenderEnum;
 use Domain\Travel\States\AbstractState;
 
 class GenderState extends AbstractState
 {
     public function render(): void
     {
-        $keyboard[] = '👨 Мужской';
-        $keyboard[] = '👩 Женский';
+        foreach (GenderEnum::cases() as $case) {
+            $keyboard[] = $case->label();
+        }
+
         $keyboard[] = 'Не указывать';
         $keyboard[] = KeyboardEnum::BACK->label();
 
@@ -44,12 +47,9 @@ class GenderState extends AbstractState
         }
 
         if (!empty($query)) {
-            $gender = match ($query) {
-                '👨 Мужской' => 'male',
-                '👩 Женский' => 'female',
-            };
+            $gender = GenderEnum::tryFromLabel($query);
             if (!empty($gender)) {
-                $questionnaire->gender = $gender;
+                $questionnaire->gender = $gender->value;
                 $questionnaire->save();
                 return new SkillState();
             }

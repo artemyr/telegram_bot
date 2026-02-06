@@ -5,16 +5,17 @@ namespace Domain\Travel\States\Questionnaire;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
+use Domain\Travel\Enum\LevelEnum;
 use Domain\Travel\States\AbstractState;
 
 class SkillState extends AbstractState
 {
     public function render(): void
     {
-        $keyboard[] = '🟢 Новичок';
-        $keyboard[] = '🔵 Средний';
-        $keyboard[] = '🔴 Уверенный';
-        $keyboard[] = '⚫ Эксперт';
+        foreach (LevelEnum::cases() as $case) {
+            $keyboard[] = $case->label();
+        }
+
         $keyboard[] = KeyboardEnum::BACK->label();
 
         message()
@@ -45,14 +46,9 @@ class SkillState extends AbstractState
         }
 
         if (!empty($query)) {
-            $level = match ($query) {
-                '🟢 Новичок' => 'beginner',
-                '🔵 Средний' => 'intermediate',
-                '🔴 Уверенный' => 'confident',
-                '⚫ Эксперт' => 'expert',
-            };
+            $level = LevelEnum::tryFromLabel($query);
             if (!empty($level)) {
-                $questionnaire->level = $level;
+                $questionnaire->level = $level->value;
                 $questionnaire->save();
                 return new StyleState();
             }

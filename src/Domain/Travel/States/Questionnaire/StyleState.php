@@ -11,29 +11,46 @@ use Illuminate\Support\Collection;
 
 class StyleState extends AbstractState
 {
-    protected static array $items = [];
-
-    private function getItems(): array
+    private function getKeyboard(): array
     {
-        if (empty( self::$items)) {
-            TravelStyle::query()
-                ->chunk(2, function (Collection $items) {
-                    self::$items[] = [
+        $result = [];
+
+        $questionnaire = $this->getQuestionnaire();
+        $styles = $questionnaire->travelStyles->pluck('id');
+
+        TravelStyle::query()
+            ->whereNotIn('id', $styles)
+            ->chunk(2, function (Collection $items) use (&$result) {
+                if ($items->count() > 1) {
+                    $result[] = [
                         $items->first()->title,
                         $items->last()->title,
                     ];
-                });
-        }
+                } else {
+                    $result[] = $items->first()->title;
+                }
+            });
 
-        return self::$items;
+
+        return $result;
     }
 
     public function render(): void
     {
-        $keyboard = $this->getItems();
-        $keyboard[] = 'Отметить все';
-        $keyboard[] = 'Не указывать';
-        $keyboard[] = 'Далее';
+        $questionnaire = $this->getQuestionnaire();
+        $styles = $questionnaire->travelStyles;
+
+        $keyboard = $this->getKeyboard();
+
+        if ($styles->isEmpty()) {
+            $keyboard[] = 'Отметить все';
+            $keyboard[] = 'Не указывать';
+        }
+
+        if ($styles->isNotEmpty()) {
+            $keyboard[] = 'Далее';
+        }
+
         $keyboard[] = KeyboardEnum::BACK->label();
 
         message()
@@ -64,7 +81,7 @@ class StyleState extends AbstractState
             return new MenuBotState(troute('home'));
         }
 
-        if (!$this->validate($query, $this->getItems())) {
+        if (!$this->validate($query, $this->getKeyboard())) {
             message('Выберите из списка');
             return $this;
         }

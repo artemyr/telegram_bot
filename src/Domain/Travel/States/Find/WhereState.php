@@ -32,10 +32,14 @@ class WhereState extends AbstractState
         if (empty( self::$where)) {
             TravelResort::query()
                 ->chunk(2, function (Collection $items) {
-                    self::$where[] = [
-                        $items->first()->title,
-                        $items->last()->title,
-                    ];
+                    if ($items->count() > 1) {
+                        self::$where[] = [
+                            $items->first()->title,
+                            $items->last()->title,
+                        ];
+                    } else {
+                        self::$where[] = $items->first()->title;
+                    }
                 });
             self::$where[] = "Другое (?)";
         }

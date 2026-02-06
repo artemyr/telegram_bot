@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use Domain\Travel\Database\Seeders\TravelSeeder;
 use Domain\Travel\Models\TravelFormat;
 use Domain\Travel\Models\TravelResort;
-use Domain\Travel\Seeders\TravelSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
 

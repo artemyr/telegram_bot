@@ -5,15 +5,32 @@ namespace Domain\Travel\States\Questionnaire;
 use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
+use Domain\Travel\Models\TravelStyle;
 use Domain\Travel\States\AbstractState;
+use Illuminate\Support\Collection;
 
 class StyleState extends AbstractState
 {
+    protected static array $items = [];
+
+    private function getItems(): array
+    {
+        if (empty( self::$items)) {
+            TravelStyle::query()
+                ->chunk(2, function (Collection $items) {
+                    self::$items[] = [
+                        $items->first()->title,
+                        $items->last()->title,
+                    ];
+                });
+        }
+
+        return self::$items;
+    }
+
     public function render(): void
     {
-        $keyboard[] = '🏂 Трассы';
-        $keyboard[] = '❄️ Фрирайд';
-        $keyboard[] = '🎢 Парк';
+        $keyboard = $this->getItems();
         $keyboard[] = 'Отметить все';
         $keyboard[] = 'Не указывать';
         $keyboard[] = 'Далее';
@@ -47,18 +64,14 @@ class StyleState extends AbstractState
             return new MenuBotState(troute('home'));
         }
 
-//        if (!empty($query)) {
-//            $level = match ($query) {
-//                '🏂 Трассы' => 'beginner',
-//                '❄️ Фрирайд' => 'intermediate',
-//                '🎢 Парк' => 'confident',
-//            };
-//            if (!empty($gender)) {
-//                $questionnaire->level = $level;
-//                $questionnaire->save();
-//                return new StyleState();
-//            }
-//        }
+        if (!$this->validate($query, $this->getItems())) {
+            message('Выберите из списка');
+            return $this;
+        }
+
+        if (!empty($query)) {
+
+        }
 
         return $this;
     }

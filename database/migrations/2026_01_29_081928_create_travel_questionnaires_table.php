@@ -23,7 +23,6 @@ return new class extends Migration
             $table->unsignedInteger('age')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->enum('level', ['beginner', 'intermediate','confident','expert'])->nullable();
-            $table->json('style')->nullable();
 
             $table->timestamps();
         });

@@ -51,10 +51,10 @@ class SkillState extends AbstractState
                 '🔴 Уверенный' => 'confident',
                 '⚫ Эксперт' => 'expert',
             };
-            if (!empty($gender)) {
+            if (!empty($level)) {
                 $questionnaire->level = $level;
                 $questionnaire->save();
-                return new SkillState();
+                return new StyleState();
             }
         }
 

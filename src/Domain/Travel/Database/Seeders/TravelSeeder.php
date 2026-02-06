@@ -1,9 +1,10 @@
 <?php
 
-namespace Domain\Travel\Seeders;
+namespace Domain\Travel\Database\Seeders;
 
 use Domain\Travel\Models\TravelFormat;
 use Domain\Travel\Models\TravelResort;
+use Domain\Travel\Models\TravelStyle;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 
@@ -33,6 +34,18 @@ class TravelSeeder extends Seeder
         ];
 
         TravelFormat::factory()
+            ->count(count($data))
+            ->state(new Sequence(...$data))
+            ->create();
+
+        $data = [
+            ['title' => '🏂 Трассы'],
+            ['title' => '❄️ Фрирайд'],
+            ['title' => '🎢 Парк'],
+            ['title' => '☕ Чилл'],
+        ];
+
+        TravelStyle::factory()
             ->count(count($data))
             ->state(new Sequence(...$data))
             ->create();

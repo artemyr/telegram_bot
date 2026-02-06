@@ -1,16 +1,13 @@
 <?php
 
-namespace Domain\Travel\Factories;
+namespace Domain\Travel\Database\Factories;
 
-use Domain\Travel\Models\TravelFormat;
+use Domain\Travel\Models\TravelStyle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
- */
-class TravelFormatFactory extends Factory
+class TravelStyleFactory extends Factory
 {
-    protected $model = TravelFormat::class;
+    protected $model = TravelStyle::class;
 
     /**
      * Define the model's default state.

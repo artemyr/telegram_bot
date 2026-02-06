@@ -9,11 +9,15 @@ class TravelQuestionnaire extends Model
 {
     protected $fillable = [
         'telegram_user_id',
-        'name',
     ];
 
     public function travelClaims(): HasMany
     {
         return $this->hasMany(TravelClaim::class);
+    }
+
+    public function travelStyles(): HasMany
+    {
+        return $this->hasMany(TravelStyle::class);
     }
 }

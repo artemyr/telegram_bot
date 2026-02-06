@@ -2,7 +2,7 @@
 
 namespace Domain\Travel\Models;
 
-use Domain\Travel\Factories\TravelFormatFactory;
+use Domain\Travel\Database\Factories\TravelFormatFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;

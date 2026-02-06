@@ -55,13 +55,11 @@ class MessageManager implements MessageContract
     {
         $this->keyboard = ReplyKeyboardMarkup::make();
         foreach ($keyboard as $line) {
-
             if (is_string($line)) {
                 $this->keyboard->addRow(
                     KeyboardButton::make($line)
                 );
             } elseif (is_array($line)) {
-
                 $cols = [];
 
                 foreach ($line as $label) {
@@ -79,7 +77,6 @@ class MessageManager implements MessageContract
     {
         $this->keyboard = InlineKeyboardMarkup::make();
         foreach ($keyboard as $data => $line) {
-
             if (is_string($line)) {
                 $this->keyboard->addRow(
                     InlineKeyboardButton::make(
@@ -88,7 +85,6 @@ class MessageManager implements MessageContract
                     )
                 );
             } elseif (is_array($line)) {
-
                 $cols = [];
 
                 foreach ($line as $callback => $label) {
@@ -125,9 +121,7 @@ class MessageManager implements MessageContract
             throw new MessageManagerException('Provide user id for send message');
         }
 
-        $userDto = tuser()->get();
-
-        if (!$this->lockEditLastMessage && !empty($userDto) && $userDto->lastMessageType === LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE) {
+        if ($this->canEditLast()) {
             try {
                 $this->editLastMessage();
             } catch (Throwable $e) {
@@ -245,5 +239,15 @@ class MessageManager implements MessageContract
         $this->replyKeyboard = false;
         $this->delay = 0;
         $this->lockEditLastMessage = false;
+    }
+
+    private function canEditLast(): bool
+    {
+        $userDto = tuser()->get();
+
+        return !$this->lockEditLastMessage
+            && !($this->keyboard instanceof ReplyKeyboardMarkup)
+            && !empty($userDto)
+            && $userDto->lastMessageType === LastMessageType::INLINE_KEYBOARD_BOT_MESSAGE;
     }
 }

@@ -28,7 +28,9 @@ jobs:
             docker compose -p telegram exec -u www-data -T php composer install \
               --no-dev \
               --optimize-autoloader > /dev/null 2>&1
+            docker compose -p telegram exec -u www-data -T php composer dump-autoload
             docker compose -p telegram exec -u www-data -T php php artisan migrate --force
             docker compose -p telegram exec -u www-data -T php php artisan config:clear
             docker compose -p telegram exec -u www-data -T php php artisan config:cache
             docker compose -p telegram exec -u www-data -T php php artisan route:cache
+            docker compose -p telegram exec -u www-data -T php php artisan cache:clear

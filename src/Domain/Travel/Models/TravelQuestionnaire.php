@@ -3,6 +3,7 @@
 namespace Domain\Travel\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TravelQuestionnaire extends Model
@@ -16,8 +17,8 @@ class TravelQuestionnaire extends Model
         return $this->hasMany(TravelClaim::class);
     }
 
-    public function travelStyles(): HasMany
+    public function travelStyles(): BelongsToMany
     {
-        return $this->hasMany(TravelStyle::class);
+        return $this->belongsToMany(TravelStyle::class);
     }
 }

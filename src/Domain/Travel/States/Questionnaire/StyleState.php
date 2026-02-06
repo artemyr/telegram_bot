@@ -70,7 +70,14 @@ class StyleState extends AbstractState
         }
 
         if (!empty($query)) {
+            $style = TravelStyle::query()
+                ->where('title', $query)
+                ->first();
 
+            if (!empty($style)) {
+                $questionnaire = $this->getQuestionnaire();
+                $questionnaire->travelStyles()->attach($style->id);
+            }
         }
 
         return $this;

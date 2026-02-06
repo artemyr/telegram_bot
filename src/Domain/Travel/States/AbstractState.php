@@ -26,7 +26,7 @@ abstract class AbstractState extends BotState
     protected function getQuestionnaire(): ?TravelQuestionnaire
     {
         return TravelQuestionnaire::query()
-            ->select(['id', 'telegram_user_id', 'name', 'age', 'gender', 'level', 'style'])
+            ->select(['id', 'telegram_user_id', 'name', 'age', 'gender', 'level'])
             ->where('telegram_user_id', nutgram()->userId())
             ->first();
     }

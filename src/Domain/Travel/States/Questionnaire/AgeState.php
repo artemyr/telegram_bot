@@ -6,19 +6,17 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use Domain\Travel\States\AbstractState;
-use Domain\Travel\States\Find\WhereState;
 
-class NameState extends AbstractState
+class AgeState extends AbstractState
 {
     public function render(): void
     {
-        $keyboard[] = nutgram()->user()->first_name;
         $keyboard[] = 'Не указывать';
         $keyboard[] = KeyboardEnum::BACK->label();
 
         message()
             ->text([
-                "Укажите ваше имя",
+                "Укажите ваш возвраст",
             ])
             ->replyKeyboard($keyboard)
             ->send();
@@ -26,11 +24,11 @@ class NameState extends AbstractState
 
     public function handle(): BotState
     {
-        $claim = $this->getClaim();
+        $questionnaire = $this->getQuestionnaire();
 
-        if (empty($claim)) {
-            message('Ваша заявка потеряна. Начните заного');
-            return new WhereState();
+        if (empty($questionnaire)) {
+            message('Ваша анкета потеряна. Начните заного');
+            return new NameState();
         }
 
         $query = nutgram()->message()?->getText();
@@ -44,19 +42,13 @@ class NameState extends AbstractState
         }
 
         if (!empty($query)) {
-            if ($this->questionnaireExists()) {
-                $questionnaire = $this->getQuestionnaire();
+            if (filter_var($query, FILTER_VALIDATE_INT)) {
+                $questionnaire->age = $query;
+                $questionnaire->save();
+                return new GenderState();
             } else {
-                $questionnaire = $this->createQuestionnaire();
+                message('Введите целое число');
             }
-
-            $questionnaire->name = $query;
-            $questionnaire->save();
-
-            $claim->travel_questionnaire_id = $questionnaire->id;
-            $claim->save();
-
-            return new AgeState();
         }
 
         return $this;

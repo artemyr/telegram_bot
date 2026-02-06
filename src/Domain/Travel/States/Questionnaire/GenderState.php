@@ -6,19 +6,19 @@ use Domain\TelegramBot\BotState;
 use Domain\TelegramBot\Enum\KeyboardEnum;
 use Domain\TelegramBot\MenuBotState;
 use Domain\Travel\States\AbstractState;
-use Domain\Travel\States\Find\WhereState;
 
-class NameState extends AbstractState
+class GenderState extends AbstractState
 {
     public function render(): void
     {
-        $keyboard[] = nutgram()->user()->first_name;
+        $keyboard[] = '👨 Мужской';
+        $keyboard[] = '👩 Женский';
         $keyboard[] = 'Не указывать';
         $keyboard[] = KeyboardEnum::BACK->label();
 
         message()
             ->text([
-                "Укажите ваше имя",
+                "Укажите ваш пол",
             ])
             ->replyKeyboard($keyboard)
             ->send();
@@ -26,11 +26,11 @@ class NameState extends AbstractState
 
     public function handle(): BotState
     {
-        $claim = $this->getClaim();
+        $questionnaire = $this->getQuestionnaire();
 
-        if (empty($claim)) {
-            message('Ваша заявка потеряна. Начните заного');
-            return new WhereState();
+        if (empty($questionnaire)) {
+            message('Ваша анкета потеряна. Начните заного');
+            return new NameState();
         }
 
         $query = nutgram()->message()?->getText();
@@ -44,19 +44,15 @@ class NameState extends AbstractState
         }
 
         if (!empty($query)) {
-            if ($this->questionnaireExists()) {
-                $questionnaire = $this->getQuestionnaire();
-            } else {
-                $questionnaire = $this->createQuestionnaire();
+            $gender = match ($query) {
+                '👨 Мужской' => 'male',
+                '👩 Женский' => 'female',
+            };
+            if (!empty($gender)) {
+                $questionnaire->gender = $gender;
+                $questionnaire->save();
+                return new SkillState();
             }
-
-            $questionnaire->name = $query;
-            $questionnaire->save();
-
-            $claim->travel_questionnaire_id = $questionnaire->id;
-            $claim->save();
-
-            return new AgeState();
         }
 
         return $this;

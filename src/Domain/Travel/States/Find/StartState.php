@@ -21,6 +21,7 @@ class StartState extends AbstractState
             $text[] = "Как только будут надены совпадения, они будут направлены вам";
 
             $keyboard['refill'] = "Заполнить заного";
+            $keyboard['remove'] = "Удалить анкету";
             $keyboard[KeyboardEnum::BACK->value] = KeyboardEnum::PREV->label();
 
             message()
@@ -45,6 +46,13 @@ class StartState extends AbstractState
 
             if ($query === "refill") {
                 return new WhereState();
+            }
+
+            if ($query === "remove") {
+                $claim = $this->getClaim();
+                $claim->delete();
+                message('Ваша анкета удалена. Предложения больше не будут поступать вам');
+                return new MenuBotState('home');
             }
         }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Menu\MenuContract;
+use App\Menu\MenuItem;
 use App\Telegram\Contracts\BotContract;
 use App\Telegram\Contracts\BotInstanceContract;
 use App\Telegram\Contracts\NotificationInstanceContract;
@@ -8,6 +9,7 @@ use App\Telegram\Contracts\UserInstanceContract;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
+use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\Services\BotManager;
 use Illuminate\Support\Carbon;
@@ -18,9 +20,21 @@ use Support\Contracts\HumanDateParserContract;
 if (!function_exists('menu')) {
     function menu(?string $botName = null): ?MenuContract
     {
+        $tuser = tuser()->get();
+        $state = $tuser?->state;
+
+        if ($state instanceof MenuBotState) {
+            $path = $state->getPath();
+            MenuItem::setCurrentPath($path);
+        } else {
+            MenuItem::setCurrentPath(troute('home'));
+        }
+
         if (empty($botName)) {
             return app(MenuContract::class);
         }
+
+        MenuItem::setDefaultTarget(MenuBotState::class);
 
         $factory = config("telegram_bot.menu.$botName");
 
@@ -98,8 +112,7 @@ if (!function_exists('init_bot')) {
     }
 }
 
-if (!function_exists('notify'))
-{
+if (!function_exists('notify')) {
     function notify(string $message, Carbon $date): NotificationInstanceContract
     {
         /** @var NotificationInstanceContract $notify */

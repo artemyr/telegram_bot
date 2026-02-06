@@ -13,10 +13,21 @@ class MenuFactory
 
     public function handle(): MenuItem
     {
-        return MenuItem::make(troute('home'), 'Главное меню')
-            ->add(MenuItem::make(troute('travel.find'), '🔍 Найти компанию', StartState::class))
-            ->add(MenuItem::make(troute('travel.create'), '➕ Создать предложение', fn() => message()->hint('➕ Создать предложение')))
-            ->add(MenuItem::make(troute('travel.profile'), '👤 Мой профиль', ProfileState::class))
-            ->add(MenuItem::make(troute('travel.how_work'), '❓ Как это работает', fn() => message()->hint('❓ Как это работает')));
+        return MenuItem::make('Главное меню')
+            ->setPath(troute('home'))
+            ->items([
+                MenuItem::make('🔍 Найти компанию')
+                    ->setPath(troute('travel.find'))
+                    ->setTarget(StartState::class),
+                MenuItem::make('➕ Создать предложение')
+                    ->setPath(troute('travel.create'))
+                    ->setTarget(fn() => message()->hint('➕ Создать предложение')),
+                MenuItem::make('👤 Мой профиль')
+                    ->setPath(troute('travel.profile'))
+                    ->setTarget(ProfileState::class),
+                MenuItem::make('❓ Как это работает')
+                    ->setPath(troute('travel.how_work'))
+                    ->setTarget(fn() => message()->hint('❓ Как это работает')),
+            ]);
     }
 }

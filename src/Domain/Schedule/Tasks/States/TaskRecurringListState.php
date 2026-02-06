@@ -17,7 +17,6 @@ class TaskRecurringListState extends BotState
     public function __construct(protected ?string $path = null)
     {
         $this->taskRepository = app(RecurrenceTaskRepositoryContract::class);
-        parent::__construct($path);
     }
 
     public function render(): void

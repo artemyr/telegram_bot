@@ -16,7 +16,6 @@ class TaskAddState extends BotState
     public function __construct(protected ?string $path = null)
     {
         $this->taskRepository = app(TaskRepositoryContract::class);
-        parent::__construct($path);
     }
 
     public function render(): void

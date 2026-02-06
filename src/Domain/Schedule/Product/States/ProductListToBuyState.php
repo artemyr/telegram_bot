@@ -12,9 +12,8 @@ class ProductListToBuyState extends BotState
     protected int $pagen;
     protected bool $block;
 
-    public function __construct(?string $path = null, int $pagen = 1, bool $block = false)
+    public function __construct(int $pagen = 1, bool $block = false)
     {
-        parent::__construct($path);
         $this->pagen = $pagen;
         $this->block = $block;
     }

@@ -7,5 +7,4 @@ return [
     App\Providers\RepositoryServiceProvider::class,
     App\Providers\TelegramServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
-    App\Providers\ViewServiceProvider::class,
 ];

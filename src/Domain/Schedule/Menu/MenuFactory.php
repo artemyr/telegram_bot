@@ -24,31 +24,57 @@ class MenuFactory
 
     public function handle(): MenuItem
     {
-        return MenuItem::make(troute('home'), 'Главное меню')
-            ->add(MenuItem::make(troute('schedule.calendar'), '📅 Календарь')
-                ->add(MenuItem::make('', '➕ Отметить событие', CalendarAddState::class))
-                ->add(MenuItem::make('', '📋 Список событий', CalendarListState::class))
-            )
-            ->add(MenuItem::make(troute('schedule.tasks'), '✅ Задачи')
-                ->add(MenuItem::make('', '✅ Список задач', TaskListState::class))
-                ->add(MenuItem::make('', '➕ Добавить задачу', TaskAddState::class))
-                ->add(MenuItem::make('', '✅ Список повторяющихся задач', TaskRecurringListState::class))
-                ->add(MenuItem::make('', '➕ Добавить повторяющуюся задачу', TaskRecurringAddState::class))
-            )
-            ->add(MenuItem::make(troute('schedule.food'), '🍗 Еда')
-                ->add(MenuItem::make('', '🛒 Покупаю', ProductListToBuyState::class))
-                ->add(MenuItem::make('', '🤢 Закончилось', ProductListSpoilState::class))
-                ->add(MenuItem::make('', '➕ Добавить', ProductAddState::class))
-                ->add(MenuItem::make('', '✅ Список', ProductListState::class))
-            )
-            ->add(
-                MenuItem::make(troute('schedule.settings'), '⚙️ Настройки')
-                    ->add(MenuItem::make('', 'Начать день', fn() => Cache::set('start_day', true)))
-                    ->add(MenuItem::make('', 'Закончить день', fn() => Cache::set('end_day', true)))
-                    ->add(MenuItem::make('', 'Тест', fn() => Cache::set('work_test', true)))
-                    ->add(MenuItem::make('', 'Пересоздать мои напоминания по задачам', fn() => Artisan::call('bot:user:notifications:recreate')))
-                    ->add(MenuItem::make('', '🕒 Часовой пояс', TimezoneState::class))
-                    ->add(MenuItem::make('', 'Отключить webhook', fn() => Artisan::call('bot:t:hook:remove')))
-            );
+        return MenuItem::make('Главное меню')
+            ->setPath(troute('home'))
+            ->items([
+                MenuItem::make('📅 Календарь')
+                    ->setPath(troute('schedule.calendar'))
+                    ->items([
+                        MenuItem::make('➕ Отметить событие')
+                            ->setTarget(CalendarAddState::class),
+                        MenuItem::make('📋 Список событий')
+                            ->setTarget(CalendarListState::class)
+                    ]),
+                MenuItem::make('✅ Задачи')
+                    ->setPath(troute('schedule.tasks'))
+                    ->items([
+                        MenuItem::make('✅ Список задач')
+                            ->setTarget(TaskListState::class),
+                        MenuItem::make('➕ Добавить задачу')
+                            ->setTarget(TaskAddState::class),
+                        MenuItem::make('✅ Список повторяющихся задач')
+                            ->setTarget(TaskRecurringListState::class),
+                        MenuItem::make('➕ Добавить повторяющуюся задачу')
+                            ->setTarget(TaskRecurringAddState::class),
+                    ]),
+                MenuItem::make('🍗 Еда')
+                    ->setPath(troute('schedule.food'))
+                    ->items([
+                        MenuItem::make('🛒 Покупаю')
+                            ->setTarget(ProductListToBuyState::class),
+                        MenuItem::make('🤢 Закончилось')
+                            ->setTarget(ProductListSpoilState::class),
+                        MenuItem::make('➕ Добавить')
+                            ->setTarget(ProductAddState::class),
+                        MenuItem::make('✅ Список')
+                            ->setTarget(ProductListState::class),
+                    ]),
+                MenuItem::make('⚙️ Настройки')
+                    ->setPath(troute('schedule.settings'))
+                    ->items([
+                        MenuItem::make('Начать день')
+                            ->setTarget(fn() => Cache::set('start_day', true)),
+                        MenuItem::make('Закончить день')
+                            ->setTarget(fn() => Cache::set('end_day', true)),
+                        MenuItem::make('Тест')
+                            ->setTarget(fn() => Cache::set('work_test', true)),
+                        MenuItem::make('Пересоздать мои напоминания по задачам')
+                            ->setTarget(fn() => Artisan::call('bot:user:notifications:recreate')),
+                        MenuItem::make('🕒 Часовой пояс')
+                            ->setTarget(TimezoneState::class),
+                        MenuItem::make('Отключить webhook')
+                            ->setTarget(fn() => Artisan::call('bot:t:hook:remove')),
+                    ])
+            ]);
     }
 }

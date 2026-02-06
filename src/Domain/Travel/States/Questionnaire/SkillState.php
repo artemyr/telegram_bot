@@ -50,6 +50,9 @@ class SkillState extends AbstractState
             if (!empty($level)) {
                 $questionnaire->level = $level->value;
                 $questionnaire->save();
+
+                $questionnaire->travelStyles()->detach();
+
                 return new StyleState();
             }
         }

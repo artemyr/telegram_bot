@@ -18,11 +18,9 @@ class WhereState extends AbstractState
 
     protected string $stage;
 
-    public function __construct(?string $path = null, ?string $stage = null)
+    public function __construct()
     {
-        parent::__construct($path);
-
-        if (empty($stage)) {
+        if (empty($this->stage)) {
             $this->stage = self::STAGE_MAIN;
         }
     }

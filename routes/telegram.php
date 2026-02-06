@@ -19,6 +19,6 @@
  */
 
 if (app()->isLocal()) {
-//    $bot = init_bot('schedule', true);
-    $bot = init_bot('travel', true);
+    $bot = init_bot('schedule', true);
+//    $bot = init_bot('travel', true);
 }

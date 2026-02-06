@@ -7,6 +7,17 @@ use Domain\TelegramBot\Enum\KeyboardEnum;
 
 class MenuBotState extends BotState
 {
+    public function __construct(
+        protected ?string $path = null
+    )
+    {
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
     public function render(): void
     {
         keyboard()->remove();
@@ -36,13 +47,13 @@ class MenuBotState extends BotState
 
         if (!nutgram()->isCallbackQuery()) {
             message('Используйте кнопки для навигации');
-            return $currentMenuItem->state();
+            return $this;
         }
 
-        $text = nutgram()->callbackQuery()->data;
+        $query = nutgram()->callbackQuery()->data;
 
-        if (!empty($text)) {
-            if ($text === KeyboardEnum::BACK->value) {
+        if (!empty($query)) {
+            if ($query === KeyboardEnum::BACK->value) {
                 if ($currentMenuItem->getParent()) {
                     return new MenuBotState($currentMenuItem->getParent()->link());
                 } else {
@@ -51,15 +62,22 @@ class MenuBotState extends BotState
             } else {
                 foreach ($currentMenuItem->all() as $item) {
                     /** @var $item MenuItem */
-                    if ($item->link() === $text) {
+                    if ($item->link() === $query) {
+                        $target = $item->target();
 
-                        if ($item->isCallback()) {
-                            message("Выполнение \"{$item->label()}\"");
-                            $call = $item->getCallback();
-                            $call();
-                            return $this;
-                        } else {
-                            return $item->state();
+                        if (!empty($target)) {
+                            if ($item->isCallback()) {
+                                message("Выполнение \"{$item->label()}\"");
+                                $target();
+                                return $this;
+                            } else {
+
+                                if ($target === self::class) {
+                                    return new $target($item->link());
+                                }
+
+                                return new $target;
+                            }
                         }
                     }
                 }

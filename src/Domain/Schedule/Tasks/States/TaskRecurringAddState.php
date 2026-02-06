@@ -16,7 +16,6 @@ class TaskRecurringAddState extends BotState
     protected RecurrenceTaskRepositoryContract $taskRepository;
 
     public function __construct(
-        protected ?string $path = null,
         protected ?string $stage = null,
         protected ?string $title = null,
     )
@@ -26,8 +25,6 @@ class TaskRecurringAddState extends BotState
         if (empty($this->stage)) {
             $this->stage = self::TITLE_STAGE;
         }
-
-        parent::__construct($path);
     }
 
     public function render(): void
@@ -73,7 +70,7 @@ class TaskRecurringAddState extends BotState
         } else {
             if ($this->stage === self::TITLE_STAGE) {
                 $title = nutgram()->message()->getText();
-                return new TaskRecurringAddState($this->path, self::DATE_STAGE, $title);
+                return new TaskRecurringAddState(self::DATE_STAGE, $title);
             }
 
             if ($this->stage === self::DATE_STAGE) {

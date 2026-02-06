@@ -4,46 +4,42 @@ namespace App\Menu;
 
 use Closure;
 use Countable;
-use Domain\TelegramBot\BotState;
 use Illuminate\Support\Str;
 use IteratorAggregate;
-use RuntimeException;
 
 class MenuItem implements Countable, IteratorAggregate, MenuContract
 {
     use MenuTrait;
 
+    protected static string $currentPath;
+    protected static $defaultTarget;
+
     /** @var MenuItem[] */
     protected array $items = [];
-    protected static string $defaultState;
+    protected string $link;
+    protected null|Closure|string $target;
 
-    public function __construct(
-        protected string $link,
-        protected string $label,
-        protected string|Closure|null $state = null,
-    ) {
-        if (empty($this->link) && empty($this->label)) {
-            throw new RuntimeException('Provide label or link');
-        }
-
-        if ($state === null) {
-            $this->state = static::$defaultState;
-        }
+    public function __construct(protected string $label) {
     }
 
-    public static function make(string $link, string $label, string|Closure|null $state = null): self
+    public static function setCurrentPath(string $path): void
     {
-        return new self($link, $label, $state);
+        self::$currentPath = $path;
+    }
+
+    public static function setDefaultTarget($target): void
+    {
+        self::$defaultTarget = $target;
+    }
+
+    public static function make(string $label): self
+    {
+        return new self($label);
     }
 
     public function isCallback(): bool
     {
-        return is_callable($this->state);
-    }
-
-    public function getCallback(): Closure
-    {
-        return $this->state;
+        return is_callable($this->target());
     }
 
     public function link(): string
@@ -64,24 +60,23 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
         return $this->label;
     }
 
-    public function state(): BotState
+    public function target(): string|Closure|null
     {
-        return new $this->state($this->link);
-    }
+        if (empty($this->target)) {
+            return self::$defaultTarget;
+        }
 
-    public static function setDefaultState(string $state): void
-    {
-        self::$defaultState = $state;
+        return $this->target;
     }
 
     public function isActive(): bool
     {
-        return tuser()->get()->state->getPath() === $this->link();
+        return self::$currentPath === $this->link();
     }
 
     public function getCurrentCategoryItem(): self
     {
-        $item =  $this->recurseSearch($this);
+        $item = $this->recurseSearch($this);
 
         if (empty($item)) {
             $item = menu();
@@ -111,5 +106,26 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
         }
 
         return null;
+    }
+
+    public function setPath(string $route): self
+    {
+        $this->link = $route;
+        return $this;
+    }
+
+    public function setTarget($target): self
+    {
+        $this->target = $target;
+        return $this;
+    }
+
+    public function items(array $items): self
+    {
+        foreach ($items as $item) {
+            $this->add($item);
+        }
+
+        return $this;
     }
 }

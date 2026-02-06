@@ -13,13 +13,10 @@ class ProductAddState extends BotState
     public const DAYS_STAGE = 'days';
 
     public function __construct(
-        protected ?string $path = null,
         protected ?string $stage = null,
         protected ?int $productId = null,
     )
     {
-        parent::__construct($path);
-
         if (empty($this->stage)) {
             $this->stage = self::TITLE_STAGE;
         }

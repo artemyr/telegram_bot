@@ -12,11 +12,6 @@ use Illuminate\Support\Collection;
 
 class ProductListState extends BotState
 {
-    public function __construct(?string $path = null)
-    {
-        parent::__construct($path);
-    }
-
     public function render(): void
     {
         message()

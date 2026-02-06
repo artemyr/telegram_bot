@@ -27,7 +27,7 @@ class ProfileState extends AbstractState
 
     public function handle(): BotState
     {
-        $query = nutgram()->callbackQuery()->data;
+        $query = nutgram()->callbackQuery()?->data;
 
         if ($query === KeyboardEnum::BACK->value) {
             return new MenuBotState(troute('home'));

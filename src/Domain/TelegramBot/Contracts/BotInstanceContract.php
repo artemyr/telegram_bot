@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Telegram\Contracts;
+namespace Domain\TelegramBot\Contracts;
 
 interface BotInstanceContract
 {

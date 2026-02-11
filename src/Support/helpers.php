@@ -2,12 +2,12 @@
 
 use App\Menu\MenuContract;
 use App\Menu\MenuItem;
-use App\Telegram\Contracts\BotContract;
-use App\Telegram\Contracts\BotInstanceContract;
-use App\Telegram\Contracts\NotificationInstanceContract;
-use App\Telegram\Contracts\UserInstanceContract;
+use Domain\TelegramBot\Contracts\BotContract;
+use Domain\TelegramBot\Contracts\BotInstanceContract;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
+use Domain\TelegramBot\Contracts\NotificationInstanceContract;
+use Domain\TelegramBot\Contracts\UserInstanceContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;

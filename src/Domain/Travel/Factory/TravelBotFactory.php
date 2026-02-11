@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Telegram\Factory;
+namespace Domain\Travel\Factory;
 
-use App\Http\Controllers\Telegram\Schedule\CallbackStateController;
-use App\Http\Controllers\Telegram\Schedule\MessageStateController;
-use App\Http\Controllers\Telegram\Schedule\StartController;
-use App\Telegram\Middleware\AuthMiddleware;
-use App\Telegram\Middleware\CheckUserMiddleware;
+
+use App\Http\Controllers\Telegram\Travel\CallbackStateController;
+use App\Http\Controllers\Telegram\Travel\MessageStateController;
+use App\Http\Controllers\Telegram\Travel\StartController;
+use Domain\TelegramBot\Middleware\AuthMiddleware;
+use Domain\TelegramBot\Middleware\CheckUserMiddleware;
 use Support\Traits\Runable;
 
-class ScheduleBotFactory
+class TravelBotFactory
 {
     use Runable;
 

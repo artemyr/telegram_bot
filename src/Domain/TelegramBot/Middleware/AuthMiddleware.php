@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Telegram\Middleware;
+namespace Domain\TelegramBot\Middleware;
 
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;

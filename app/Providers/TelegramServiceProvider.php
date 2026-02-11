@@ -3,13 +3,13 @@
 namespace App\Providers;
 
 use App\Models\User;
-use App\Telegram\Contracts\NotificationInstanceContract;
 use Domain\Schedule\Calendar\Jobs\TimersRecoverJob;
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
 use Domain\Schedule\Tasks\Jobs\Recurrence\GenerateTaskOccurrencesJob;
 use Domain\Schedule\Tasks\Services\RecurrenceTaskNotificationCreator;
 use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
+use Domain\TelegramBot\Contracts\NotificationInstanceContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
 use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\Services\KeyboardManager;

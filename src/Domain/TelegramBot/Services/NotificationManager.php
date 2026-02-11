@@ -2,7 +2,7 @@
 
 namespace Domain\TelegramBot\Services;
 
-use App\Telegram\Contracts\NotificationInstanceContract;
+use Domain\TelegramBot\Contracts\NotificationInstanceContract;
 use Domain\TelegramBot\Jobs\SendNotificationJob;
 use Illuminate\Support\Carbon;
 

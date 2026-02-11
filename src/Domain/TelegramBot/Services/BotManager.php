@@ -2,7 +2,7 @@
 
 namespace Domain\TelegramBot\Services;
 
-use App\Telegram\Contracts\BotContract;
+use Domain\TelegramBot\Contracts\BotContract;
 use Domain\TelegramBot\Exceptions\TelegramBotException;
 use SergiX44\Nutgram\Nutgram;
 

@@ -80,7 +80,7 @@ if (!function_exists('bot')) {
 if (!function_exists('init_bot')) {
     function init_bot($factory, bool $polling = false): Nutgram
     {
-        if (empty($factory) || !$factory instanceof AbstractBotFactory) {
+        if (empty($factory) || !is_subclass_of($factory, AbstractBotFactory::class)) {
             throw new RuntimeException('Factory must implement AbstractBotFactory');
         }
 

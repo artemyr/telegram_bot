@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands\Telegram\CliCommands;
 
+use Domain\Schedule\Factory\ScheduleBotFactory;
+use Domain\Travel\Factory\TravelBotFactory;
 use Illuminate\Console\Command;
 
 class UnRegisterWebhookCommand extends Command
@@ -28,16 +30,16 @@ class UnRegisterWebhookCommand extends Command
         switch ($choice) {
             case 'schedule':
                 $this->info('schedule');
-                nutgram('schedule')->deleteWebhook();
+                init_bot(ScheduleBotFactory::class)->deleteWebhook();
                 break;
             case 'travel':
                 $this->info('travel');
-                nutgram('travel')->deleteWebhook();
+                init_bot(TravelBotFactory::class)->deleteWebhook();
                 break;
             case 'all':
                 $this->info('travel and schedule');
-                nutgram('schedule')->deleteWebhook();
-                nutgram('travel')->deleteWebhook();
+                init_bot(ScheduleBotFactory::class)->deleteWebhook();
+                init_bot(TravelBotFactory::class)->deleteWebhook();
                 break;
             default:
                 $this->fail("Unknown bot name");

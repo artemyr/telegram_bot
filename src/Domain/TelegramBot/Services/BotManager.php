@@ -42,8 +42,8 @@ class BotManager implements BotContract
         } else {
             $bot = new Nutgram(config("telegram_bot.bots.$this->botName.token"));
             $bot->setRunningMode(LaravelWebhook::class);
-            $this->factory->handle();
             $this->bot = app()->instance(BotInstanceContract::class, $bot);
+            $this->factory->handle();
         }
 
         /** @var UserStateContract $userState */

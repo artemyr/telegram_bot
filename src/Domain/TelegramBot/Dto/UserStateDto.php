@@ -63,7 +63,7 @@ readonly class UserStateDto
                     break;
                 case 'object':
                     $str .= get_class($field) . ":\n";
-                    $str .= json_encode($field, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) . "\n";
+                    $str .= json_encode($field, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
                     break;
             }
         }

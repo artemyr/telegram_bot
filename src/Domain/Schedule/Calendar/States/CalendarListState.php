@@ -59,7 +59,7 @@ class CalendarListState extends BotState
                     ->where('id', $row->getCol('id'))
                     ->first();
 
-                if($timer) {
+                if ($timer) {
                     $timer->delete();
                     message("Таймер \"{$timer->title}\" удален");
                 } else {

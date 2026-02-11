@@ -37,5 +37,4 @@ class Day
 
         return $next($date);
     }
-
 }

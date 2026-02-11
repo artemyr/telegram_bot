@@ -16,8 +16,7 @@ class SendMessageJob implements ShouldQueue
         protected int $userId,
         protected string $message,
         protected InlineKeyboardMarkup|ReplyKeyboardMarkup|null $keyboard = null,
-    )
-    {
+    ) {
     }
 
     public function handle(): void

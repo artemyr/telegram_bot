@@ -18,8 +18,7 @@ class TaskRecurringAddState extends BotState
     public function __construct(
         protected ?string $stage = null,
         protected ?string $title = null,
-    )
-    {
+    ) {
         $this->taskRepository = app(RecurrenceTaskRepositoryContract::class);
 
         if (empty($this->stage)) {

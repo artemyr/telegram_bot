@@ -42,7 +42,13 @@ class Month
 
     protected function process(HumanDateParserContract $date): void
     {
-        if (preg_match_all("~(?P<day>\d) числа в (?P<hour>\d{2}):(?P<minute>\d{2})~", $date->getStartString(), $matches)) {
+        if (
+            preg_match_all(
+                "~(?P<day>\d) числа в (?P<hour>\d{2}):(?P<minute>\d{2})~",
+                $date->getStartString(),
+                $matches
+            )
+        ) {
             foreach ($matches[0] as $key => $match) {
                 $date->getCollection()
                     ->addMonthRecurrence(

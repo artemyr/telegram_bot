@@ -6,7 +6,8 @@ use Closure;
 use Domain\TelegramBot\BotState;
 use Illuminate\Support\Collection;
 
-interface MenuContract {
+interface MenuContract
+{
     public function getCurrentCategoryItem(): self;
     public function getParent(): ?self;
     public function link(): string;

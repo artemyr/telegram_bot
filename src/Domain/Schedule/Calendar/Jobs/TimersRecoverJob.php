@@ -23,12 +23,18 @@ class TimersRecoverJob implements ShouldQueue, ShouldBeUnique
             ->select(['id', 'title', 'startDate'])
             ->chunk(10, function (Collection $timers) {
                 foreach ($timers as $timer) {
-
                     if ($timer->startDate->getTimestamp() < now()->getTimestamp()) {
                         continue;
                     }
 
-                    dispatch(new NotificationJob(Timer::class, $timer->id, 'Таймер (восстановлен): ' . $timer->title, $timer->startDate))
+                    dispatch(
+                        new NotificationJob(
+                            Timer::class,
+                            $timer->id,
+                            'Таймер (восстановлен): ' . $timer->title,
+                            $timer->startDate
+                        )
+                    )
                         ->delay($timer->startDate);
                 }
             });

@@ -5,7 +5,6 @@ namespace Domain\Schedule\Routes;
 use Support\Traits\Runable;
 use Illuminate\Support\Facades\Route;
 
-
 class Routes
 {
     use Runable;

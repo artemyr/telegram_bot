@@ -19,7 +19,8 @@ class MenuItem implements Countable, IteratorAggregate, MenuContract
     protected string $link;
     protected null|Closure|string $target;
 
-    public function __construct(protected string $label) {
+    public function __construct(protected string $label)
+    {
     }
 
     public static function setCurrentPath(string $path): void

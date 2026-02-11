@@ -23,7 +23,7 @@ class StartController extends Command
     public function scopes(): array
     {
         return [
-            new BotCommandScopeAllPrivateChats,
+            new BotCommandScopeAllPrivateChats(),
         ];
     }
 

@@ -8,7 +8,6 @@ readonly class RecurrenceDayDto
 {
     public function __construct(
         public Carbon $time,
-    )
-    {
+    ) {
     }
 }

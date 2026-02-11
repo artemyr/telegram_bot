@@ -9,8 +9,7 @@ class MenuBotState extends BotState
 {
     public function __construct(
         protected ?string $path = null
-    )
-    {
+    ) {
     }
 
     public function getPath(): ?string
@@ -71,12 +70,11 @@ class MenuBotState extends BotState
                                 $target();
                                 return $this;
                             } else {
-
                                 if ($target === self::class) {
                                     return new $target($item->link());
                                 }
 
-                                return new $target;
+                                return new $target();
                             }
                         }
                     }

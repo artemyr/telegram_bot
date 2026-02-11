@@ -7,8 +7,7 @@ class TableDto
     public function __construct(
         /** @param RowDto[] $rows */
         public array $rows = []
-    )
-    {
+    ) {
     }
 
     public function addRow(RowDto $row): self

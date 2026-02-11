@@ -13,6 +13,5 @@ trait Runable
 
     public function handle(): void
     {
-
     }
 }

@@ -13,8 +13,8 @@ use Support\Contracts\HumanDateParserContract;
 
 class Parser implements HumanDateParserContract
 {
-    const DOUBLE_SET_TYPE_ERROR = 1;
-    const UNKNOWN_FORMAT_ERROR = 2;
+    public const DOUBLE_SET_TYPE_ERROR = 1;
+    public const UNKNOWN_FORMAT_ERROR = 2;
 
     protected TaskRepeatTypesEnum $type;
     protected string $tz;

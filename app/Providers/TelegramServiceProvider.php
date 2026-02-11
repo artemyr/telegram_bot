@@ -32,7 +32,10 @@ class TelegramServiceProvider extends ServiceProvider
         $this->app->singleton(MessageContract::class, MessageManager::class);
         $this->app->singleton(UserStateContract::class, UserStateManager::class);
         $this->app->singleton(NotificationInstanceContract::class, NotificationManager::class);
-        $this->app->singleton(RecurrenceTaskNotificationCreatorContract::class, RecurrenceTaskNotificationCreator::class);
+        $this->app->singleton(
+            RecurrenceTaskNotificationCreatorContract::class,
+            RecurrenceTaskNotificationCreator::class
+        );
     }
 
     public function boot(): void
@@ -68,7 +71,7 @@ class TelegramServiceProvider extends ServiceProvider
 
             logger()->error('Redis data is lost. Start to recover delayed jobs');
 
-            dispatch(new GenerateTaskOccurrencesJob);
+            dispatch(new GenerateTaskOccurrencesJob());
             dispatch(new TimersRecoverJob());
         }
 

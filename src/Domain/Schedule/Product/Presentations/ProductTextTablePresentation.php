@@ -14,8 +14,7 @@ class ProductTextTablePresentation
     public function __construct(
         protected Collection $products,
         protected ?string $timezone = null
-    )
-    {
+    ) {
     }
 
     public function __toString(): string

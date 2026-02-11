@@ -10,7 +10,7 @@ enum KeyboardEnum: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::BACK => '⏪ Вернуться',
             self::PREV => '◀️ Назад',
             self::NEXT => 'Дальше ➡️',

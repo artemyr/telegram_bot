@@ -15,8 +15,7 @@ class ProductAddState extends BotState
     public function __construct(
         protected ?string $stage = null,
         protected ?int $productId = null,
-    )
-    {
+    ) {
         if (empty($this->stage)) {
             $this->stage = self::TITLE_STAGE;
         }
@@ -62,7 +61,8 @@ class ProductAddState extends BotState
                     'title' => $query,
                 ]);
                 $this->productId = $product->id;
-                $this->stage = self::DAYS_STAGE;;
+                $this->stage = self::DAYS_STAGE;
+
                 return $this;
             }
 

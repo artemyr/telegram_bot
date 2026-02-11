@@ -14,8 +14,7 @@ class GenerateOneTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
 
     public function __construct(
         protected int $taskId
-    )
-    {
+    ) {
     }
 
     public function handle(RecurrenceTaskNotificationCreatorContract $creator): void

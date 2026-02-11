@@ -84,7 +84,7 @@ if (!function_exists('init_bot')) {
             throw new RuntimeException('Factory must implement AbstractBotFactory');
         }
 
-        $f = new $factory;
+        $f = new $factory();
 
         $botManager = app()->instance(BotContract::class, new BotManager($f, $polling));
         return $botManager->current();

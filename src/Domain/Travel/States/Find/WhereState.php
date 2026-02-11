@@ -27,7 +27,7 @@ class WhereState extends AbstractState
 
     private function getWhere(): array
     {
-        if (empty( self::$where)) {
+        if (empty(self::$where)) {
             TravelResort::query()
                 ->chunk(2, function (Collection $items) {
                     if ($items->count() > 1) {
@@ -42,7 +42,7 @@ class WhereState extends AbstractState
             self::$where[] = "Другое (?)";
         }
 
-       return self::$where;
+        return self::$where;
     }
 
     public function render(): void

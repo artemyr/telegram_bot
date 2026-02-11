@@ -12,9 +12,8 @@ class TimerPresentation
 {
     public function __construct(
         protected Collection $timers,
-        protected ?string    $timezone = null
-    )
-    {
+        protected ?string $timezone = null
+    ) {
     }
 
     public function __toString(): string

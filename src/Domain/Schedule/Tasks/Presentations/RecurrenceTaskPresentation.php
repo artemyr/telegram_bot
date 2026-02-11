@@ -13,8 +13,7 @@ class RecurrenceTaskPresentation
     public function __construct(
         protected Collection $tasks,
         protected ?string $timezone = null
-    )
-    {
+    ) {
     }
 
     public function __toString(): string

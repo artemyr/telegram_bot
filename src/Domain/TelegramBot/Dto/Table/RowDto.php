@@ -7,8 +7,7 @@ class RowDto
     public function __construct(
         /** @param ColDto[] $cols */
         public array $cols = []
-    )
-    {
+    ) {
     }
 
     public function addCol(ColDto $col): self

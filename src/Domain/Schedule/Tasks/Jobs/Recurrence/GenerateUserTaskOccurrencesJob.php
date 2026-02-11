@@ -14,8 +14,7 @@ class GenerateUserTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
 
     public function __construct(
         protected int $tuserId
-    )
-    {
+    ) {
     }
 
     public function handle(RecurrenceTaskNotificationCreatorContract $creator): void
@@ -31,7 +30,6 @@ class GenerateUserTaskOccurrencesJob implements ShouldQueue, ShouldBeUnique
                 foreach ($tasks as $task) {
                     $recurrences = $task->taskRecurrences;
                     foreach ($recurrences as $recurrence) {
-
                         if (!$recurrence->is_active) {
                             continue;
                         }

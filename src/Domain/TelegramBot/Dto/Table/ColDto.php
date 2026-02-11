@@ -8,8 +8,7 @@ readonly class ColDto
         public ?string $value = '',
         public ?string $code = '',
         public bool $hidden = false,
-    )
-    {
+    ) {
     }
 
     public function __toString(): string

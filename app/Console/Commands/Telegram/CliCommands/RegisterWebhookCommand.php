@@ -41,16 +41,36 @@ class RegisterWebhookCommand extends Command
         switch ($choice) {
             case 'schedule':
                 $this->info('schedule');
-                init_bot(ScheduleBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
+                init_bot(ScheduleBotFactory::class)
+                    ->setWebhook(
+                        config('app.url') . "/api/webhook/schedule",
+                        null,
+                        config('telegram_bot.serverip')
+                    );
                 break;
             case 'travel':
                 $this->info('travel');
-                init_bot(TravelBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                init_bot(TravelBotFactory::class)
+                    ->setWebhook(
+                        config('app.url') . "/api/webhook/travel",
+                        null,
+                        config('telegram_bot.serverip')
+                    );
                 break;
             case 'all':
                 $this->info('travel and schedule');
-                init_bot(ScheduleBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
-                init_bot(TravelBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                init_bot(ScheduleBotFactory::class)
+                    ->setWebhook(
+                        config('app.url') . "/api/webhook/schedule",
+                        null,
+                        config('telegram_bot.serverip')
+                    );
+                init_bot(TravelBotFactory::class)
+                    ->setWebhook(
+                        config('app.url') . "/api/webhook/travel",
+                        null,
+                        config('telegram_bot.serverip')
+                    );
                 break;
             default:
                 $this->fail("Unknown bot name");

@@ -17,7 +17,8 @@ readonly class RepositoryResult
         public int $state,
         public ?Model $model = null,
         public ?string $message = null,
-    ) {}
+    ) {
+    }
 
     public static function error(string $message): self
     {

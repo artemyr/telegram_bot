@@ -8,8 +8,7 @@ readonly class RecurrenceWeekDto
 {
     public function __construct(
         public Carbon $time,
-        public array  $daysOfWeek,
-    )
-    {
+        public array $daysOfWeek,
+    ) {
     }
 }

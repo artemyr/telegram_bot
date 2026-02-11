@@ -2,7 +2,6 @@
 
 namespace Domain\Travel\Factory;
 
-
 use App\Http\Controllers\Telegram\Travel\CallbackStateController;
 use App\Http\Controllers\Telegram\Travel\MessageStateController;
 use App\Http\Controllers\Telegram\Travel\StartController;

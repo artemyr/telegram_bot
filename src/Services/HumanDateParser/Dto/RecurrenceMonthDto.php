@@ -8,8 +8,7 @@ readonly class RecurrenceMonthDto
 {
     public function __construct(
         public Carbon $time,
-        public array  $daysOfMonth,
-    )
-    {
+        public array $daysOfMonth,
+    ) {
     }
 }

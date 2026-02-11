@@ -18,7 +18,7 @@ class SendNotificationJob implements ShouldQueue
 
     public function handle(): void
     {
-        init_bot($this->botName);
+        init_bot(config("telegram_bot.bots.$this->botName.factory"));
         nutgram()->sendMessage(text: $this->message, chat_id: $this->userId);
     }
 }

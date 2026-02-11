@@ -3,18 +3,23 @@
 namespace Domain\TelegramBot\Services;
 
 use Domain\TelegramBot\Contracts\BotContract;
-use Domain\TelegramBot\Exceptions\TelegramBotException;
+use Domain\TelegramBot\Contracts\BotInstanceContract;
+use Domain\TelegramBot\Contracts\UserInstanceContract;
+use Domain\TelegramBot\Contracts\UserStateContract;
+use Domain\TelegramBot\Factory\AbstractBotFactory;
+use Nutgram\Laravel\RunningMode\LaravelWebhook;
 use SergiX44\Nutgram\Nutgram;
 
 class BotManager implements BotContract
 {
     protected Nutgram $bot;
-    protected array $bots;
+    protected string $botName;
 
-    public function __construct(Nutgram $bot)
-    {
-        $this->bot = $bot;
-        $this->bots = config('telegram_bot.bots');
+    public function __construct(
+        protected AbstractBotFactory $factory,
+        protected bool $poling = false
+    ) {
+        $this->botName = $this->factory->getBotCode();
         $this->bootstrapBot();
     }
 
@@ -23,30 +28,27 @@ class BotManager implements BotContract
         return $this->bot;
     }
 
-    public function username(): string
-    {
-        return $this->bot->getMe()->username;
-    }
-
-    /**
-     * @throws TelegramBotException
-     */
     public function role(): string
     {
-        $username = $this->username();
-        foreach ($this->bots as $role => $bot) {
-            if ($bot['username'] === $username) {
-                return $role;
-            }
-        }
-
-        throw new TelegramBotException('Unknown bot');
+        return $this->botName;
     }
 
-    private function bootstrapBot()
+    private function bootstrapBot(): void
     {
-        $role = $this->role();
-        $factoryClass = config("telegram_bot.bots.$role.factory");
-        (new $factoryClass)->handle();
+        if ($this->poling) {
+            // чтобы сработали провайдеры и подключился telegram.php - для локальной разработки
+            $bot = app(Nutgram::class);
+            $this->bot = app()->instance(BotInstanceContract::class, $bot);
+        } else {
+            $bot = new Nutgram(config("telegram_bot.bots.$this->botName.token"));
+            $bot->setRunningMode(LaravelWebhook::class);
+            $this->factory->handle();
+            $this->bot = app()->instance(BotInstanceContract::class, $bot);
+        }
+
+        /** @var UserStateContract $userState */
+        $userState = app(UserStateContract::class);
+        $userState->setBotName($this->botName);
+        app()->instance(UserInstanceContract::class, $userState);
     }
 }

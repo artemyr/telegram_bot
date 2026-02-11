@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Domain\Schedule\Calendar\Actions\StartWorkAction;
+use Domain\Schedule\Factory\ScheduleBotFactory;
 use Domain\TelegramBot\Models\TelegramUser;
 use Illuminate\Support\Facades\Cache;
 
@@ -10,7 +11,7 @@ class WorkController extends Controller
 {
     public function __construct()
     {
-        init_bot('schedule');
+        init_bot(ScheduleBotFactory::class);
     }
 
     public function config()

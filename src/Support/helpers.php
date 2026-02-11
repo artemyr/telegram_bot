@@ -9,16 +9,16 @@ use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\NotificationInstanceContract;
 use Domain\TelegramBot\Contracts\UserInstanceContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
+use Domain\TelegramBot\Factory\AbstractBotFactory;
 use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\Services\BotManager;
 use Illuminate\Support\Carbon;
-use Nutgram\Laravel\RunningMode\LaravelWebhook;
 use SergiX44\Nutgram\Nutgram;
 use Support\Contracts\HumanDateParserContract;
 
 if (!function_exists('menu')) {
-    function menu(?string $botName = null): ?MenuContract
+    function menu(): ?MenuContract
     {
         $tuser = tuser()->get();
         $state = $tuser?->state;
@@ -30,19 +30,7 @@ if (!function_exists('menu')) {
             MenuItem::setCurrentPath(troute('home'));
         }
 
-        if (empty($botName)) {
-            return app(MenuContract::class);
-        }
-
-        MenuItem::setDefaultTarget(MenuBotState::class);
-
-        $factory = config("telegram_bot.menu.$botName");
-
-        if (empty($factory)) {
-            return null;
-        }
-
-        return app()->instance(MenuContract::class, $factory::create());
+        return app(MenuContract::class);
     }
 }
 
@@ -76,21 +64,9 @@ if (!function_exists('try')) {
 }
 
 if (!function_exists('nutgram')) {
-    function nutgram(?string $botName = null, bool $polling = false): Nutgram
+    function nutgram(): Nutgram
     {
-        if (empty($botName)) {
-            return app(BotInstanceContract::class);
-        }
-
-        if ($polling) {
-            // чтобы сработали провайдеры и подключился telegram.php - для локальной разработки
-            $bot = app(Nutgram::class);
-            return app()->instance(BotInstanceContract::class, $bot);
-        }
-
-        $bot = new Nutgram(config("telegram_bot.bots.$botName.token"));
-        $bot->setRunningMode(LaravelWebhook::class);
-        return app()->instance(BotInstanceContract::class, $bot);
+        return app(BotInstanceContract::class);
     }
 }
 
@@ -102,13 +78,16 @@ if (!function_exists('bot')) {
 }
 
 if (!function_exists('init_bot')) {
-    function init_bot(string $botName, bool $polling = false): Nutgram
+    function init_bot($factory, bool $polling = false): Nutgram
     {
-        $bot = nutgram($botName, $polling);
-        app()->instance(BotContract::class, new BotManager($bot));
-        tuser($botName);
-        menu($botName);
-        return $bot;
+        if (empty($factory) || !$factory instanceof AbstractBotFactory) {
+            throw new RuntimeException('Factory must implement AbstractBotFactory');
+        }
+
+        $f = new $factory;
+
+        $botManager = app()->instance(BotContract::class, new BotManager($f, $polling));
+        return $botManager->current();
     }
 }
 
@@ -123,16 +102,9 @@ if (!function_exists('notify')) {
 }
 
 if (!function_exists('tuser')) {
-    function tuser(?string $botName = null): UserStateContract
+    function tuser(): UserStateContract
     {
-        if (empty($botName)) {
-            return app(UserInstanceContract::class);
-        }
-
-        /** @var UserStateContract $userState */
-        $userState = app(UserStateContract::class);
-        $userState->setBotName($botName);
-        return app()->instance(UserInstanceContract::class, $userState);
+        return app(UserInstanceContract::class);
     }
 }
 

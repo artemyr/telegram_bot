@@ -3,6 +3,7 @@
 namespace Domain\Schedule\Jobs;
 
 use Domain\Schedule\Calendar\Models\Timer;
+use Domain\Schedule\Factory\ScheduleBotFactory;
 use Domain\Schedule\Tasks\Models\Task;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -33,7 +34,7 @@ class NotificationJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        init_bot('schedule');
+        init_bot(ScheduleBotFactory::class);
 
         $notifiable = $this->model;
 

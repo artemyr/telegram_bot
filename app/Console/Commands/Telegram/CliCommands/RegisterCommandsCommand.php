@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands\Telegram\CliCommands;
 
+use Domain\Schedule\Factory\ScheduleBotFactory;
+use Domain\Travel\Factory\TravelBotFactory;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -29,16 +31,16 @@ class RegisterCommandsCommand extends Command
         switch ($choice) {
             case 'schedule':
                 $this->info('schedule');
-                init_bot('schedule')->registerMyCommands();
+                init_bot(ScheduleBotFactory::class)->registerMyCommands();
                 break;
             case 'travel':
                 $this->info('travel');
-                init_bot('travel', true)->registerMyCommands();
+                init_bot(TravelBotFactory::class, true)->registerMyCommands();
                 break;
             case 'all':
                 $this->info('travel and schedule');
-                init_bot('schedule')->registerMyCommands();
-                init_bot('travel')->registerMyCommands();
+                init_bot(ScheduleBotFactory::class)->registerMyCommands();
+                init_bot(TravelBotFactory::class)->registerMyCommands();
                 break;
             default:
                 $this->fail("Unknown bot name");

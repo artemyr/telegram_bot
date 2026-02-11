@@ -2,6 +2,7 @@
 
 namespace Domain\Schedule\Tasks\Jobs\MorningNotify;
 
+use Domain\Schedule\Factory\ScheduleBotFactory;
 use Domain\Schedule\Tasks\Models\Task;
 use Domain\Schedule\Tasks\Presentations\TaskPresentation;
 use Domain\TelegramBot\Models\TelegramUser;
@@ -21,7 +22,7 @@ class UserTaskRemindJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        init_bot('schedule');
+        init_bot(ScheduleBotFactory::class);
 
         $tuser = TelegramUser::query()
             ->select(['id', 'telegram_id', 'timezone'])

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Menu\MenuItem;
 use App\Models\User;
 use Domain\Schedule\Calendar\Jobs\TimersRecoverJob;
 use Domain\Schedule\Tasks\Contracts\RecurrenceTaskNotificationCreatorContract;
@@ -11,6 +12,7 @@ use Domain\TelegramBot\Contracts\KeyboardContract;
 use Domain\TelegramBot\Contracts\MessageContract;
 use Domain\TelegramBot\Contracts\NotificationInstanceContract;
 use Domain\TelegramBot\Contracts\UserStateContract;
+use Domain\TelegramBot\MenuBotState;
 use Domain\TelegramBot\Models\TelegramUser;
 use Domain\TelegramBot\Services\KeyboardManager;
 use Domain\TelegramBot\Services\MessageManager;
@@ -69,5 +71,7 @@ class TelegramServiceProvider extends ServiceProvider
             dispatch(new GenerateTaskOccurrencesJob);
             dispatch(new TimersRecoverJob());
         }
+
+        MenuItem::setDefaultTarget(MenuBotState::class);
     }
 }

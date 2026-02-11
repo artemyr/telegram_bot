@@ -18,7 +18,10 @@
  * a nutgram:run
  */
 
+use Domain\Schedule\Factory\ScheduleBotFactory;
+use Domain\Travel\Factory\TravelBotFactory;
+
 if (app()->isLocal()) {
-    $bot = init_bot('schedule', true);
-//    $bot = init_bot('travel', true);
+//    $bot = init_bot(ScheduleBotFactory::class, true);
+//    $bot = init_bot(TravelBotFactory::class, true);
 }

@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands\Telegram\CliCommands;
 
+use Domain\Schedule\Factory\ScheduleBotFactory;
+use Domain\Travel\Factory\TravelBotFactory;
 use Illuminate\Console\Command;
-use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Common\WebhookInfo;
 
 class WebhookInfoCommand extends Command
@@ -17,16 +18,13 @@ class WebhookInfoCommand extends Command
             $this->fail("Can't use it on local");
         }
 
-        $botInfo = nutgram('schedule')->getWebhookInfo();
-        $this->showInfo('schedule', $botInfo);
-
-        $botInfo = nutgram('travel')->getWebhookInfo();
-        $this->showInfo('travel', $botInfo);
+        $this->showInfo(init_bot(ScheduleBotFactory::class)->getWebhookInfo());
+        $this->showInfo(init_bot(TravelBotFactory::class)->getWebhookInfo());
 
         return self::SUCCESS;
     }
 
-    protected function showInfo(string $botName, WebhookInfo $botInfo): void
+    protected function showInfo(WebhookInfo $botInfo): void
     {
         $name = $botInfo->getBot()?->getMyName()?->name;
         $this->alert("$name bot info");

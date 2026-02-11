@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands\Telegram\CliCommands;
 
-use Domain\TelegramBot\Exceptions\PrintableException;
+use Domain\Schedule\Factory\ScheduleBotFactory;
+use Domain\Travel\Factory\TravelBotFactory;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 use JsonException;
@@ -40,16 +41,16 @@ class RegisterWebhookCommand extends Command
         switch ($choice) {
             case 'schedule':
                 $this->info('schedule');
-                nutgram('schedule')->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
+                init_bot(ScheduleBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
                 break;
             case 'travel':
                 $this->info('travel');
-                nutgram('travel')->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                init_bot(TravelBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
                 break;
             case 'all':
                 $this->info('travel and schedule');
-                nutgram('schedule')->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
-                nutgram('travel')->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
+                init_bot(ScheduleBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/schedule", null, config('telegram_bot.serverip'));
+                init_bot(TravelBotFactory::class)->setWebhook(config('app.url') . "/api/webhook/travel", null, config('telegram_bot.serverip'));
                 break;
             default:
                 $this->fail("Unknown bot name");

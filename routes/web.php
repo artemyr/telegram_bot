@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('index');
+    return view('wedding');
 })->name('home');
 
 \Domain\Schedule\Routes\Routes::run();

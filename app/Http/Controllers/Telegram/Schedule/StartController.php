@@ -32,7 +32,7 @@ class StartController extends Command
         tuser()->changeLastMessageType(LastMessageType::USER_MESSAGE);
 
         try_to(function () {
-            $state = new MenuBotState();
+            $state = new MenuBotState(troute('home'));
             tuser()->changeState($state);
             $state->render();
         }, function ($e) {

@@ -32,8 +32,8 @@ class StartController extends Command
         tuser()->changeLastMessageType(LastMessageType::USER_MESSAGE);
 
         try_to(function () {
-            $userDto = tuser()->get();
-            $state = $userDto->state ?? new MenuBotState();
+            $state = new MenuBotState();
+            tuser()->changeState($state);
             $state->render();
         }, function ($e) {
             $this->handleException($e);

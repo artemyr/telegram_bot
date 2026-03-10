@@ -20,6 +20,12 @@ class ProductListToBuyState extends BotState
 
     public function render(): void
     {
+        /**
+         * FIXME если теряется клавиатура (например очистка чата) и block в true
+         * то становится невозможно выйти из этой стадии тк при нажатии start меню уже не рендерится из-за
+         * block true
+         */
+
         if (!$this->block) {
             $products = Product::query()
                 ->select('id', 'telegram_user_id', 'exist', 'title')

@@ -51,7 +51,7 @@
             <p class="text-center" id="where">Приглашаем вас разделить с нами<br> радость этого неповторимого события<br> в городе Краснодар</p>
             <div class="relative max-w-full">
                 <div class="absolute bg-[url(/src/images/brush.png)] z-10 w-[437px] h-[400px] bg-contain bg-no-repeat opacity-20 top-[-67px] left-[-16px]"></div>
-                <p class="caligraf text-center">30/08/2025</p>
+                <p class="caligraf text-center">06/06/2026</p>
                 <p class="caligraf text-[30px] text-center">Время сбора 17:00</p>
             </div>
             <div>
@@ -158,6 +158,7 @@
             </div>
         </section>
 
+        @if(false)
         <section class="mx-4 grid grid-flow-row gap-4" id="chats">
 
             <p>Пожалуйста, подтвердите присутствие на нашем празднике до 15 июня</p>
@@ -179,6 +180,7 @@
             </a>
 
         </section>
+        @endif
     </main>
 </div>
 </body>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Приглашаем на свадьбу</title>
+    <link rel="icon" href="/wedding/assets/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/wedding/assets/favicon.png" type="image/x-icon">
     <meta name="description" content="Кто не придет тот вонючка">
     <script type="module" crossorigin src="/wedding/assets/index-Y5DPDawM.js"></script>
     <link rel="stylesheet" crossorigin href="/wedding/assets/index-dz8tUwjj.css">

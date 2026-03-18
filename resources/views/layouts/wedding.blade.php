@@ -29,10 +29,13 @@
                 <li>
                     <a href="#dress">Дресс-код</a>
                 </li>
+                @if(false)
                 <li>
                     <a href="#chats">Чаты</a>
                 </li>
+                @endif
             </ul>
+            <img class="absolute z-[190] w-[400px] top-[48%] left-[50%] -translate-x-1/2 -translate-y-1/2" src="/wedding/assets/brush3-BlBwWMa5.png" alt="">
         </label>
 
         <div class="pt-16 ml-20 mr-4">

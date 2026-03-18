@@ -49,7 +49,7 @@
     <main class="grid grid-flow-row gap-10">
         <section class="grid grid-flow-row gap-10">
             <div class="ml-4">
-                <p class="uppercase">Мы сами не ожидали но этот день настал</p>
+                <p class="uppercase">Мы очень ждали и этот день настал</p>
                 <p class="caligraf">— мы женимся!</p>
             </div>
             <img src="/wedding/assets/offer-DybgJ1sI.jpg" alt="">
